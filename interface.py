@@ -1,8 +1,9 @@
 import streamlit as st
-import requests
+import os
 from PIL import Image
+import glob
+import requests
 from io import BytesIO
-import json
 
 # Vocabulary dictionary from your PDF
 vocab_dict = {
@@ -90,6 +91,61 @@ def get_image_from_picsum(query, width=400, height=300):
         st.error(f"Error loading fallback image: {e}")
     return None
 
+def get_local_image(word, images_folder="images"):
+    """
+    Load image from local images folder
+    Supports common image formats: png, jpg, jpeg, gif, bmp, webp
+    """
+    if not os.path.exists(images_folder):
+        st.warning(f"Images folder '{images_folder}' not found!")
+        return None
+    
+    # Common image extensions to check
+    extensions = ['*.png', '*.jpg', '*.jpeg', '*.gif', '*.bmp', '*.webp', 
+                  '*.PNG', '*.JPG', '*.JPEG', '*.GIF', '*.BMP', '*.WEBP']
+    
+    # Look for image file with the word name
+    for ext in extensions:
+        pattern = os.path.join(images_folder, f"{word}{ext[1:]}")  # Remove the *
+        if os.path.exists(pattern):
+            try:
+                return Image.open(pattern)
+            except Exception as e:
+                st.error(f"Error loading image {pattern}: {e}")
+                continue
+    
+    # If exact match not found, try pattern matching
+    for ext in extensions:
+        pattern = os.path.join(images_folder, f"{word}.*")
+        matches = glob.glob(pattern)
+        if matches:
+            try:
+                return Image.open(matches[0])  # Use first match
+            except Exception as e:
+                st.error(f"Error loading image {matches[0]}: {e}")
+                continue
+    
+    return None
+
+def list_available_images(images_folder="images"):
+    """
+    List all available images in the folder for debugging
+    """
+    if not os.path.exists(images_folder):
+        return []
+    
+    extensions = ['*.png', '*.jpg', '*.jpeg', '*.gif', '*.bmp', '*.webp', 
+                  '*.PNG', '*.JPG', '*.JPEG', '*.GIF', '*.BMP', '*.WEBP']
+    
+    all_images = []
+    for ext in extensions:
+        pattern = os.path.join(images_folder, ext)
+        all_images.extend(glob.glob(pattern))
+    
+    # Extract just the filename without extension
+    image_names = [os.path.splitext(os.path.basename(img))[0].lower() for img in all_images]
+    return image_names
+
 def main():
     st.set_page_config(
         page_title="Tigrinya Vocabulary Learning App",
@@ -163,7 +219,7 @@ def main():
                     if image_source == "Unsplash (realistic)":
                         image = get_image_from_unsplash(search_word)
                     else:
-                        image = get_image_from_picsum(search_word)
+                        image = get_local_image(search_word)
                     
                     if image:
                         st.image(
