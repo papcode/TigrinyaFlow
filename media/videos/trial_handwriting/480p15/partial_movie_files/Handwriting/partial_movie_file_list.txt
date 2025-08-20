@@ -1,0 +1,3 @@
+# This file is used internally by FFMPEG.
+file 'file:C:/WORKSPACE/AMAL/trigano/media/videos/trial_handwriting/480p15/partial_movie_files/Handwriting/1185818338_3224770954_223132457.mp4'
+file 'file:C:/WORKSPACE/AMAL/trigano/media/videos/trial_handwriting/480p15/partial_movie_files/Handwriting/624642324_1839128356_1172203018.mp4'
