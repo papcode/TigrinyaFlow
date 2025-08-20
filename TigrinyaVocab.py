@@ -288,22 +288,25 @@ class DynamicHandwriting(Scene):
         if {is_ethiopic}:
             font_attempts = [
                 # Best font first if detected
-                ("{primary_font}", {{"font": "{primary_font}", "font_size": 84}}),
+                ("{primary_font}", {{"font": "{primary_font}", "font_size": 150}}),
                 
                 # Other Ethiopic fonts
-                ("Noto Sans Ethiopic", {{"font": "Noto Sans Ethiopic", "font_size": 84}}),
-                ("NotoSansEthiopic-Regular", {{"font": "NotoSansEthiopic-Regular", "font_size": 84}}),
-                ("Ebrima", {{"font": "Ebrima", "font_size": 84}}),
-                ("Nyala", {{"font": "Nyala", "font_size": 84}}),
-                ("Abyssinica SIL", {{"font": "Abyssinica SIL", "font_size": 84}}),
-                ("Kefa", {{"font": "Kefa", "font_size": 84}}),
-                ("Arial Unicode MS", {{"font": "Arial Unicode MS", "font_size": 84}}),
-                ("DejaVu Sans", {{"font": "DejaVu Sans", "font_size": 84}}),
+                ("Noto Sans Ethiopic", {{"font": "Noto Sans Ethiopic", "font_size": 150}}),
+                ("NotoSansEthiopic-Regular", {{"font": "NotoSansEthiopic-Regular", "font_size": 150}}),
+                ("Ebrima", {{"font": "Ebrima", "font_size": 150}}),
+                ("Nyala", {{"font": "Nyala", "font_size": 150}}),
+                ("Abyssinica SIL", {{"font": "Abyssinica SIL", "font_size": 150}}),
+                ("Kefa", {{"font": "Kefa", "font_size": 150}}),
+                ("Arial Unicode MS", {{"font": "Arial Unicode MS", "font_size": 150}}),
+                ("DejaVu Sans", {{"font": "DejaVu Sans", "font_size": 150}}),
                 
                 # System fallbacks
-                ("System Default", {{"font_size": 84}}),
-                ("Minimal fallback", {{"font_size": 72, "color": "#FFFFFF"}}),
+                ("System Default", {{"font_size": 150}}),
+                ("Minimal fallback", {{"font_size": 150, "color": "#FFFFFF"}}),
             ]
+
+
+
         
         text = None
         used_font = "Unknown"
@@ -464,21 +467,20 @@ def main():
             st.success(f"✅ Translation found!")
             
             # Display image
-            st.subheader(f"🖼️ Image for '{search_word}'")
+            
             image = get_local_image(search_word) or get_image_from_unsplash(search_word)
             if image:
                 st.image(
                     image,
-                    caption=f"{search_word.title()}",
                     width=400
                 )
             else:
                 st.warning("Could not load image.")
 
-            st.subheader(f"✍️ Handwriting Animation for '{translation}'")
+            
 
             # Generate animation
-            with st.spinner("🎨 Creating your handwriting animation..."):
+            with st.spinner("loading Tigrinya Translation"):
                 font_status = check_font_support()
                 best_font = font_status.get('best_font')
                 script_path = create_manim_script(translation, best_font)
@@ -537,8 +539,7 @@ def main():
                             break
                     
                     if found_file:
-                            st.success("🎉 Animation created successfully!")
-                            st.video(found_file, width=400)
+                            st.video(found_file, width=400, autoplay=True)
                     else:
                         st.error("❌ Could not find the generated video file")
                         
