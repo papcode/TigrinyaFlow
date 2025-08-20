@@ -443,122 +443,117 @@ def main():
     )
 
     if mode == "Search Translation":
-        col1, col2 = st.columns(2)
+        st.subheader("🔍 Search for a word")
         
-        with col1:
-            st.subheader("🔍 Search for a word")
+        input_method = st.radio("Input method:", ["Type word", "Select from dropdown"])
+        
+        if input_method == "Type word":
+            search_word = st.text_input(
+                "Enter English word:",
+                placeholder="e.g., house, cat, red..."
+            ).lower().strip()
+        else:
+            search_word = st.selectbox(
+                "Select English word:",
+                options=[""] + sorted(vocab_dict.keys())
+            )
+        
+        if search_word and search_word in vocab_dict:
+            translation = vocab_dict[search_word]
             
-            input_method = st.radio("Input method:", ["Type word", "Select from dropdown"])
+            st.success(f"✅ Translation found!")
             
-            if input_method == "Type word":
-                search_word = st.text_input(
-                    "Enter English word:",
-                    placeholder="e.g., house, cat, red..."
-                ).lower().strip()
-            else:
-                search_word = st.selectbox(
-                    "Select English word:",
-                    options=[""] + sorted(vocab_dict.keys())
+            # Display image
+            st.subheader(f"🖼️ Image for '{search_word}'")
+            image = get_local_image(search_word) or get_image_from_unsplash(search_word)
+            if image:
+                st.image(
+                    image,
+                    caption=f"{search_word.title()}",
+                    use_column_width=True
                 )
-            
-            if search_word and search_word in vocab_dict:
-                translation = vocab_dict[search_word]
+            else:
+                st.warning("Could not load image.")
+
+            st.subheader(f"✍️ Handwriting Animation for '{translation}'")
+
+            # Generate animation
+            with st.spinner("🎨 Creating your handwriting animation..."):
+                font_status = check_font_support()
+                best_font = font_status.get('best_font')
+                script_path = create_manim_script(translation, best_font)
                 
-                st.success(f"✅ Translation found!")
+                if not script_path:
+                    st.error("Failed to create animation script")
+                    st.stop()
+
+                import hashlib
+                text_hash = hashlib.md5(translation.encode('utf-8')).hexdigest()[:8]
+                output_filename = f"tigrinya_animation_{text_hash}.mp4"
                 
-                # Display image
-                st.subheader(f"🖼️ Image for '{search_word}'")
-                image = get_local_image(search_word) or get_image_from_unsplash(search_word)
-                if image:
-                    st.image(
-                        image,
-                        caption=f"{search_word.title()}",
-                        use_column_width=True
+                quality_flags = ["-qm"] # Medium quality
+
+                try:
+                    env = os.environ.copy()
+                    env.update({
+                        'PYTHONIOENCODING': 'utf-8',
+                        'PYTHONUTF8': '1',
+                        'MANIM_DISABLE_CACHING': '1'
+                    })
+                    
+                    cmd = [
+                        "python", "-m", "manim"
+                    ] + quality_flags + [
+                        script_path, "DynamicHandwriting",
+                        "-o", output_filename,
+                        "--disable_caching"
+                    ]
+                    
+                    result = subprocess.run(
+                        cmd,
+                        capture_output=True,
+                        text=True,
+                        env=env,
+                        encoding='utf-8',
+                        errors='replace',
+                        timeout=180
                     )
-                else:
-                    st.warning("Could not load image.")
-
-        with col2:
-            if search_word and search_word in vocab_dict:
-                st.subheader(f"✍️ Handwriting Animation for '{translation}'")
-
-                # Generate animation
-                with st.spinner("🎨 Creating your handwriting animation..."):
-                    font_status = check_font_support()
-                    best_font = font_status.get('best_font')
-                    script_path = create_manim_script(translation, best_font)
                     
-                    if not script_path:
-                        st.error("Failed to create animation script")
+                    if result.returncode != 0:
+                        st.error(f"❌ Animation generation failed (code {result.returncode})")
+                        st.expander("⚠️ Manim Errors").code(result.stderr)
                         st.stop()
-
-                    import hashlib
-                    text_hash = hashlib.md5(translation.encode('utf-8')).hexdigest()[:8]
-                    output_filename = f"tigrinya_animation_{text_hash}.mp4"
                     
-                    quality_flags = ["-qm"] # Medium quality
-
+                    quality_dir = "720p30"
+                    
+                    possible_paths = [
+                        Path("media/videos/dynamic_handwriting") / quality_dir / output_filename,
+                    ]
+                    
+                    found_file = None
+                    for path in possible_paths:
+                        if path.exists():
+                            found_file = str(path)
+                            break
+                    
+                    if found_file:
+                        st.success("🎉 Animation created successfully!")
+                        st.video(found_file)
+                    else:
+                        st.error("❌ Could not find the generated video file")
+                        
+                except subprocess.TimeoutExpired:
+                    st.error("⏰ Animation generation timed out (3 minutes)")
+                except Exception as e:
+                    st.error(f"💥 Error during generation: {e}")
+                finally:
                     try:
-                        env = os.environ.copy()
-                        env.update({
-                            'PYTHONIOENCODING': 'utf-8',
-                            'PYTHONUTF8': '1',
-                            'MANIM_DISABLE_CACHING': '1'
-                        })
-                        
-                        cmd = [
-                            "python", "-m", "manim"
-                        ] + quality_flags + [
-                            script_path, "DynamicHandwriting",
-                            "-o", output_filename,
-                            "--disable_caching"
-                        ]
-                        
-                        result = subprocess.run(
-                            cmd,
-                            capture_output=True,
-                            text=True,
-                            env=env,
-                            encoding='utf-8',
-                            errors='replace',
-                            timeout=180
-                        )
-                        
-                        if result.returncode != 0:
-                            st.error(f"❌ Animation generation failed (code {result.returncode})")
-                            st.expander("⚠️ Manim Errors").code(result.stderr)
-                            st.stop()
-                        
-                        quality_dir = "720p30"
-                        
-                        possible_paths = [
-                            Path("media/videos/dynamic_handwriting") / quality_dir / output_filename,
-                        ]
-                        
-                        found_file = None
-                        for path in possible_paths:
-                            if path.exists():
-                                found_file = str(path)
-                                break
-                        
-                        if found_file:
-                            st.success("🎉 Animation created successfully!")
-                            st.video(found_file)
-                        else:
-                            st.error("❌ Could not find the generated video file")
-                            
-                    except subprocess.TimeoutExpired:
-                        st.error("⏰ Animation generation timed out (3 minutes)")
-                    except Exception as e:
-                        st.error(f"💥 Error during generation: {e}")
-                    finally:
-                        try:
-                            if script_path and os.path.exists(script_path):
-                                os.remove(script_path)
-                        except:
-                            pass
-            elif search_word:
-                st.error(f"❌ '{search_word}' not found in vocabulary.")
+                        if script_path and os.path.exists(script_path):
+                            os.remove(script_path)
+                    except:
+                        pass
+        elif search_word:
+            st.error(f"❌ '{search_word}' not found in vocabulary.")
 
     elif mode == "Browse All Words":
         st.subheader("📋 Complete Vocabulary List")
