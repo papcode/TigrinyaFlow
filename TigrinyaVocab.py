@@ -470,7 +470,7 @@ def main():
                 st.image(
                     image,
                     caption=f"{search_word.title()}",
-                    use_column_width=True
+                    width=400
                 )
             else:
                 st.warning("Could not load image.")
@@ -537,8 +537,8 @@ def main():
                             break
                     
                     if found_file:
-                        st.success("🎉 Animation created successfully!")
-                        st.video(found_file)
+                            st.success("🎉 Animation created successfully!")
+                            st.video(found_file, width=400)
                     else:
                         st.error("❌ Could not find the generated video file")
                         
