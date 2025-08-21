@@ -193,7 +193,7 @@ def main():
                 st.markdown(f"""
                 <div style='background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;'>
                     <h2 style='color: #1f77b4; margin: 0;'>{search_word.title()}</h2>
-                    <h1 style='color: #ff6347; margin: 10px 0; font-size: 3em;'>{translation}</h1>
+                    <h1 style='color: #ff6347; margin: 10px 0; font-size: 4.2em;'>{translation}</h1>
                 </div>
                 """, unsafe_allow_html=True)
                 
@@ -208,25 +208,15 @@ def main():
             if search_word and search_word in vocab_dict:
                 st.subheader(f"🖼️ Image for '{search_word}'")
                 
-                # Image loading options
-                image_source = st.radio(
-                    "Image source:",
-                    ["Unsplash (realistic)", "Abstract placeholder"],
-                    key="image_source"
-                )
-                
                 with st.spinner("Loading image..."):
-                    if image_source == "Unsplash (realistic)":
-                        image = get_image_from_unsplash(search_word)
-                    else:
-                        image = get_local_image(search_word)
+                    image = get_local_image(search_word)
                     
                     if image:
                         st.image(
                             image,
-                            caption=f"{search_word.title()} - {vocab_dict[search_word]}",
-                            use_column_width=True
+                            use_container_width=True
                         )
+                        st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{search_word.title()} - {vocab_dict[search_word]}</div>", unsafe_allow_html=True)
                     else:
                         st.warning("Could not load image. Please try again.")
     
