@@ -198,16 +198,14 @@ def main():
                 """, unsafe_allow_html=True)
                 
                 # Audio pronunciation placeholder
-                st.info("🔊 Audio pronunciation feature coming soon!")
+                # st.info("🔊 Audio pronunciation feature coming soon!")
                 
             elif search_word and search_word not in vocab_dict:
                 st.error(f"❌ '{search_word}' not found in vocabulary.")
                 st.info("💡 Try one of these words: " + ", ".join(list(vocab_dict.keys())[:10]) + "...")
         
         with col2:
-            if search_word and search_word in vocab_dict:
-                st.subheader(f"🖼️ Image for '{search_word}'")
-                
+            if search_word and search_word in vocab_dict:                
                 with st.spinner("Loading image..."):
                     image = get_local_image(search_word)
                     
@@ -216,7 +214,7 @@ def main():
                             image,
                             use_container_width=True
                         )
-                        st.markdown(f"<div style='text-align: center; font-size: 1.5em;'>{search_word.title()} - {vocab_dict[search_word]}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='text-align: center; font-size: 2em;'>{search_word.title()} - {vocab_dict[search_word]}</div>", unsafe_allow_html=True)
                     else:
                         st.warning("Could not load image. Please try again.")
     
