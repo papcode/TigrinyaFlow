@@ -4,6 +4,7 @@ from PIL import Image
 import glob
 import requests
 from io import BytesIO
+from deep_translator import GoogleTranslator
 
 # Vocabulary dictionary from your PDF
 vocab_dict = {
@@ -166,13 +167,15 @@ def main():
     if mode == "Search Translation":
         # Main search interface
         col1, col2 = st.columns(2)
-        
+        translation = None
+        search_word = ""
+
         with col1:
             st.subheader("🔍 Search for a word")
-            
+
             # Input methods
             input_method = st.radio("Input method:", ["Type word", "Select from dropdown"])
-            
+
             if input_method == "Type word":
                 search_word = st.text_input(
                     "Enter English word:",
@@ -183,40 +186,49 @@ def main():
                     "Select English word:",
                     options=[""] + sorted(vocab_dict.keys())
                 )
-            
-            if search_word and search_word in vocab_dict:
-                translation = vocab_dict[search_word]
+
+            if search_word:
+                if search_word in vocab_dict:
+                    translation = vocab_dict[search_word]
+                    st.success(f"✅ Translation found!")
+                else:
+                    with st.spinner(f"Translating '{search_word}'..."):
+                        try:
+                            translation = GoogleTranslator(source='auto', target='ti').translate(search_word)
+                            if translation and translation.lower() != search_word.lower():
+                                st.success(f"✅ Online translation successful!")
+                            else:
+                                st.error(f"❌ '{search_word}' not in vocabulary and could not be translated.")
+                                translation = None
+                        except Exception as e:
+                            st.error(f"An error occurred during translation: {e}")
+                            translation = None
+
+                if translation:
+                    # Display translation with larger font
+                    st.markdown(f"""
+                    <div style='background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;'>
+                        <h2 style='color: #1f77b4; margin: 0;'>{search_word.title()}</h2>
+                        <h1 style='color: #ff6347; margin: 10px 0; font-size: 4.2em;'>{translation}</h1>
+                    </div>
+                    """, unsafe_allow_html=True)
                 
-                st.success(f"✅ Translation found!")
-                
-                # Display translation with larger font
-                st.markdown(f"""
-                <div style='background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;'>
-                    <h2 style='color: #1f77b4; margin: 0;'>{search_word.title()}</h2>
-                    <h1 style='color: #ff6347; margin: 10px 0; font-size: 4.2em;'>{translation}</h1>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Audio pronunciation placeholder
-                # st.info("🔊 Audio pronunciation feature coming soon!")
-                
-            elif search_word and search_word not in vocab_dict:
-                st.error(f"❌ '{search_word}' not found in vocabulary.")
-                st.info("💡 Try one of these words: " + ", ".join(list(vocab_dict.keys())[:10]) + "...")
-        
+                elif search_word:
+                    st.info("💡 Try one of these words: " + ", ".join(list(vocab_dict.keys())[:10]) + "...")
+
         with col2:
-            if search_word and search_word in vocab_dict:                
+            if search_word and translation:
                 with st.spinner("Loading image..."):
                     image = get_local_image(search_word)
-                    
+
                     if image:
                         st.image(
                             image,
                             use_container_width=True
                         )
-                        st.markdown(f"<div style='text-align: center; font-size: 2em;'>{search_word.title()} - {vocab_dict[search_word]}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='text-align: center; font-size: 2em;'>{search_word.title()} - {translation}</div>", unsafe_allow_html=True)
                     else:
-                        st.warning("Could not load image. Please try again.")
+                        st.warning("Image not loaded/hosted. Please contact administrator.")
     
     elif mode == "Browse All Words":
         st.subheader("📋 Complete Vocabulary List")
