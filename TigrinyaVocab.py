@@ -58,7 +58,7 @@ def get_vocabulary():
         "green": "ቀጠልያ",
         "yellow": "ቢጫ",
         "black": "ጸሊም",
-        "white": "ጻዕዳ",
+        "white": "ቀይሕ",
         "orange": "ኣራንቾኒ",
         "purple": "ሊላ",
         "brown": "ቡናዊ",
