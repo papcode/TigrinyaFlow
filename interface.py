@@ -5,6 +5,7 @@ import glob
 import requests
 from io import BytesIO
 from deep_translator import GoogleTranslator
+from clientTranslation import geez_to_latin_syllable
 
 # Vocabulary dictionary from your PDF
 vocab_dict = {
@@ -205,11 +206,13 @@ def main():
                             translation = None
 
                 if translation:
+                    phonetic_translation = geez_to_latin_syllable(translation)
                     # Display translation with larger font
                     st.markdown(f"""
                     <div style='background-color: #f0f2f6; padding: 20px; border-radius: 10px; margin: 10px 0;'>
                         <h2 style='color: #1f77b4; margin: 0;'>{search_word.title()}</h2>
                         <h1 style='color: #ff6347; margin: 10px 0; font-size: 4.2em;'>{translation}</h1>
+                        <h3 style='color: #555; margin: 0;'>({phonetic_translation})</h3>
                     </div>
                     """, unsafe_allow_html=True)
                 
@@ -226,7 +229,7 @@ def main():
                             image,
                             use_container_width=True
                         )
-                        st.markdown(f"<div style='text-align: center; font-size: 2em;'>{search_word.title()} - {translation}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='text-align: center; font-size: 2em;'>{search_word.title()} - {translation} ({geez_to_latin_syllable(translation)})</div>", unsafe_allow_html=True)
                     else:
                         st.warning("Image not loaded/hosted. Please contact administrator.")
     
@@ -251,11 +254,13 @@ def main():
         cols = st.columns(3)
         for i, word in enumerate(sorted(words_to_show)):
             if word in vocab_dict:
+                phonetic_translation = geez_to_latin_syllable(vocab_dict[word])
                 with cols[i % 3]:
                     st.markdown(f"""
                     <div style='background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin: 5px 0; border-left: 4px solid #1f77b4;'>
                         <strong style='color: #1f77b4;'>{word.title()}</strong><br>
                         <span style='font-size: 1.5em; color: #ff6347;'>{vocab_dict[word]}</span>
+                        <br><span style='color: #555;'>({phonetic_translation})</span>
                     </div>
                     """, unsafe_allow_html=True)
     
