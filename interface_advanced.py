@@ -531,7 +531,7 @@ def main():
     st.sidebar.markdown("Choose a learning mode:")
     
     page = st.sidebar.radio(
-        "",
+        "Choose a page:",
         ["🔍 Search Translation", "📚 Browse Vocabulary", "🎯 Quiz Mode", "📊 Statistics"],
         label_visibility="collapsed"
     )
