@@ -43,14 +43,10 @@ class ImageLoader:
     
     def __init__(self, images_folder: str = "images"):
         self.images_folder = images_folder
-        self._cache = {}
     
     @st.cache_data
-    def get_local_image(_self, word: str) -> Optional[Image.Image]:
+    def get_local_image(_self, word: str) -> Optional[bytes]:
         """Load image from local folder with caching"""
-        if word in _self._cache:
-            return _self._cache[word]
-        
         if not os.path.exists(_self.images_folder):
             return None
         
@@ -61,27 +57,26 @@ class ImageLoader:
                 image_path = os.path.join(_self.images_folder, f"{case_word}{ext}")
                 if os.path.exists(image_path):
                     try:
-                        image = Image.open(image_path)
-                        _self._cache[word] = image
-                        return image
+                        with open(image_path, "rb") as f:
+                            return f.read()
                     except Exception as e:
                         st.error(f"Error loading {image_path}: {e}")
         
         return None
     
     @st.cache_data
-    def get_unsplash_image(_self, query: str, width: int = 400, height: int = 300) -> Optional[Image.Image]:
+    def get_unsplash_image(_self, query: str, width: int = 400, height: int = 300) -> Optional[bytes]:
         """Fetch image from Unsplash with error handling"""
         try:
             url = f"https://source.unsplash.com/{width}x{height}/?{query}"
             response = requests.get(url, timeout=5)
             if response.status_code == 200:
-                return Image.open(BytesIO(response.content))
+                return response.content
         except Exception as e:
             st.warning(f"Could not load online image for '{query}': {str(e)}")
         return None
     
-    def get_image(self, word: str) -> Optional[Image.Image]:
+    def get_image(self, word: str) -> Optional[bytes]:
         """Get image with fallback priority: local -> unsplash -> placeholder"""
         # Try local first
         image = self.get_local_image(word)
