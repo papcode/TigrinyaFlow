@@ -1,15 +1,16 @@
-"""
+'''
 Streamlit App for Ethiopian Amharic Characters with Hand-Drawing Animation
 =========================================================================
 
 This Streamlit application displays Ethiopian Amharic characters using animated SVG graphics
 that simulate hand-drawing with stroke-by-stroke animation.
-"""
+'''
 
 import streamlit as st
 import math
 import time
 from io import StringIO
+import streamlit.components.v1 as components
 
 # ==============================
 # Global Parameters
@@ -199,7 +200,7 @@ class AnimatedSVGDrawer:
             <rect width="100%" height="100%" fill="url(#grid)" opacity="0.3"/>
             
             <!-- Animated strokes -->
-            {''.join(animated_elements)}
+            {''''''.join(animated_elements)}
             
             <!-- Title -->
             <text x="0" y="{viewbox_y + 20}" text-anchor="middle" font-family="Arial, sans-serif" 
@@ -467,9 +468,9 @@ def show_individual_characters():
                     st.markdown(f"### ✍️ Drawing: {name}")
                     draw_func()
                     animated_svg = drawer.get_animated_svg(name)
-                    st.markdown(
+                    components.html(
                         f'<div style="text-align: center; margin: 20px;">{animated_svg}</div>',
-                        unsafe_allow_html=True
+                        height=SVG_HEIGHT + 40
                     )
                 else:
                     st.markdown(f"### Preview: {name}")
@@ -501,11 +502,9 @@ def show_family_animations():
             with cols[idx % 4]:
                 draw_func()
                 animated_svg = drawer.get_animated_svg(name)
-                st.markdown(
-                    f'<div style="text-align: center; margin: 5px;">'
-                    f'{animated_svg}'
-                    f'</div>',
-                    unsafe_allow_html=True
+                components.html(
+                    f'<div style="text-align: center; margin: 5px;">{animated_svg}</div>',
+                    height=SVG_HEIGHT + 40
                 )
 
 def show_full_sequence():
@@ -534,11 +533,9 @@ def show_full_sequence():
                     with family_cols[idx]:
                         draw_func()
                         animated_svg = drawer.get_animated_svg(name)
-                        st.markdown(
-                            f'<div style="text-align: center; margin: 2px;">'
-                            f'{animated_svg}'
-                            f'</div>',
-                            unsafe_allow_html=True
+                        components.html(
+                            f'<div style="text-align: center; margin: 2px;">{animated_svg}</div>',
+                            height=SVG_HEIGHT + 40
                         )
                 
                 current_family += 1
