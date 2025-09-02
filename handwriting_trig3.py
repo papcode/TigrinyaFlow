@@ -120,7 +120,7 @@ def get_system_info():
         'renderer': 'HTML5 Canvas'
     }
 
-def create_handwriting_animation_html(text, pen_style="Realistic", writing_style="Natural", animation_speed=1.0):
+def create_handwriting_animation_html(text, pen_style="Realistic", writing_style="Natural", animation_speed=3.5):
     """Create HTML5 Canvas-based handwriting animation"""
     
     # Escape text for JavaScript
@@ -830,7 +830,7 @@ def main():
         animation_speed = st.slider(
             "Animation Speed",
             min_value=0.5,
-            max_value=2.0,
+            max_value=10.0,
             value=1.0,
             step=0.1,
             help="1.0 = normal speed"
