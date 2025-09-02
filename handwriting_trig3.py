@@ -133,6 +133,7 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tigrinya Handwriting Animation</title>
+    <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
         
@@ -283,10 +284,10 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             <div class="progress-fill" id="progressFill"></div>
         </div>
         
-        <div class="status" id="status">Ready to animate</div>
+        <div class="status" id="status">Loading font...</div>
         
         <div class="controls">
-            <button class="btn btn-primary" onclick="startAnimation()">Start Animation</button>
+            <button id="startBtn" class="btn btn-primary" onclick="startAnimation()" disabled>Start Animation</button>
             <button class="btn btn-secondary" onclick="pauseAnimation()">Pause</button>
             <button class="btn btn-secondary" onclick="resetAnimation()">Reset</button>
             <button class="btn btn-secondary" onclick="downloadAnimation()">Download GIF</button>
@@ -307,8 +308,20 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             currentCharIndex: 0,
             currentStroke: 0,
             frames: [],
-            animationFrame: null
+            animationFrame: null,
+            font: null
         }};
+
+        // Load font
+        opentype.load('https://fonts.gstatic.com/s/notosansethiopic/v49/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK6Dj.ttf', function (err, font) {{
+            if (err) {{
+                document.getElementById('status').textContent = 'Error loading font: ' + err;
+            }} else {{
+                config.font = font;
+                document.getElementById('status').textContent = 'Ready to animate';
+                document.getElementById('startBtn').disabled = false;
+            }}
+        }});
         
         // Initialize canvas
         function initCanvas() {{
@@ -318,6 +331,34 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             config.ctx.lineCap = 'round';
             config.ctx.lineJoin = 'round';
         }}
+
+        function pathCommandsToPoints(commands, detail) {{
+            const points = [];
+            let currentPos = {{x: 0, y: 0}};
+            for (const command of commands) {{
+                if (command.type === 'M') {{
+                    currentPos = {{x: command.x, y: command.y}};
+                }} else if (command.type === 'L') {{
+                    points.push({{x: command.x, y: command.y}});
+                    currentPos = {{x: command.x, y: command.y}};
+                }} else if (command.type === 'Q') {{
+                    for (let t = 0; t <= 1; t += 1/detail) {{
+                        const x = Math.pow(1 - t, 2) * currentPos.x + 2 * (1 - t) * t * command.x1 + Math.pow(t, 2) * command.x;
+                        const y = Math.pow(1 - t, 2) * currentPos.y + 2 * (1 - t) * t * command.y1 + Math.pow(t, 2) * command.y;
+                        points.push({{x, y}});
+                    }}
+                    currentPos = {{x: command.x, y: command.y}};
+                }} else if (command.type === 'C') {{
+                    for (let t = 0; t <= 1; t += 1/detail) {{
+                        const x = Math.pow(1 - t, 3) * currentPos.x + 3 * Math.pow(1 - t, 2) * t * command.x1 + 3 * (1 - t) * Math.pow(t, 2) * command.x2 + Math.pow(t, 3) * command.x;
+                        const y = Math.pow(1 - t, 3) * currentPos.y + 3 * Math.pow(1 - t, 2) * t * command.y1 + 3 * (1 - t) * Math.pow(t, 2) * command.y2 + Math.pow(t, 3) * command.y;
+                        points.push({{x, y}});
+                    }}
+                    currentPos = {{x: command.x, y: command.y}};
+                }}
+            }}
+            return points;
+        }}
         
         // Character path generation
         function generateCharacterPaths(text) {{
@@ -325,115 +366,34 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             const canvas = config.canvas;
             const ctx = config.ctx;
             
-            // Set font for measurements
-            ctx.font = '48px "Noto Sans Ethiopic", Ebrima, Nyala, sans-serif';
-            ctx.textAlign = 'left';
-            ctx.textBaseline = 'middle';
-            
-            const totalWidth = ctx.measureText(text).width;
+            const fontSize = 48;
+            const totalWidth = config.font.getAdvanceWidth(text, fontSize);
             const startX = (canvas.width - totalWidth) / 2;
-            const baseY = canvas.height / 2;
+            const baseY = canvas.height / 2 + fontSize / 2;
             
             let currentX = startX;
             
             for (let i = 0; i < text.length; i++) {{
                 const char = text[i];
-                const charWidth = ctx.measureText(char).width;
                 
                 if (char === ' ') {{
-                    // Space handling
-                    paths.push({{ 
-                        char: char,
-                        type: 'space',
-                        startX: currentX,
-                        endX: currentX + charWidth,
-                        y: baseY,
-                        strokes: []
-                    }});
-                    currentX += charWidth;
+                    currentX += config.font.getAdvanceWidth(' ', fontSize);
                     continue;
                 }}
                 
-                // Generate character stroke paths
-                const charPaths = generateCharacterStrokes(char, currentX, baseY, charWidth);
+                const fontPath = config.font.getPath(char, currentX, baseY, fontSize);
+                const strokes = pathCommandsToPoints(fontPath.commands, 10);
+                
                 paths.push({{ 
                     char: char,
                     type: 'character',
-                    startX: currentX,
-                    endX: currentX + charWidth,
-                    y: baseY,
-                    strokes: charPaths
+                    strokes: [strokes]
                 }});
                 
-                currentX += charWidth + 5; // Small spacing between characters
+                currentX += config.font.getAdvanceWidth(char, fontSize);
             }}
             
             return paths;
-        }}
-        
-        function generateCharacterStrokes(char, startX, baseY, charWidth) {{
-            const strokes = [];
-            const charHeight = 40;
-            
-            // Basic stroke generation based on character
-            if (isEthiopicChar(char)) {{
-                // Complex Ethiopic character - multiple strokes
-                strokes.push(...generateEthiopicStrokes(char, startX, baseY, charWidth, charHeight));
-            }} else {{
-                // Latin character - simpler strokes
-                strokes.push(...generateLatinStrokes(char, startX, baseY, charWidth, charHeight));
-            }}
-            
-            return strokes;
-        }}
-        
-        function isEthiopicChar(char) {{
-            const code = char.charCodeAt(0);
-            return (code >= 0x1200 && code <= 0x137F) || 
-                   (code >= 0x1380 && code <= 0x139F) || 
-                   (code >= 0x2D80 && code <= 0x2DDF);
-        }}
-        
-        function generateEthiopicStrokes(char, startX, baseY, charWidth, charHeight) {{
-            const strokes = [];
-            const numStrokes = Math.min(5, Math.max(2, Math.floor(charWidth / 8)));
-            
-            for (let i = 0; i < numStrokes; i++) {{
-                const stroke = [];
-                const strokeStartX = startX + (i * charWidth / numStrokes);
-                const strokeEndX = startX + ((i + 1) * charWidth / numStrokes);
-                
-                // Create curved path for Ethiopic character
-                const points = 8;
-                for (let j = 0; j <= points; j++) {{
-                    const progress = j / points;
-                    const x = strokeStartX + progress * (strokeEndX - strokeStartX);
-                    const y = baseY - charHeight/2 + progress * charHeight + 
-                             Math.sin(progress * Math.PI * 2) * (charHeight * 0.1);
-                    stroke.push({{ x, y }});
-                }}
-                
-                strokes.push(stroke);
-            }}
-            
-            return strokes;
-        }}
-        
-        function generateLatinStrokes(char, startX, baseY, charWidth, charHeight) {{
-            const strokes = [];
-            const stroke = [];
-            
-            // Simple left-to-right stroke for Latin characters
-            const points = Math.max(5, Math.floor(charWidth / 5));
-            for (let i = 0; i <= points; i++) {{
-                const progress = i / points;
-                const x = startX + progress * charWidth;
-                const y = baseY + Math.sin(progress * Math.PI) * (charHeight * 0.2) - charHeight * 0.1;
-                stroke.push({{ x, y }});
-            }}
-            
-            strokes.push(stroke);
-            return strokes;
         }}
         
         // Pen drawing functions
@@ -573,22 +533,6 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                     config.currentStroke = 0;
                     config.animationFrame = requestAnimationFrame(animateNextFrame);
                 }}, 300 / config.animationSpeed);
-                return;
-            }}
-
-            // For Ethiopic characters, draw them directly instead of animating fake strokes
-            if (isEthiopicChar(currentPath.char)) {{
-                ctx.fillStyle = '#2c3e50';
-                ctx.font = '48px "Noto Sans Ethiopic", Ebrima, Nyala, sans-serif';
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(currentPath.char, currentPath.startX, currentPath.y);
-
-                config.currentCharIndex++;
-                config.currentStroke = 0;
-                setTimeout(() => {{
-                    config.animationFrame = requestAnimationFrame(animateNextFrame);
-                }}, 200 / config.animationSpeed);
                 return;
             }}
             
