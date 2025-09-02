@@ -547,6 +547,8 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             document.getElementById('progressFill').style.width = '0%';
         }}
         
+        // Fixed animation functions - replace these in your HTML JavaScript section
+
         function animateNextFrame() {{
             if (config.isPaused || !config.isAnimating) return;
             
@@ -584,16 +586,18 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                 return;
             }}
             
-            // Draw current stroke
+            // Draw current stroke ONE AT A TIME - this is the key fix
             const stroke = currentPath.strokes[config.currentStroke];
             drawStroke(stroke, () => {{
                 config.currentStroke++;
+                // Add a small delay between strokes to make them more visible
                 setTimeout(() => {{
                     config.animationFrame = requestAnimationFrame(animateNextFrame);
-                }}, 100 / config.animationSpeed);
+                }}, 150 / config.animationSpeed); // Increased delay between strokes
             }});
         }}
-        
+
+        // Enhanced drawStroke function with better timing control
         function drawStroke(stroke, callback) {{
             if (!stroke || stroke.length === 0) {{
                 callback();
@@ -602,6 +606,12 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             
             const ctx = config.ctx;
             let pointIndex = 0;
+            
+            // Clear previous pen position
+            ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+            
+            // Redraw all previously drawn strokes
+            redrawCompletedStrokes();
             
             function drawNextPoint() {{
                 if (pointIndex >= stroke.length) {{
@@ -612,15 +622,25 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                 const point = stroke[pointIndex];
                 
                 if (pointIndex === 0) {{
-                    // Start of stroke - move pen
+                    // Start of stroke - show pen moving to position
                     drawPen(point.x, point.y - 20);
                 }} else {{
-                    // Draw line segment
+                    // Clear canvas and redraw everything
+                    ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+                    redrawCompletedStrokes();
+                    
+                    // Draw the current stroke up to this point
                     ctx.strokeStyle = '#2c3e50';
                     ctx.lineWidth = 2;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
                     ctx.beginPath();
-                    ctx.moveTo(stroke[pointIndex - 1].x, stroke[pointIndex - 1].y);
-                    ctx.lineTo(point.x, point.y);
+                    ctx.moveTo(stroke[0].x, stroke[0].y);
+                    
+                    // Draw all points in current stroke up to current point
+                    for (let i = 1; i <= pointIndex; i++) {{
+                        ctx.lineTo(stroke[i].x, stroke[i].y);
+                    }}
                     ctx.stroke();
                     
                     // Show pen at current position
@@ -629,13 +649,102 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                 
                 pointIndex++;
                 
-                // Capture frame for GIF
+                // Capture frame for potential GIF export
                 config.frames.push(ctx.getImageData(0, 0, config.canvas.width, config.canvas.height));
                 
-                setTimeout(drawNextPoint, 50 / config.animationSpeed);
+                // Slower drawing for better visibility
+                setTimeout(drawNextPoint, 100 / config.animationSpeed); // Increased from 50ms
             }}
             
             drawNextPoint();
+        }}
+
+        // New function to redraw completed strokes
+        function redrawCompletedStrokes() {{
+            const ctx = config.ctx;
+            const paths = config.paths;
+            
+            // Draw background
+            ctx.fillStyle = '#fefefe';
+            ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+            
+            // Redraw all completed characters
+            for (let charIndex = 0; charIndex < config.currentCharIndex; charIndex++) {{
+                const path = paths[charIndex];
+                if (path.type === 'character') {{
+                    drawCompletedCharacter(path);
+                }}
+            }}
+            
+            // Redraw completed strokes of current character
+            if (config.currentCharIndex < paths.length && paths[config.currentCharIndex].type === 'character') {{
+                const currentPath = paths[config.currentCharIndex];
+                for (let strokeIndex = 0; strokeIndex < config.currentStroke; strokeIndex++) {{
+                    drawCompletedStroke(currentPath.strokes[strokeIndex]);
+                }}
+            }}
+        }}
+
+        // Helper function to draw a completed character
+        function drawCompletedCharacter(path) {{
+            const ctx = config.ctx;
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            for (const stroke of path.strokes) {{
+                if (stroke.length > 0) {{
+                    ctx.beginPath();
+                    ctx.moveTo(stroke[0].x, stroke[0].y);
+                    for (let i = 1; i < stroke.length; i++) {{
+                        ctx.lineTo(stroke[i].x, stroke[i].y);
+                    }}
+                    ctx.stroke();
+                }}
+            }}
+        }}
+
+        // Helper function to draw a completed stroke
+        function drawCompletedStroke(stroke) {{
+            if (!stroke || stroke.length === 0) return;
+            
+            const ctx = config.ctx;
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(stroke[0].x, stroke[0].y);
+            
+            for (let i = 1; i < stroke.length; i++) {{
+                ctx.lineTo(stroke[i].x, stroke[i].y);
+            }}
+            ctx.stroke();
+        }}
+
+        // Enhanced reset function
+        function resetAnimation() {{
+            config.isAnimating = false;
+            config.isPaused = false;
+            config.currentCharIndex = 0;
+            config.currentStroke = 0;
+            config.frames = [];
+            
+            if (config.animationFrame) {{
+                cancelAnimationFrame(config.animationFrame);
+            }}
+            
+            // Clear canvas
+            const ctx = config.ctx;
+            ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+            
+            // Draw background
+            ctx.fillStyle = '#fefefe';
+            ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+            
+            document.getElementById('status').textContent = 'Ready to animate';
+            document.getElementById('progressFill').style.width = '0%';
         }}
         
         function downloadAnimation() {{

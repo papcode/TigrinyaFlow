@@ -332,32 +332,43 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             config.ctx.lineJoin = 'round';
         }}
 
-        function pathCommandsToPoints(commands, detail) {{
-            const points = [];
-            let currentPos = {{x: 0, y: 0}};
+        function pathCommandsToStrokes(commands, detail) {{
+            const strokes = [];
+            let currentStroke = [];
+
             for (const command of commands) {{
                 if (command.type === 'M') {{
-                    currentPos = {{x: command.x, y: command.y}};
+                    if (currentStroke.length > 0) {{
+                        strokes.push(currentStroke);
+                    }}
+                    currentStroke = [{{x: command.x, y: command.y}}];
                 }} else if (command.type === 'L') {{
-                    points.push({{x: command.x, y: command.y}});
-                    currentPos = {{x: command.x, y: command.y}};
+                    currentStroke.push({{x: command.x, y: command.y}});
                 }} else if (command.type === 'Q') {{
-                    for (let t = 0; t <= 1; t += 1/detail) {{
-                        const x = Math.pow(1 - t, 2) * currentPos.x + 2 * (1 - t) * t * command.x1 + Math.pow(t, 2) * command.x;
-                        const y = Math.pow(1 - t, 2) * currentPos.y + 2 * (1 - t) * t * command.y1 + Math.pow(t, 2) * command.y;
-                        points.push({{x, y}});
+                    const p0 = currentStroke[currentStroke.length - 1];
+                    for (let t = 1/detail; t <= 1; t += 1/detail) {{
+                        const x = Math.pow(1 - t, 2) * p0.x + 2 * (1 - t) * t * command.x1 + Math.pow(t, 2) * command.x;
+                        const y = Math.pow(1 - t, 2) * p0.y + 2 * (1 - t) * t * command.y1 + Math.pow(t, 2) * command.y;
+                        currentStroke.push({{x, y}});
                     }}
-                    currentPos = {{x: command.x, y: command.y}};
                 }} else if (command.type === 'C') {{
-                    for (let t = 0; t <= 1; t += 1/detail) {{
-                        const x = Math.pow(1 - t, 3) * currentPos.x + 3 * Math.pow(1 - t, 2) * t * command.x1 + 3 * (1 - t) * Math.pow(t, 2) * command.x2 + Math.pow(t, 3) * command.x;
-                        const y = Math.pow(1 - t, 3) * currentPos.y + 3 * Math.pow(1 - t, 2) * t * command.y1 + 3 * (1 - t) * Math.pow(t, 2) * command.y2 + Math.pow(t, 3) * command.y;
-                        points.push({{x, y}});
+                    const p0 = currentStroke[currentStroke.length - 1];
+                    for (let t = 1/detail; t <= 1; t += 1/detail) {{
+                        const x = Math.pow(1 - t, 3) * p0.x + 3 * Math.pow(1 - t, 2) * t * command.x1 + 3 * (1 - t) * Math.pow(t, 2) * command.x2 + Math.pow(t, 3) * command.x;
+                        const y = Math.pow(1 - t, 3) * p0.y + 3 * Math.pow(1 - t, 2) * t * command.y1 + 3 * (1 - t) * Math.pow(t, 2) * command.y2 + Math.pow(t, 3) * command.y;
+                        currentStroke.push({{x, y}});
                     }}
-                    currentPos = {{x: command.x, y: command.y}};
+                }} else if (command.type === 'Z') {{
+                    if (currentStroke.length > 0) {{
+                        strokes.push(currentStroke);
+                        currentStroke = [];
+                    }}
                 }}
             }}
-            return points;
+            if (currentStroke.length > 0) {{
+                strokes.push(currentStroke);
+            }}
+            return strokes;
         }}
         
         // Character path generation
@@ -382,12 +393,12 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                 }}
                 
                 const fontPath = config.font.getPath(char, currentX, baseY, fontSize);
-                const strokes = pathCommandsToPoints(fontPath.commands, 10);
+                const strokes = pathCommandsToStrokes(fontPath.commands, 10);
                 
                 paths.push({{ 
                     char: char,
                     type: 'character',
-                    strokes: [strokes]
+                    strokes: strokes
                 }});
                 
                 currentX += config.font.getAdvanceWidth(char, fontSize);
@@ -483,30 +494,7 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             }}
             document.getElementById('status').textContent = 'Paused';
         }}
-        
-        function resetAnimation() {{
-            config.isAnimating = false;
-            config.isPaused = false;
-            config.currentCharIndex = 0;
-            config.currentStroke = 0;
-            config.frames = [];
-            
-            if (config.animationFrame) {{
-                cancelAnimationFrame(config.animationFrame);
-            }}
-            
-            // Clear canvas
-            const ctx = config.ctx;
-            ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
-            
-            // Draw background
-            ctx.fillStyle = '#fefefe';
-            ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
-            
-            document.getElementById('status').textContent = 'Ready to animate';
-            document.getElementById('progressFill').style.width = '0%';
-        }}
-        
+
         function animateNextFrame() {{
             if (config.isPaused || !config.isAnimating) return;
             
@@ -544,16 +532,18 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                 return;
             }}
             
-            // Draw current stroke
+            // Draw current stroke ONE AT A TIME - this is the key fix
             const stroke = currentPath.strokes[config.currentStroke];
             drawStroke(stroke, () => {{
                 config.currentStroke++;
+                // Add a small delay between strokes to make them more visible
                 setTimeout(() => {{
                     config.animationFrame = requestAnimationFrame(animateNextFrame);
-                }}, 100 / config.animationSpeed);
+                }}, 150 / config.animationSpeed); // Increased delay between strokes
             }});
         }}
-        
+
+        // Enhanced drawStroke function with better timing control
         function drawStroke(stroke, callback) {{
             if (!stroke || stroke.length === 0) {{
                 callback();
@@ -563,6 +553,12 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
             const ctx = config.ctx;
             let pointIndex = 0;
             
+            // Clear previous pen position
+            ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+            
+            // Redraw all previously drawn strokes
+            redrawCompletedStrokes();
+            
             function drawNextPoint() {{
                 if (pointIndex >= stroke.length) {{
                     callback();
@@ -571,25 +567,130 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                 
                 const point = stroke[pointIndex];
                 
-                if (pointIndex > 0) {{
-                    // Draw line segment
+                if (pointIndex === 0) {{
+                    // Start of stroke - show pen moving to position
+                    drawPen(point.x, point.y - 20);
+                }} else {{
+                    // Clear canvas and redraw everything
+                    ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+                    redrawCompletedStrokes();
+                    
+                    // Draw the current stroke up to this point
                     ctx.strokeStyle = '#2c3e50';
                     ctx.lineWidth = 2;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
                     ctx.beginPath();
-                    ctx.moveTo(stroke[pointIndex - 1].x, stroke[pointIndex - 1].y);
-                    ctx.lineTo(point.x, point.y);
+                    ctx.moveTo(stroke[0].x, stroke[0].y);
+                    
+                    // Draw all points in current stroke up to current point
+                    for (let i = 1; i <= pointIndex; i++) {{
+                        ctx.lineTo(stroke[i].x, stroke[i].y);
+                    }}
                     ctx.stroke();
+                    
+                    // Show pen at current position
+                    drawPen(point.x, point.y - 20);
                 }}
                 
                 pointIndex++;
                 
-                // Capture frame for GIF
+                // Capture frame for potential GIF export
                 config.frames.push(ctx.getImageData(0, 0, config.canvas.width, config.canvas.height));
                 
-                setTimeout(drawNextPoint, 50 / config.animationSpeed);
+                // Slower drawing for better visibility
+                setTimeout(drawNextPoint, 100 / config.animationSpeed); // Increased from 50ms
             }}
             
             drawNextPoint();
+        }}
+
+        // New function to redraw completed strokes
+        function redrawCompletedStrokes() {{
+            const ctx = config.ctx;
+            const paths = config.paths;
+            
+            // Draw background
+            ctx.fillStyle = '#fefefe';
+            ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+            
+            // Redraw all completed characters
+            for (let charIndex = 0; charIndex < config.currentCharIndex; charIndex++) {{
+                const path = paths[charIndex];
+                if (path.type === 'character') {{
+                    drawCompletedCharacter(path);
+                }}
+            }}
+            
+            // Redraw completed strokes of current character
+            if (config.currentCharIndex < paths.length && paths[config.currentCharIndex].type === 'character') {{
+                const currentPath = paths[config.currentCharIndex];
+                for (let strokeIndex = 0; strokeIndex < config.currentStroke; strokeIndex++) {{
+                    drawCompletedStroke(currentPath.strokes[strokeIndex]);
+                }}
+            }}
+        }}
+
+        // Helper function to draw a completed character
+        function drawCompletedCharacter(path) {{
+            const ctx = config.ctx;
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            for (const stroke of path.strokes) {{
+                if (stroke.length > 0) {{
+                    ctx.beginPath();
+                    ctx.moveTo(stroke[0].x, stroke[0].y);
+                    for (let i = 1; i < stroke.length; i++) {{
+                        ctx.lineTo(stroke[i].x, stroke[i].y);
+                    }}
+                    ctx.stroke();
+                }}
+            }}
+        }}
+
+        // Helper function to draw a completed stroke
+        function drawCompletedStroke(stroke) {{
+            if (!stroke || stroke.length === 0) return;
+            
+            const ctx = config.ctx;
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.beginPath();
+            ctx.moveTo(stroke[0].x, stroke[0].y);
+            
+            for (let i = 1; i < stroke.length; i++) {{
+                ctx.lineTo(stroke[i].x, stroke[i].y);
+            }}
+            ctx.stroke();
+        }}
+
+        // Enhanced reset function
+        function resetAnimation() {{
+            config.isAnimating = false;
+            config.isPaused = false;
+            config.currentCharIndex = 0;
+            config.currentStroke = 0;
+            config.frames = [];
+            
+            if (config.animationFrame) {{
+                cancelAnimationFrame(config.animationFrame);
+            }}
+            
+            // Clear canvas
+            const ctx = config.ctx;
+            ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+            
+            // Draw background
+            ctx.fillStyle = '#fefefe';
+            ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+            
+            document.getElementById('status').textContent = 'Ready to animate';
+            document.getElementById('progressFill').style.width = '0%';
         }}
         
         function downloadAnimation() {{
