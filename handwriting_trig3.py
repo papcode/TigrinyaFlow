@@ -571,10 +571,7 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                 
                 const point = stroke[pointIndex];
                 
-                if (pointIndex === 0) {{
-                    // Start of stroke - move pen
-                    drawPen(point.x, point.y - 20);
-                }} else {{
+                if (pointIndex > 0) {{
                     // Draw line segment
                     ctx.strokeStyle = '#2c3e50';
                     ctx.lineWidth = 2;
@@ -582,9 +579,6 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
                     ctx.moveTo(stroke[pointIndex - 1].x, stroke[pointIndex - 1].y);
                     ctx.lineTo(point.x, point.y);
                     ctx.stroke();
-                    
-                    // Show pen at current position
-                    drawPen(point.x, point.y - 20);
                 }}
                 
                 pointIndex++;
