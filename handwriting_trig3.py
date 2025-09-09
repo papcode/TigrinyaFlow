@@ -1336,6 +1336,8 @@ def create_handwriting_animation_html(text, pen_style="Realistic", writing_style
     """
     
     return html_content
+
+
 def main():
     st.set_page_config(
         page_title="Tigrinya Handwriting Animation (No FFmpeg)",

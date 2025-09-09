@@ -496,7 +496,33 @@ def statistics_page():
             st.metric("Correct Answers", stats['score'])
             st.metric("Best Streak", stats['best_streak'])
 
+def alphabet_page():
+    """Displays Tigrinya alphabets"""
+
+    st.subheader("ፊደላት (Alphabets)")
+
+    alphabets = [
+        ["be (በ)", "bu (ቡ)", "bi (ቢ)", "ba (ባ)", "bie (ቤ)", "b (ብ)", "bo (ቦ)"],
+        ["ve (ከ)", "vu (ኩ)", "vi (ኪ)", "va (ካ)", "vie (ኬ)", "v (ክ)", "vo (ኮ)"],
+        ["se (ሰ)", "su (ሱ)", "si (ሲ)", "sa (ሳ)", "sie (ሴ)", "s (ስ)", "so (ሶ)"],
+        ["Se (ሸ)", "Su (ሹ)", "Si (ሺ)", "Sa (ሻ)", "Sie (ሼ)", "S (ሽ)", "So (ሾ)"],
+        ["ke (ከ)", "ku (ኩ)", "ki (ኪ)", "ka (ካ)", "kie (ኬ)", "k (ክ)", "ko (ኮ)"],
+        ["Ke (ኸ)", "Ku (ኹ)", "Ki (ኺ)", "Ka (ኻ)", "Kie (ኼ)", "K (ኽ)", "Ko (ኾ)"],
+    ]
+
+    table_header = '''
+| 1st    | 2nd    | 3rd    | 4th    | 5th    | 6th    | 7th    |
+|--------|--------|--------|--------|--------|--------|--------|
+'''
+    
+    table_rows = ""
+    for row in alphabets:
+        table_rows += f"| {' | '.join(row)} |\n"
+        
+    st.markdown(table_header + table_rows, unsafe_allow_html=True)
+
 def main():
+
     # Page configuration
     st.set_page_config(
         page_title="Tigrinya Vocabulary Learning App",
@@ -527,7 +553,7 @@ def main():
     
     page = st.sidebar.radio(
         "Choose a page:",
-        ["🔍 Search Translation", "📚 Browse Vocabulary", "🎯 Quiz Mode", "📊 Statistics"],
+        ["🔍 Search Translation", "📚 Browse Vocabulary", "ፊደላት (Alphabets)", "🎯 Quiz Mode", "📊 Statistics"],
         label_visibility="collapsed"
     )
     
@@ -536,6 +562,8 @@ def main():
         search_page()
     elif page == "📚 Browse Vocabulary":
         browse_page()
+    elif page == "ፊደላት (Alphabets)":
+        alphabet_page()
     elif page == "🎯 Quiz Mode":
         quiz_page()
     elif page == "📊 Statistics":
