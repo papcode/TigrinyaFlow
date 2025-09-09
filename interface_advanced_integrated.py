@@ -2042,12 +2042,14 @@ def alphabet_page_backup():
     st.markdown(table_header + table_rows, unsafe_allow_html=True)
 
 def alphabet_page():
-    """Enhanced alphabets page with automatic handwriting animation"""
+    """Enhanced alphabets page with automatic handwriting animation on same canvas"""
     st.subheader("ፊደላት (Tigrinya Alphabets)")
     
-    # Initialize session state for selected character
+    # Initialize session state for selected character and animation character
     if 'selected_character' not in st.session_state:
         st.session_state.selected_character = None
+    if 'animation_character' not in st.session_state:
+        st.session_state.animation_character = None
     
     # Display alphabet grid
     st.markdown("### Click any character to see automatic handwriting animation:")
@@ -2071,6 +2073,7 @@ def alphabet_page():
                         use_container_width=True
                     ):
                         st.session_state.selected_character = alphabet_key
+                        st.session_state.animation_character = alphabet_key
                         st.rerun()
     
     # Display selected character details and animation
@@ -2111,55 +2114,77 @@ def alphabet_page():
             import pandas as pd
             df = pd.DataFrame(forms_df)
             st.dataframe(df, use_container_width=True, hide_index=True)
-        
-        with col2:
-            # Automatic handwriting animation - no button needed
-            st.markdown("#### Handwriting Animation")
-            st.info("Animation starting automatically...")
             
-            # Generate and display handwriting animation that auto-starts
-            # Determine which character to animate (main or related form)
-            character_to_animate = st.session_state.get('animation_character', selected_char)
-            
-            animation_html = create_auto_start_handwriting_html(
-                text=character_to_animate,
-                pen_style="Realistic",  # Fixed to Realistic
-                writing_style="Natural",
-                animation_speed=4.0  # Fixed to 4.0
-            )
-            
-            # Reset the animation character after using it
-            if st.session_state.get('animation_character'):
-                st.info(f"Now animating: {st.session_state.animation_character}")
-                st.session_state.animation_character = None
-            
-            components.html(
-                animation_html,
-                height=900,
-                scrolling=True
-            )
-            
-            # Character practice section
-            st.markdown("#### Practice Writing")
-            st.info("Try writing this character on paper while watching the animation!")
-            
-            # Related characters or similar forms with auto-animation
+            # Related characters or similar forms - Click to animate on same canvas
             st.markdown("#### Related Forms - Click to animate")
             related_forms = char_data['forms'][:4]  # Show first 4 forms
             related_phonetics = char_data['phonetic'][:4]
             
-            form_cols = st.columns(4)
-            for i, (form, phonetic) in enumerate(zip(related_forms, related_phonetics)):
-                with form_cols[i]:
+            # Display related forms as buttons in a 2x2 grid
+            for i in range(0, len(related_forms), 2):
+                form_cols = st.columns(2)
+                
+                # First form in the row
+                with form_cols[0]:
+                    form = related_forms[i]
+                    phonetic = related_phonetics[i]
                     if st.button(
                         f"{form}",
-                        key=f"related_{form}_{selected_char}",
-                        help=f"Animate {form} ({phonetic}) in main canvas",
+                        key=f"related_{form}_{selected_char}_{i}",
+                        help=f"Animate {form} ({phonetic})",
                         use_container_width=True
                     ):
-                        # Update session state to trigger animation of related form
+                        # Set this form to be animated on main canvas
                         st.session_state.animation_character = form
                         st.rerun()
+                
+                # Second form in the row (if exists)
+                if i + 1 < len(related_forms):
+                    with form_cols[1]:
+                        form = related_forms[i + 1]
+                        phonetic = related_phonetics[i + 1]
+                        if st.button(
+                            f"{form}",
+                            key=f"related_{form}_{selected_char}_{i+1}",
+                            help=f"Animate {form} ({phonetic})",
+                            use_container_width=True
+                        ):
+                            # Set this form to be animated on main canvas
+                            st.session_state.animation_character = form
+                            st.rerun()
+        
+        with col2:
+            # Main handwriting animation canvas
+            st.markdown("#### Handwriting Animation")
+            
+            # Show what character is being animated
+            character_to_animate = st.session_state.get('animation_character', selected_char)
+            
+            if st.session_state.get('animation_character') and st.session_state.animation_character != selected_char:
+                st.info(f"Now animating: {st.session_state.animation_character}")
+            else:
+                st.info("Animation starting automatically...")
+            
+            # Generate and display handwriting animation that auto-starts
+            animation_html = create_auto_start_handwriting_html(
+                text=character_to_animate,
+                pen_style="Realistic",
+                writing_style="Natural",
+                animation_speed=4.0
+            )
+            
+            # Use st.empty() to ensure proper refresh
+            animation_placeholder = st.empty()
+            with animation_placeholder.container():
+                components.html(
+                    animation_html,
+                    height=900,
+                    scrolling=True
+                )
+            
+            # Character practice section
+            st.markdown("#### Practice Writing")
+            st.info("Try writing this character on paper while watching the animation!")
     
     else:
         st.info("Select a character above to see its automatic handwriting animation and details!")
@@ -2185,9 +2210,7 @@ def alphabet_page():
     for row in sample_alphabets:
         table_rows += f"| {' | '.join(row)} |\n"
         
-    st.markdown(table_header + table_rows, unsafe_allow_html=True)
-
-
+    st.markdown(table_header + table_rows, unsafe_allow_html=True) 
 def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0):
     """Create HTML5 Canvas-based handwriting animation that starts automatically without buttons"""
     
