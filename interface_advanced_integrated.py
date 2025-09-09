@@ -1874,7 +1874,7 @@ def statistics_page():
             st.metric("Correct Answers", stats['score'])
             st.metric("Best Streak", stats['best_streak'])
 
-def alphabet_page():
+def alphabet_page_backup():
     """Enhanced alphabets page with interactive handwriting animation"""
     st.subheader("ፊደላት (Tigrinya Alphabets)")
     
@@ -2040,6 +2040,701 @@ def alphabet_page():
         table_rows += f"| {' | '.join(row)} |\n"
         
     st.markdown(table_header + table_rows, unsafe_allow_html=True)
+
+def alphabet_page():
+    """Enhanced alphabets page with automatic handwriting animation"""
+    st.subheader("ፊደላት (Tigrinya Alphabets)")
+    
+    # Initialize session state for selected character
+    if 'selected_character' not in st.session_state:
+        st.session_state.selected_character = None
+    
+    # Display alphabet grid
+    st.markdown("### Click any character to see automatic handwriting animation:")
+    
+    # Create alphabet grid with clickable buttons
+    cols_per_row = 7
+    alphabet_keys = list(TIGRINYA_ALPHABETS.keys())
+    
+    for i in range(0, len(alphabet_keys), cols_per_row):
+        cols = st.columns(cols_per_row)
+        for j, col in enumerate(cols):
+            if i + j < len(alphabet_keys):
+                alphabet_key = alphabet_keys[i + j]
+                alphabet_data = TIGRINYA_ALPHABETS[alphabet_key]
+                
+                with col:
+                    if st.button(
+                        f"{alphabet_key}",
+                        key=f"alphabet_{alphabet_key}",
+                        help=f"Click to animate {alphabet_key}",
+                        use_container_width=True
+                    ):
+                        st.session_state.selected_character = alphabet_key
+                        st.rerun()
+    
+    # Display selected character details and animation
+    if st.session_state.selected_character:
+        selected_char = st.session_state.selected_character
+        char_data = TIGRINYA_ALPHABETS[selected_char]
+        
+        st.markdown("---")
+        
+        # Character information
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            st.markdown(f"""
+            <div style='
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 30px; 
+                border-radius: 15px; 
+                color: white;
+                text-align: center;
+                margin: 20px 0;
+            '>
+                <h1 style='font-size: 4em; margin: 0; font-family: "Noto Sans Ethiopic", serif;'>{selected_char}</h1>
+                <h3 style='margin: 10px 0;'>Base Character</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Character forms table
+            st.markdown("#### All Forms:")
+            forms_df = []
+            for i, (form, phonetic) in enumerate(zip(char_data['forms'], char_data['phonetic'])):
+                forms_df.append({
+                    "Form": form,
+                    "Sound": phonetic,
+                    "Order": i + 1
+                })
+            
+            import pandas as pd
+            df = pd.DataFrame(forms_df)
+            st.dataframe(df, use_container_width=True, hide_index=True)
+        
+        with col2:
+            # Automatic handwriting animation - no button needed
+            st.markdown("#### Handwriting Animation")
+            st.info("Animation starting automatically...")
+            
+            # Generate and display handwriting animation that auto-starts
+            animation_html = create_auto_start_handwriting_html(
+                text=selected_char,
+                pen_style="Realistic",  # Fixed to Realistic
+                writing_style="Natural",
+                animation_speed=4.0  # Fixed to 4.0
+            )
+            
+            components.html(
+                animation_html,
+                height=900,
+                scrolling=True
+            )
+            
+            # Character practice section
+            st.markdown("#### Practice Writing")
+            st.info("Try writing this character on paper while watching the animation!")
+            
+            # Related characters or similar forms with auto-animation
+            st.markdown("#### Related Forms - Click to animate")
+            related_forms = char_data['forms'][:4]  # Show first 4 forms
+            related_phonetics = char_data['phonetic'][:4]
+            
+            form_cols = st.columns(4)
+            for i, (form, phonetic) in enumerate(zip(related_forms, related_phonetics)):
+                with form_cols[i]:
+                    if st.button(
+                        f"{form}",
+                        key=f"related_{form}_{selected_char}",  # Added selected_char to make unique
+                        help=f"Animate {form} ({phonetic})",
+                        use_container_width=True
+                    ):
+                        # Auto-animate related form
+                        related_animation_html = create_handwriting_animation_html(
+                            text=form,
+                            pen_style="Realistic",
+                            writing_style="Natural",
+                            animation_speed=4.0
+                        )
+                        
+                        # Display related form animation in an expander
+                        with st.expander(f"Animation for {form} ({phonetic})", expanded=True):
+                            components.html(
+                                related_animation_html,
+                                height=600,
+                                scrolling=True
+                            )
+    
+    else:
+        st.info("Select a character above to see its automatic handwriting animation and details!")
+    
+    # Traditional alphabet table for reference
+    st.markdown("---")
+    st.markdown("### Traditional Alphabet Reference")
+    
+    # Show traditional grid format
+    sample_alphabets = [
+        ["በ (be)", "ቡ (bu)", "ቢ (bi)", "ባ (ba)", "ቤ (bie)", "ብ (b)", "ቦ (bo)"],
+        ["ከ (ke)", "ኩ (ku)", "ኪ (ki)", "ካ (ka)", "ኬ (kie)", "ክ (k)", "ኮ (ko)"],
+        ["ሰ (se)", "ሱ (su)", "ሲ (si)", "ሳ (sa)", "ሴ (sie)", "ስ (s)", "ሶ (so)"],
+        ["ሸ (Se)", "ሹ (Su)", "ሺ (Si)", "ሻ (Sa)", "ሼ (Sie)", "ሽ (S)", "ሾ (So)"],
+    ]
+
+    table_header = '''
+| 1st Order | 2nd Order | 3rd Order | 4th Order | 5th Order | 6th Order | 7th Order |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+'''
+    
+    table_rows = ""
+    for row in sample_alphabets:
+        table_rows += f"| {' | '.join(row)} |\n"
+        
+    st.markdown(table_header + table_rows, unsafe_allow_html=True)
+
+def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0):
+    """Create HTML5 Canvas-based handwriting animation that starts automatically without buttons"""
+    
+    import json
+    
+    # Escape text for JavaScript
+    safe_text = json.dumps(text)
+    
+    html_content = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Tigrinya Handwriting Animation</title>
+            <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
+                
+                body {{
+                    margin: 0;
+                    padding: 20px;
+                    font-family: 'Noto Sans Ethiopic', 'Ebrima', 'Nyala', sans-serif;
+                    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }}
+                
+                .container {{
+                    max-width: 1000px;
+                    width: 100%;
+                    background: white;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                    padding: 30px;
+                    margin: 20px;
+                }}
+                
+                h1 {{
+                    text-align: center;
+                    color: #2c3e50;
+                    margin-bottom: 30px;
+                    font-size: 2.2em;
+                }}
+                
+                .animation-area {{
+                    position: relative;
+                    background: #fefefe;
+                    border: 2px solid #e1e8ed;
+                    border-radius: 10px;
+                    margin: 20px 0;
+                    min-height: 300px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 10px;
+                }}
+                
+                .scroll-container {{
+                    width: 100%;
+                    max-width: 900px;
+                    max-height: 400px;
+                    overflow: auto;
+                    border-radius: 8px;
+                    border: 1px solid #ddd;
+                    background: white;
+                    position: relative;
+                }}
+                
+                #animationCanvas {{
+                    display: block;
+                    background: white;
+                    border-radius: 4px;
+                }}
+                
+                .info-panel {{
+                    background: #f8f9fa;
+                    border-left: 4px solid #667eea;
+                    padding: 15px;
+                    border-radius: 5px;
+                    margin: 15px 0;
+                }}
+                
+                .text-display {{
+                    font-size: 1.5em;
+                    text-align: center;
+                    margin: 15px 0;
+                    padding: 15px;
+                    background: #e8f4fd;
+                    border-radius: 8px;
+                    border: 1px solid #bee5eb;
+                }}
+                
+                .progress-bar {{
+                    width: 100%;
+                    height: 6px;
+                    background: #ecf0f1;
+                    border-radius: 3px;
+                    margin: 10px 0;
+                    overflow: hidden;
+                }}
+                
+                .progress-fill {{
+                    height: 100%;
+                    background: linear-gradient(90deg, #667eea, #764ba2);
+                    border-radius: 3px;
+                    width: 0%;
+                    transition: width 0.3s ease;
+                }}
+                
+                .status {{
+                    text-align: center;
+                    margin: 10px 0;
+                    font-weight: 500;
+                }}
+
+                /* Custom scrollbar styling */
+                .scroll-container::-webkit-scrollbar {{
+                    width: 8px;
+                    height: 8px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-track {{
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-thumb {{
+                    background: #667eea;
+                    border-radius: 4px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-thumb:hover {{
+                    background: #5a67d8;
+                }}
+
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>✍️ Tigrinya Handwriting Animation</h1>
+                
+                <div class="text-display">
+                    <strong>Animating:</strong> {text}
+                </div>
+                
+                <div class="info-panel">
+                    <strong>Settings:</strong> Pen Style: {pen_style} | Writing Style: {writing_style} | Speed: {animation_speed}x
+                </div>
+                
+                <div class="animation-area">
+                    <div class="scroll-container" id="scrollContainer">
+                        <canvas id="animationCanvas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <div class="status" id="status">Loading font...</div>
+            </div>
+
+            <script>
+                // Animation configuration
+                const config = {{
+                    text: {safe_text},
+                    penStyle: "{pen_style}",
+                    writingStyle: "{writing_style}",
+                    animationSpeed: {animation_speed},
+                    canvas: null,
+                    ctx: null,
+                    isAnimating: false,
+                    isPaused: false,
+                    currentCharIndex: 0,
+                    currentStroke: 0,
+                    frames: [],
+                    animationFrame: null,
+                    font: null,
+                    characterPaths: [],
+                    scrollContainer: null,
+                    canvasWidth: 2400,
+                    canvasHeight: 400
+                }};
+
+                // Load font and auto-start animation
+                opentype.load('https://fonts.gstatic.com/s/notosansethiopic/v49/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK6Dj.ttf', function (err, font) {{
+                    if (err) {{
+                        document.getElementById('status').textContent = 'Error loading font: ' + err;
+                    }} else {{
+                        config.font = font;
+                        document.getElementById('status').textContent = 'Font loaded - Starting animation...';
+                        initCanvas();
+                        // Auto-start animation after a short delay
+                        setTimeout(startAnimation, 500);
+                    }}
+                }});
+                
+                // Initialize canvas with proper dimensions
+                function initCanvas() {{
+                    config.canvas = document.getElementById('animationCanvas');
+                    config.scrollContainer = document.getElementById('scrollContainer');
+                    
+                    // Set canvas size based on text length
+                    const textLength = config.text.length;
+                    const estimatedWidth = Math.max(800, textLength * 120);
+                    
+                    config.canvasWidth = estimatedWidth;
+                    config.canvas.width = config.canvasWidth;
+                    config.canvas.height = config.canvasHeight;
+                    
+                    config.ctx = config.canvas.getContext('2d');
+                    config.ctx.imageSmoothingEnabled = true;
+                    config.ctx.lineCap = 'round';
+                    config.ctx.lineJoin = 'round';
+                    
+                    // Reset scroll to beginning
+                    config.scrollContainer.scrollLeft = 0;
+                }}
+
+                // Auto-scroll to follow the pen
+                function scrollToPosition(x) {{
+                    if (!config.scrollContainer) return;
+                    
+                    const containerWidth = config.scrollContainer.clientWidth;
+                    const scrollLeft = config.scrollContainer.scrollLeft;
+                    const scrollRight = scrollLeft + containerWidth;
+                    
+                    // Keep pen in view with some padding
+                    const padding = 100;
+                    
+                    if (x < scrollLeft + padding) {{
+                        config.scrollContainer.scrollLeft = Math.max(0, x - padding);
+                    }} else if (x > scrollRight - padding) {{
+                        config.scrollContainer.scrollLeft = x - containerWidth + padding;
+                    }}
+                }}
+
+                // Convert font paths to drawable strokes for handwriting effect
+                function generateCharacterStrokes(text) {{
+                    const strokes = [];
+                    
+                    const fontSize = 120; // Larger font size for single characters
+                    const padding = 100;
+                    const startX = padding;
+                    const baseY = config.canvasHeight / 2 + fontSize / 4;
+                    
+                    let currentX = startX;
+                    
+                    for (let i = 0; i < text.length; i++) {{
+                        const char = text[i];
+                        
+                        if (char === ' ') {{
+                            const spaceWidth = config.font.getAdvanceWidth(' ', fontSize);
+                            currentX += spaceWidth;
+                            strokes.push({{
+                                char: ' ',
+                                type: 'space',
+                                x: currentX,
+                                y: baseY,
+                                width: spaceWidth
+                            }});
+                            continue;
+                        }}
+                        
+                        const fontPath = config.font.getPath(char, currentX, baseY, fontSize);
+                        const charStrokes = convertPathToStrokes(fontPath, currentX, baseY);
+                        
+                        strokes.push({{
+                            char: char,
+                            type: 'character',
+                            strokes: charStrokes,
+                            x: currentX,
+                            y: baseY
+                        }});
+                        
+                        currentX += config.font.getAdvanceWidth(char, fontSize);
+                    }}
+                    
+                    return strokes;
+                }}
+
+                // Convert OpenType path to handwriting strokes
+                function convertPathToStrokes(path, offsetX, offsetY) {{
+                    const strokes = [];
+                    let currentStroke = [];
+                    
+                    for (const cmd of path.commands) {{
+                        switch (cmd.type) {{
+                            case 'M': // Move to
+                                if (currentStroke.length > 0) {{
+                                    strokes.push(currentStroke);
+                                }}
+                                currentStroke = [{{x: cmd.x, y: cmd.y}}];
+                                break;
+                                
+                            case 'L': // Line to
+                                currentStroke.push({{x: cmd.x, y: cmd.y}});
+                                break;
+                                
+                            case 'Q': // Quadratic curve
+                                const p0 = currentStroke[currentStroke.length - 1];
+                                for (let t = 0.1; t <= 1; t += 0.1) {{
+                                    const x = Math.pow(1-t, 2) * p0.x + 2*(1-t)*t * cmd.x1 + Math.pow(t, 2) * cmd.x;
+                                    const y = Math.pow(1-t, 2) * p0.y + 2*(1-t)*t * cmd.y1 + Math.pow(t, 2) * cmd.y;
+                                    currentStroke.push({{x, y}});
+                                }}
+                                break;
+                                
+                            case 'C': // Cubic curve
+                                const p0c = currentStroke[currentStroke.length - 1];
+                                for (let t = 0.1; t <= 1; t += 0.1) {{
+                                    const x = Math.pow(1-t, 3) * p0c.x + 
+                                            3 * Math.pow(1-t, 2) * t * cmd.x1 +
+                                            3 * (1-t) * Math.pow(t, 2) * cmd.x2 + 
+                                            Math.pow(t, 3) * cmd.x;
+                                    const y = Math.pow(1-t, 3) * p0c.y + 
+                                            3 * Math.pow(1-t, 2) * t * cmd.y1 +
+                                            3 * (1-t) * Math.pow(t, 2) * cmd.y2 + 
+                                            Math.pow(t, 3) * cmd.y;
+                                    currentStroke.push({{x, y}});
+                                }}
+                                break;
+                                
+                            case 'Z': // Close path
+                                if (currentStroke.length > 0) {{
+                                    strokes.push(currentStroke);
+                                    currentStroke = [];
+                                }}
+                                break;
+                        }}
+                    }}
+                    
+                    if (currentStroke.length > 0) {{
+                        strokes.push(currentStroke);
+                    }}
+                    
+                    return strokes;
+                }}
+                
+                // Pen drawing functions
+                function drawPen(x, y, angle = 0) {{
+                    const ctx = config.ctx;
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(angle);
+                    
+                    // Realistic pen style
+                    // Pen shadow
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                    ctx.fillRect(-3, 3, 6, 30);
+                    
+                    // Pen body
+                    ctx.fillStyle = '#4169E1';
+                    ctx.fillRect(-3, 0, 6, 27);
+                    
+                    // Pen grip
+                    ctx.fillStyle = '#696969';
+                    ctx.fillRect(-3.5, 9, 7, 9);
+                    
+                    // Pen tip
+                    ctx.fillStyle = '#000080';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                }}
+                
+                // Main animation functions
+                function startAnimation() {{
+                    if (config.isAnimating) return;
+                    
+                    config.isAnimating = true;
+                    config.characterPaths = generateCharacterStrokes(config.text);
+                    config.currentCharIndex = 0;
+                    config.currentStroke = 0;
+                    
+                    document.getElementById('status').textContent = 'Animating...';
+                    animateNextFrame();
+                }}
+
+                function animateNextFrame() {{
+                    if (config.isPaused || !config.isAnimating) return;
+                    
+                    const paths = config.characterPaths;
+                    if (!paths || config.currentCharIndex >= paths.length) {{
+                        // Animation complete
+                        config.isAnimating = false;
+                        document.getElementById('status').textContent = 'Animation complete!';
+                        document.getElementById('progressFill').style.width = '100%';
+                        return;
+                    }}
+                    
+                    const currentPath = paths[config.currentCharIndex];
+                    
+                    // Update progress
+                    const progress = (config.currentCharIndex / paths.length) * 100;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    
+                    if (currentPath.type === 'space') {{
+                        scrollToPosition(currentPath.x);
+                        setTimeout(() => {{
+                            config.currentCharIndex++;
+                            config.currentStroke = 0;
+                            config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        }}, 300 / config.animationSpeed);
+                        return;
+                    }}
+                    
+                    if (config.currentStroke >= currentPath.strokes.length) {{
+                        config.currentCharIndex++;
+                        config.currentStroke = 0;
+                        config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        return;
+                    }}
+                    
+                    const stroke = currentPath.strokes[config.currentStroke];
+                    animateStroke(stroke, () => {{
+                        config.currentStroke++;
+                        setTimeout(() => {{
+                            config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        }}, 100 / config.animationSpeed);
+                    }});
+                }}
+
+                // Animate individual stroke with handwriting effect
+                function animateStroke(stroke, callback) {{
+                    if (!stroke || stroke.length === 0) {{
+                        callback();
+                        return;
+                    }}
+                    
+                    let pointIndex = 0;
+                    const ctx = config.ctx;
+                    
+                    function drawNextSegment() {{
+                        if (pointIndex >= stroke.length) {{
+                            callback();
+                            return;
+                        }}
+                        
+                        redrawCanvas();
+                        
+                        if (pointIndex === 0) {{
+                            const penX = stroke[0].x;
+                            const penY = stroke[0].y - 35;
+                            drawPen(penX, penY);
+                            scrollToPosition(penX);
+                        }} else {{
+                            ctx.strokeStyle = '#2c3e50';
+                            ctx.lineWidth = 4;
+                            ctx.lineCap = 'round';
+                            ctx.lineJoin = 'round';
+                            
+                            ctx.beginPath();
+                            ctx.moveTo(stroke[0].x, stroke[0].y);
+                            
+                            for (let i = 1; i <= pointIndex; i++) {{
+                                ctx.lineTo(stroke[i].x, stroke[i].y);
+                            }}
+                            ctx.stroke();
+                            
+                            const currentPoint = stroke[pointIndex];
+                            const penX = currentPoint.x;
+                            const penY = currentPoint.y - 35;
+                            drawPen(penX, penY);
+                            scrollToPosition(penX);
+                        }}
+                        
+                        pointIndex++;
+                        setTimeout(drawNextSegment, 40 / config.animationSpeed);
+                    }}
+                    
+                    drawNextSegment();
+                }}
+
+                // Redraw the entire canvas with completed characters and strokes
+                function redrawCanvas() {{
+                    const ctx = config.ctx;
+                    
+                    ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+                    ctx.fillStyle = '#fefefe';
+                    ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+                    
+                    // Draw all completed characters
+                    for (let charIndex = 0; charIndex < config.currentCharIndex; charIndex++) {{
+                        const path = config.characterPaths[charIndex];
+                        if (path.type === 'character') {{
+                            drawCompletedCharacter(path);
+                        }}
+                    }}
+                    
+                    // Draw completed strokes of current character
+                    if (config.currentCharIndex < config.characterPaths.length && 
+                        config.characterPaths[config.currentCharIndex].type === 'character') {{
+                        const currentPath = config.characterPaths[config.currentCharIndex];
+                        
+                        ctx.strokeStyle = '#2c3e50';
+                        ctx.lineWidth = 4;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                        
+                        for (let strokeIndex = 0; strokeIndex < config.currentStroke; strokeIndex++) {{
+                            const stroke = currentPath.strokes[strokeIndex];
+                            if (stroke && stroke.length > 0) {{
+                                ctx.beginPath();
+                                ctx.moveTo(stroke[0].x, stroke[0].y);
+                                for (let i = 1; i < stroke.length; i++) {{
+                                    ctx.lineTo(stroke[i].x, stroke[i].y);
+                                }}
+                                ctx.stroke();
+                            }}
+                        }}
+                    }}
+                }}
+
+                // Draw a completed character
+                function drawCompletedCharacter(path) {{
+                    const ctx = config.ctx;
+                    
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 4;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                    
+                    for (const stroke of path.strokes) {{
+                        if (stroke && stroke.length > 0) {{
+                            ctx.beginPath();
+                            ctx.moveTo(stroke[0].x, stroke[0].y);
+                            for (let i = 1; i < stroke.length; i++) {{
+                                ctx.lineTo(stroke[i].x, stroke[i].y);
+                            }}
+                            ctx.stroke();
+                        }}
+                    }}
+                }}
+            </script>
+        </body>
+        </html>
+            """
+    return html_content    
 
 def main():
     # Page configuration
