@@ -1990,7 +1990,7 @@ def alphabet_page_backup():
             
             # Related characters or similar forms
             st.markdown("#### Related Forms")
-            related_forms = char_data['forms'][:4]  # Show first 4 forms
+            related_forms = char_data['forms']  # Show first 4 forms
             related_phonetics = char_data['phonetic'][:4]
             
             form_cols = st.columns(4)
@@ -2117,8 +2117,8 @@ def alphabet_page():
             
             # Related characters or similar forms - Click to animate on same canvas
             st.markdown("#### Related Forms - Click to animate")
-            related_forms = char_data['forms'][:4]  # Show first 4 forms
-            related_phonetics = char_data['phonetic'][:4]
+            related_forms = char_data['forms']  # Show first 4 forms
+            related_phonetics = char_data['phonetic']
             
             # Display related forms as buttons in a 2x2 grid
             for i in range(0, len(related_forms), 2):
