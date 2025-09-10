@@ -2264,16 +2264,7 @@ def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_styl
                     margin: 20px;
                 }}
                 
-                h1 {{
-                    text-align: center;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                    background-clip: text;
-                    margin-bottom: 30px;
-                    font-size: 2.5em;
-                    font-weight: 700;
-                }}
+
                 
                 .text-display {{
                     font-size: 1.6em;
@@ -2370,9 +2361,7 @@ def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_styl
             </style>
         </head>
         <body>
-            <div class="container">
-                <h1>✍️ Fluid Handwriting Animation</h1>
-                
+            <div class="container">                
                 <div class="text-display">
                     <strong>Animating:</strong> {text}
                 </div>
@@ -2502,10 +2491,31 @@ def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_styl
                 }}
 
                 // Prepare character paths using fluid continuous path system
-                function prepareCharacterPaths() {{
-                    const padding = 120;
+ function prepareCharacterPaths() {{
                     const baseY = config.canvasHeight / 2 + config.fontSize / 4;
-                    let currentX = padding;
+                    
+                    // Calculate total text width to center it
+                    let totalTextWidth = 0;
+                    for (let i = 0; i < config.text.length; i++) {{
+                        const char = config.text[i];
+                        if (char === ' ') {{
+                            const spaceWidth = config.font ? 
+                                config.font.getAdvanceWidth(' ', config.fontSize) : 
+                                config.fontSize * 0.3;
+                            totalTextWidth += spaceWidth;
+                        }} else {{
+                            const charWidth = config.font ? 
+                                config.font.getAdvanceWidth(char, config.fontSize) : 
+                                config.fontSize * 0.6; // Reduced from 0.7 for better centering
+                            totalTextWidth += charWidth;
+                        }}
+                    }}
+                    
+                    // Calculate centered starting X position with some padding
+                    const padding = 50;
+                    const availableWidth = config.canvasWidth - (2 * padding);
+                    const startX = padding + (availableWidth - totalTextWidth) / 2;
+                    let currentX = Math.max(padding, startX); // Ensure minimum padding
                     
                     config.characters = [];
                     
@@ -3081,49 +3091,6 @@ def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_styl
         </html>
     """
     return html_content
-# Example usage and additional utility functions
-def create_demo_animations():
-    """Create several demo animations with different settings"""
-    
-    demos = [
-        {
-            'text': 'ሰላም ዓለም',  # Hello World in Tigrinya
-            'pen_style': 'Realistic',
-            'writing_style': 'Natural',
-            'speed': 3.0,
-            'step_size': 2
-        },
-        {
-            'text': 'Beautiful Script',
-            'pen_style': 'Brush',
-            'writing_style': 'Cursive',
-            'speed': 2.5,
-            'step_size': 1
-        },
-        {
-            'text': 'Fast Writing Demo',
-            'pen_style': 'Simple',
-            'writing_style': 'Formal',
-            'speed': 6.0,
-            'step_size': 3
-        }
-    ]
-    
-    for i, demo in enumerate(demos):
-        html_content = create_fluid_handwriting_animation(
-            text=demo['text'],
-            pen_style=demo['pen_style'],
-            writing_style=demo['writing_style'],
-            animation_speed=demo['speed'],
-            step_size=demo['step_size']
-        )
-        
-        filename = f"handwriting_demo_{i+1}.html"
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.write(html_content)
-        
-        print(f"Created {filename}: {demo['text']} ({demo['pen_style']}, {demo['speed']}x speed)")
-
 def main():
     # Page configuration
     st.set_page_config(
