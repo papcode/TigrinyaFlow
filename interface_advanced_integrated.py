@@ -2211,7 +2211,8 @@ def alphabet_page():
         table_rows += f"| {' | '.join(row)} |\n"
         
     st.markdown(table_header + table_rows, unsafe_allow_html=True) 
-def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0):
+
+def create_auto_start_handwriting_html_outlineVersion(text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0):
     """Create HTML5 Canvas-based handwriting animation that starts automatically without buttons"""
     
     import json
@@ -2756,6 +2757,644 @@ def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_styl
             """
     return html_content    
 
+def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0):
+    """Create HTML5 Canvas-based handwriting animation with realistic ink filling effect"""
+    
+    import json
+    
+    # Escape text for JavaScript
+    safe_text = json.dumps(text)
+    
+    html_content = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Tigrinya Handwriting Animation - Ink Style</title>
+            <script src="https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js"></script>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
+                
+                body {{
+                    margin: 0;
+                    padding: 20px;
+                    font-family: 'Noto Sans Ethiopic', 'Ebrima', 'Nyala', sans-serif;
+                    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }}
+                
+                .container {{
+                    max-width: 1000px;
+                    width: 100%;
+                    background: white;
+                    border-radius: 15px;
+                    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+                    padding: 30px;
+                    margin: 20px;
+                }}
+                
+                h1 {{
+                    text-align: center;
+                    color: #2c3e50;
+                    margin-bottom: 30px;
+                    font-size: 2.2em;
+                }}
+                
+                .animation-area {{
+                    position: relative;
+                    background: #fefefe;
+                    border: 2px solid #e1e8ed;
+                    border-radius: 10px;
+                    margin: 20px 0;
+                    min-height: 300px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 10px;
+                }}
+                
+                .scroll-container {{
+                    width: 100%;
+                    max-width: 900px;
+                    max-height: 400px;
+                    overflow: auto;
+                    border-radius: 8px;
+                    border: 1px solid #ddd;
+                    background: white;
+                    position: relative;
+                }}
+                
+                #animationCanvas {{
+                    display: block;
+                    background: white;
+                    border-radius: 4px;
+                }}
+                
+                .info-panel {{
+                    background: #f8f9fa;
+                    border-left: 4px solid #667eea;
+                    padding: 15px;
+                    border-radius: 5px;
+                    margin: 15px 0;
+                }}
+                
+                .text-display {{
+                    font-size: 1.5em;
+                    text-align: center;
+                    margin: 15px 0;
+                    padding: 15px;
+                    background: #e8f4fd;
+                    border-radius: 8px;
+                    border: 1px solid #bee5eb;
+                }}
+                
+                .progress-bar {{
+                    width: 100%;
+                    height: 6px;
+                    background: #ecf0f1;
+                    border-radius: 3px;
+                    margin: 10px 0;
+                    overflow: hidden;
+                }}
+                
+                .progress-fill {{
+                    height: 100%;
+                    background: linear-gradient(90deg, #667eea, #764ba2);
+                    border-radius: 3px;
+                    width: 0%;
+                    transition: width 0.3s ease;
+                }}
+                
+                .status {{
+                    text-align: center;
+                    margin: 10px 0;
+                    font-weight: 500;
+                }}
+
+                .scroll-container::-webkit-scrollbar {{
+                    width: 8px;
+                    height: 8px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-track {{
+                    background: #f1f1f1;
+                    border-radius: 4px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-thumb {{
+                    background: #667eea;
+                    border-radius: 4px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-thumb:hover {{
+                    background: #5a67d8;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>✍️ Tigrinya Handwriting Animation - Ink Style</h1>
+                
+                <div class="text-display">
+                    <strong>Animating:</strong> {text}
+                </div>
+                
+                <div class="info-panel">
+                    <strong>Settings:</strong> Pen Style: {pen_style} | Writing Style: {writing_style} | Speed: {animation_speed}x | Mode: Ink Mask
+                </div>
+                
+                <div class="animation-area">
+                    <div class="scroll-container" id="scrollContainer">
+                        <canvas id="animationCanvas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                
+                <div class="status" id="status">Loading font...</div>
+            </div>
+
+            <script>
+                // Animation configuration with ink mask settings
+                const config = {{
+                    text: {safe_text},
+                    penStyle: "{pen_style}",
+                    writingStyle: "{writing_style}",
+                    animationSpeed: {animation_speed},
+                    
+                    // Canvas elements
+                    canvas: null,
+                    ctx: null,
+                    glyphCanvas: null,
+                    glyphCtx: null,
+                    maskCanvas: null,
+                    maskCtx: null,
+                    
+                    // Animation state
+                    isAnimating: false,
+                    isPaused: false,
+                    currentCharIndex: 0,
+                    currentStrokeIndex: 0,
+                    currentPointIndex: 0,
+                    
+                    // Font and layout
+                    font: null,
+                    fontSize: 120,
+                    characters: [],
+                    scrollContainer: null,
+                    canvasWidth: 2400,
+                    canvasHeight: 400,
+                    
+                    // Ink mask settings
+                    revealMode: 'ink-mask',
+                    nibShape: 'round', // 'round' or 'chisel'
+                    nibAngle: 30, // degrees for chisel
+                    nibRadius: 0, // calculated based on fontSize
+                    inkColor: '#2c3e50',
+                    
+                    // Animation timing
+                    penX: 0,
+                    penY: 0,
+                    animationFrame: null,
+                    
+                    // Stroke maps (basic heuristic)
+                    strokeMap: {{}}
+                }};
+
+                // Load font and auto-start animation
+                opentype.load('https://fonts.gstatic.com/s/notosansethiopic/v49/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK6Dj.ttf', function (err, font) {{
+                    if (err) {{
+                        document.getElementById('status').textContent = 'Error loading font: ' + err;
+                    }} else {{
+                        config.font = font;
+                        document.getElementById('status').textContent = 'Font loaded - Starting animation...';
+                        initCanvas();
+                        setTimeout(startAnimation, 500);
+                    }}
+                }});
+                
+                // Initialize canvas with offscreen canvases for mask compositing
+                function initCanvas() {{
+                    config.canvas = document.getElementById('animationCanvas');
+                    config.scrollContainer = document.getElementById('scrollContainer');
+                    
+                    // Calculate canvas dimensions
+                    const textLength = config.text.length;
+                    const estimatedWidth = Math.max(800, textLength * 140);
+                    config.canvasWidth = estimatedWidth;
+                    config.canvas.width = config.canvasWidth;
+                    config.canvas.height = config.canvasHeight;
+                    config.ctx = config.canvas.getContext('2d');
+                    
+                    // Create offscreen canvases
+                    config.glyphCanvas = document.createElement('canvas');
+                    config.glyphCanvas.width = config.canvasWidth;
+                    config.glyphCanvas.height = config.canvasHeight;
+                    config.glyphCtx = config.glyphCanvas.getContext('2d');
+                    
+                    config.maskCanvas = document.createElement('canvas');
+                    config.maskCanvas.width = config.canvasWidth;
+                    config.maskCanvas.height = config.canvasHeight;
+                    config.maskCtx = config.maskCanvas.getContext('2d');
+                    
+                    // Configure rendering contexts
+                    [config.ctx, config.glyphCtx, config.maskCtx].forEach(ctx => {{
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                    }});
+                    
+                    // Calculate nib radius based on font size
+                    config.nibRadius = config.fontSize * 0.045;
+                    
+                    config.scrollContainer.scrollLeft = 0;
+                }}
+
+                // Auto-scroll to follow the pen
+                function scrollToPosition(x) {{
+                    if (!config.scrollContainer) return;
+                    
+                    const containerWidth = config.scrollContainer.clientWidth;
+                    const scrollLeft = config.scrollContainer.scrollLeft;
+                    const scrollRight = scrollLeft + containerWidth;
+                    const padding = 100;
+                    
+                    if (x < scrollLeft + padding) {{
+                        config.scrollContainer.scrollLeft = Math.max(0, x - padding);
+                    }} else if (x > scrollRight - padding) {{
+                        config.scrollContainer.scrollLeft = x - containerWidth + padding;
+                    }}
+                }}
+
+                // Prepare character layout and glyph layers
+                function prepareCharacters() {{
+                    const padding = 100;
+                    const baseY = config.canvasHeight / 2 + config.fontSize / 4;
+                    let currentX = padding;
+                    
+                    config.characters = [];
+                    
+                    // Clear glyph canvas with white background
+                    config.glyphCtx.fillStyle = 'white';
+                    config.glyphCtx.fillRect(0, 0, config.canvasWidth, config.canvasHeight);
+                    
+                    for (let i = 0; i < config.text.length; i++) {{
+                        const char = config.text[i];
+                        
+                        if (char === ' ') {{
+                            const spaceWidth = config.font.getAdvanceWidth(' ', config.fontSize);
+                            currentX += spaceWidth;
+                            config.characters.push({{
+                                char: ' ',
+                                type: 'space',
+                                x: currentX,
+                                y: baseY,
+                                width: spaceWidth,
+                                strokes: []
+                            }});
+                            continue;
+                        }}
+                        
+                        // Prepare glyph layer - draw filled character
+                        config.glyphCtx.font = `${{config.fontSize}}px 'Noto Sans Ethiopic'`;
+                        config.glyphCtx.fillStyle = config.inkColor;
+                        config.glyphCtx.fillText(char, currentX, baseY);
+                        
+                        // Generate stroke guides
+                        const strokes = buildStrokeGuides(char, currentX, baseY);
+                        
+                        config.characters.push({{
+                            char: char,
+                            type: 'character',
+                            x: currentX,
+                            y: baseY,
+                            strokes: strokes
+                        }});
+                        
+                        currentX += config.font.getAdvanceWidth(char, config.fontSize);
+                    }}
+                }}
+
+                // Build stroke guides using heuristic approach
+                function buildStrokeGuides(char, x, y) {{
+                    // Check stroke map first (empty for now, but extensible)
+                    if (config.strokeMap[char]) {{
+                        return config.strokeMap[char].strokes.map(stroke => 
+                            stroke.map(point => ({{x: point[0] + x, y: point[1] + y}}))
+                        );
+                    }}
+                    
+                    // Heuristic fallback: create centerline-based strokes
+                    const fontPath = config.font.getPath(char, x, y, config.fontSize);
+                    return generateCenterlineStrokes(fontPath, x, y);
+                }}
+
+                // Generate centerline strokes from font path (heuristic)
+                function generateCenterlineStrokes(path, offsetX, offsetY) {{
+                    const contours = extractContours(path);
+                    const strokes = [];
+                    
+                    for (const contour of contours) {{
+                        if (contour.length < 3) continue;
+                        
+                        // Create a simplified centerline
+                        const centerline = generateCenterline(contour);
+                        if (centerline.length > 1) {{
+                            strokes.push(centerline);
+                        }}
+                    }}
+                    
+                    return strokes;
+                }}
+
+                // Extract contours from OpenType path
+                function extractContours(path) {{
+                    const contours = [];
+                    let currentContour = [];
+                    
+                    for (const cmd of path.commands) {{
+                        switch (cmd.type) {{
+                            case 'M': // Move to
+                                if (currentContour.length > 0) {{
+                                    contours.push(currentContour);
+                                }}
+                                currentContour = [{{x: cmd.x, y: cmd.y}}];
+                                break;
+                                
+                            case 'L': // Line to
+                                currentContour.push({{x: cmd.x, y: cmd.y}});
+                                break;
+                                
+                            case 'Q': // Quadratic curve
+                                const p0q = currentContour[currentContour.length - 1];
+                                for (let t = 0.2; t <= 1; t += 0.2) {{
+                                    const x = Math.pow(1-t, 2) * p0q.x + 2*(1-t)*t * cmd.x1 + Math.pow(t, 2) * cmd.x;
+                                    const y = Math.pow(1-t, 2) * p0q.y + 2*(1-t)*t * cmd.y1 + Math.pow(t, 2) * cmd.y;
+                                    currentContour.push({{x, y}});
+                                }}
+                                break;
+                                
+                            case 'C': // Cubic curve
+                                const p0c = currentContour[currentContour.length - 1];
+                                for (let t = 0.2; t <= 1; t += 0.2) {{
+                                    const x = Math.pow(1-t, 3) * p0c.x + 
+                                            3 * Math.pow(1-t, 2) * t * cmd.x1 +
+                                            3 * (1-t) * Math.pow(t, 2) * cmd.x2 + 
+                                            Math.pow(t, 3) * cmd.x;
+                                    const y = Math.pow(1-t, 3) * p0c.y + 
+                                            3 * Math.pow(1-t, 2) * t * cmd.y1 +
+                                            3 * (1-t) * Math.pow(t, 2) * cmd.y2 + 
+                                            Math.pow(t, 3) * cmd.y;
+                                    currentContour.push({{x, y}});
+                                }}
+                                break;
+                                
+                            case 'Z': // Close path
+                                if (currentContour.length > 0) {{
+                                    contours.push(currentContour);
+                                    currentContour = [];
+                                }}
+                                break;
+                        }}
+                    }}
+                    
+                    if (currentContour.length > 0) {{
+                        contours.push(currentContour);
+                    }}
+                    
+                    return contours;
+                }}
+
+                // Generate centerline from contour (simplified approach)
+                function generateCenterline(contour) {{
+                    if (contour.length < 3) return contour;
+                    
+                    // Calculate centroid
+                    const centroid = contour.reduce((acc, point) => {{
+                        acc.x += point.x;
+                        acc.y += point.y;
+                        return acc;
+                    }}, {{x: 0, y: 0}});
+                    centroid.x /= contour.length;
+                    centroid.y /= contour.length;
+                    
+                    // Create centerline by moving points toward centroid
+                    const centerline = contour.map((point, i) => {{
+                        const factor = 0.3; // How much to move toward center
+                        return {{
+                            x: point.x + (centroid.x - point.x) * factor,
+                            y: point.y + (centroid.y - point.y) * factor
+                        }};
+                    }});
+                    
+                    // Smooth the centerline
+                    return smoothPath(centerline);
+                }}
+
+                // Simple path smoothing
+                function smoothPath(path) {{
+                    if (path.length < 3) return path;
+                    
+                    const smoothed = [path[0]];
+                    for (let i = 1; i < path.length - 1; i++) {{
+                        const prev = path[i - 1];
+                        const curr = path[i];
+                        const next = path[i + 1];
+                        
+                        smoothed.push({{
+                            x: (prev.x + curr.x + next.x) / 3,
+                            y: (prev.y + curr.y + next.y) / 3
+                        }});
+                    }}
+                    smoothed.push(path[path.length - 1]);
+                    
+                    return smoothed;
+                }}
+
+                // Paint nib onto mask canvas
+                function paintNib(x, y) {{
+                    config.maskCtx.save();
+                    config.maskCtx.translate(x, y);
+                    
+                    if (config.nibShape === 'round') {{
+                        config.maskCtx.beginPath();
+                        config.maskCtx.arc(0, 0, config.nibRadius, 0, Math.PI * 2);
+                        config.maskCtx.fillStyle = 'black';
+                        config.maskCtx.fill();
+                    }} else if (config.nibShape === 'chisel') {{
+                        config.maskCtx.rotate(config.nibAngle * Math.PI / 180);
+                        config.maskCtx.fillStyle = 'black';
+                        config.maskCtx.fillRect(-config.nibRadius * 1.2, -config.nibRadius * 0.6, 
+                                               config.nibRadius * 2.4, config.nibRadius * 1.2);
+                    }}
+                    
+                    config.maskCtx.restore();
+                }}
+
+                // Composite frame using mask
+                function compositeFrame() {{
+                    const ctx = config.ctx;
+                    
+                    // Clear main canvas
+                    ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+                    
+                    // Draw background (paper)
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+                    
+                    // Draw filled glyph layer
+                    ctx.drawImage(config.glyphCanvas, 0, 0);
+                    
+                    // Apply mask (only show where ink has been painted)
+                    ctx.globalCompositeOperation = 'destination-in';
+                    ctx.drawImage(config.maskCanvas, 0, 0);
+                    ctx.globalCompositeOperation = 'source-over';
+                    
+                    // Draw pen at current position
+                    if (config.isAnimating) {{
+                        drawPen(config.penX, config.penY - 35);
+                    }}
+                }}
+
+                // Draw realistic pen
+                function drawPen(x, y, angle = 0) {{
+                    const ctx = config.ctx;
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(angle);
+                    
+                    // Pen shadow
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+                    ctx.fillRect(-3, 3, 6, 30);
+                    
+                    // Pen body
+                    ctx.fillStyle = '#4169E1';
+                    ctx.fillRect(-3, 0, 6, 27);
+                    
+                    // Pen grip
+                    ctx.fillStyle = '#696969';
+                    ctx.fillRect(-3.5, 9, 7, 9);
+                    
+                    // Pen tip
+                    ctx.fillStyle = '#000080';
+                    ctx.beginPath();
+                    ctx.arc(0, 0, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.restore();
+                }}
+
+                // Main animation functions
+                function startAnimation() {{
+                    if (config.isAnimating) return;
+                    
+                    config.isAnimating = true;
+                    config.currentCharIndex = 0;
+                    config.currentStrokeIndex = 0;
+                    config.currentPointIndex = 0;
+                    
+                    // Clear mask canvas
+                    config.maskCtx.clearRect(0, 0, config.canvasWidth, config.canvasHeight);
+                    
+                    // Prepare character data and glyph layer
+                    prepareCharacters();
+                    
+                    document.getElementById('status').textContent = 'Animating...';
+                    animateNextFrame();
+                }}
+
+                function animateNextFrame() {{
+                    if (!config.isAnimating || config.isPaused) return;
+                    
+                    if (config.currentCharIndex >= config.characters.length) {{
+                        // Animation complete
+                        config.isAnimating = false;
+                        document.getElementById('status').textContent = 'Animation complete!';
+                        document.getElementById('progressFill').style.width = '100%';
+                        return;
+                    }}
+                    
+                    const character = config.characters[config.currentCharIndex];
+                    
+                    // Update progress
+                    const progress = (config.currentCharIndex / config.characters.length) * 100;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    
+                    if (character.type === 'space') {{
+                        // Handle space
+                        config.penX = character.x;
+                        config.penY = character.y;
+                        scrollToPosition(config.penX);
+                        compositeFrame();
+                        
+                        setTimeout(() => {{
+                            config.currentCharIndex++;
+                            config.currentStrokeIndex = 0;
+                            config.currentPointIndex = 0;
+                            config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        }}, 300 / config.animationSpeed);
+                        return;
+                    }}
+                    
+                    // Handle character
+                    if (config.currentStrokeIndex >= character.strokes.length) {{
+                        // Move to next character
+                        config.currentCharIndex++;
+                        config.currentStrokeIndex = 0;
+                        config.currentPointIndex = 0;
+                        setTimeout(() => {{
+                            config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        }}, 150 / config.animationSpeed);
+                        return;
+                    }}
+                    
+                    const stroke = character.strokes[config.currentStrokeIndex];
+                    if (!stroke || stroke.length === 0) {{
+                        config.currentStrokeIndex++;
+                        config.currentPointIndex = 0;
+                        config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        return;
+                    }}
+                    
+                    if (config.currentPointIndex >= stroke.length) {{
+                        // Move to next stroke
+                        config.currentStrokeIndex++;
+                        config.currentPointIndex = 0;
+                        setTimeout(() => {{
+                            config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        }}, 100 / config.animationSpeed);
+                        return;
+                    }}
+                    
+                    // Animate current point
+                    const point = stroke[config.currentPointIndex];
+                    config.penX = point.x;
+                    config.penY = point.y;
+                    
+                    // Paint nib onto mask
+                    paintNib(config.penX, config.penY);
+                    
+                    // Composite and render
+                    compositeFrame();
+                    scrollToPosition(config.penX);
+                    
+                    config.currentPointIndex++;
+                    
+                    setTimeout(() => {{
+                        config.animationFrame = requestAnimationFrame(animateNextFrame);
+                    }}, 30 / config.animationSpeed);
+                }}
+            </script>
+        </body>
+        </html>
+    """
+    return html_content
 def main():
     # Page configuration
     st.set_page_config(
