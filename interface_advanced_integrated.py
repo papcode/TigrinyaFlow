@@ -2757,7 +2757,7 @@ def create_auto_start_handwriting_html_outlineVersion(text, pen_style="Realistic
             """
     return html_content    
 
-def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0):
+def create_auto_start_handwriting_html_inkStyle(text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0):
     """Create HTML5 Canvas-based handwriting animation with realistic ink filling effect"""
     
     import json
@@ -3395,6 +3395,1045 @@ def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_styl
         </html>
     """
     return html_content
+
+def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0, step_size=2):
+    """
+    Create HTML5 Canvas-based fluid handwriting animation with continuous path system
+    
+    Args:
+        text (str): Text to animate
+        pen_style (str): Style of pen rendering ("Realistic", "Simple", "Brush")
+        writing_style (str): Writing characteristics ("Natural", "Formal", "Cursive")
+        animation_speed (float): Animation speed multiplier
+        step_size (int): Point sampling density in pixels (1-3 for smooth animation)
+    
+    Returns:
+        str: Complete HTML content with fluid handwriting animation
+    """
+    
+    import json
+    
+    # Escape text for JavaScript
+    safe_text = json.dumps(text)
+    
+    html_content = f"""
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Fluid Handwriting Animation - Enhanced</title>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
+                
+                body {{
+                    margin: 0;
+                    padding: 20px;
+                    font-family: 'Noto Sans Ethiopic', 'Ebrima', 'Nyala', sans-serif;
+                    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }}
+                
+                .container {{
+                    max-width: 1200px;
+                    width: 100%;
+                    background: white;
+                    border-radius: 15px;
+                    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+                    padding: 40px;
+                    margin: 20px;
+                }}
+                
+                h1 {{
+                    text-align: center;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    background-clip: text;
+                    margin-bottom: 30px;
+                    font-size: 2.5em;
+                    font-weight: 700;
+                }}
+                
+                .text-display {{
+                    font-size: 1.6em;
+                    text-align: center;
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
+                    border-radius: 12px;
+                    border: 2px solid rgba(102, 126, 234, 0.2);
+                    color: #2c3e50;
+                    font-weight: 500;
+                }}
+                
+                .controls {{
+                    display: flex;
+                    justify-content: center;
+                    gap: 15px;
+                    margin: 25px 0;
+                    flex-wrap: wrap;
+                }}
+                
+                .control-btn {{
+                    padding: 10px 20px;
+                    border: none;
+                    border-radius: 25px;
+                    cursor: pointer;
+                    font-weight: 600;
+                    transition: all 0.3s ease;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: white;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                }}
+                
+                .control-btn:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+                }}
+                
+                .control-btn:disabled {{
+                    opacity: 0.6;
+                    cursor: not-allowed;
+                    transform: none;
+                }}
+                
+                .info-panel {{
+                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                    border-left: 4px solid #667eea;
+                    padding: 20px;
+                    border-radius: 10px;
+                    margin: 20px 0;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+                }}
+                
+                .animation-area {{
+                    position: relative;
+                    background: #fefefe;
+                    border: 2px solid #e1e8ed;
+                    border-radius: 15px;
+                    margin: 25px 0;
+                    min-height: 350px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 15px;
+                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+                }}
+                
+                .scroll-container {{
+                    width: 100%;
+                    max-width: 1000px;
+                    max-height: 450px;
+                    overflow: auto;
+                    border-radius: 10px;
+                    border: 1px solid #ddd;
+                    background: white;
+                    position: relative;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                }}
+                
+                #animationCanvas {{
+                    display: block;
+                    background: white;
+                    border-radius: 8px;
+                }}
+                
+                .progress-container {{
+                    margin: 20px 0;
+                }}
+                
+                .progress-bar {{
+                    width: 100%;
+                    height: 8px;
+                    background: #ecf0f1;
+                    border-radius: 4px;
+                    overflow: hidden;
+                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+                }}
+                
+                .progress-fill {{
+                    height: 100%;
+                    background: linear-gradient(90deg, #667eea, #764ba2);
+                    border-radius: 4px;
+                    width: 0%;
+                    transition: width 0.3s ease;
+                    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+                }}
+                
+                .status {{
+                    text-align: center;
+                    margin: 15px 0;
+                    font-weight: 600;
+                    font-size: 1.1em;
+                    color: #2c3e50;
+                }}
+
+                .scroll-container::-webkit-scrollbar {{
+                    width: 10px;
+                    height: 10px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-track {{
+                    background: #f1f1f1;
+                    border-radius: 5px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-thumb {{
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    border-radius: 5px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-thumb:hover {{
+                    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+                }}
+                
+                .settings-grid {{
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 15px;
+                    margin: 15px 0;
+                }}
+                
+                .setting-item {{
+                    background: rgba(102, 126, 234, 0.05);
+                    padding: 10px 15px;
+                    border-radius: 8px;
+                    font-weight: 500;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>✍️ Fluid Handwriting Animation</h1>
+                
+                <div class="text-display">
+                    <strong>Animating:</strong> {text}
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" id="startBtn" onclick="startAnimation()">▶️ Start</button>
+                    <button class="control-btn" id="pauseBtn" onclick="togglePause()" disabled>⏸️ Pause</button>
+                    <button class="control-btn" id="resetBtn" onclick="resetAnimation()">🔄 Reset</button>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="settings-grid">
+                        <div class="setting-item"><strong>Pen Style:</strong> {pen_style}</div>
+                        <div class="setting-item"><strong>Writing Style:</strong> {writing_style}</div>
+                        <div class="setting-item"><strong>Speed:</strong> {animation_speed}x</div>
+                        <div class="setting-item"><strong>Path Sampling:</strong> {step_size}px steps</div>
+                    </div>
+                </div>
+                
+                <div class="animation-area">
+                    <div class="scroll-container" id="scrollContainer">
+                        <canvas id="animationCanvas"></canvas>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="status" id="status">Ready to start animation</div>
+                </div>
+            </div>
+
+            <script>
+                // Enhanced animation configuration with fluid path system
+                const config = {{
+                    text: {safe_text},
+                    penStyle: "{pen_style}",
+                    writingStyle: "{writing_style}",
+                    animationSpeed: {animation_speed},
+                    stepSize: {step_size},
+                    
+                    // Canvas elements
+                    canvas: null,
+                    ctx: null,
+                    glyphCanvas: null,
+                    glyphCtx: null,
+                    maskCanvas: null,
+                    maskCtx: null,
+                    
+                    // Animation state
+                    isAnimating: false,
+                    isPaused: false,
+                    currentCharIndex: 0,
+                    currentPointIndex: 0,
+                    
+                    // Font and layout
+                    font: null,
+                    fontSize: 120,
+                    characters: [],
+                    scrollContainer: null,
+                    canvasWidth: 2400,
+                    canvasHeight: 400,
+                    
+                    // Fluid path settings
+                    revealMode: 'ink-mask',
+                    nibRadius: 0,
+                    inkColor: '#2c3e50',
+                    
+                    // Animation state
+                    penX: 0,
+                    penY: 0,
+                    penPressure: 1.0,
+                    penSpeed: 0,
+                    animationFrame: null,
+                    
+                    // Performance tracking
+                    lastFrameTime: 0,
+                    frameCount: 0
+                }};
+
+                // Load font and initialize
+                opentype.load('https://fonts.gstatic.com/s/notosansethiopic/v49/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK6Dj.ttf', function (err, font) {{
+                    if (err) {{
+                        console.error('Font loading error:', err);
+                        document.getElementById('status').textContent = 'Error loading font. Using fallback.';
+                        initWithoutFont();
+                    }} else {{
+                        config.font = font;
+                        document.getElementById('status').textContent = 'Font loaded successfully - Ready to animate!';
+                        initCanvas();
+                        prepareCharacterPaths();
+                    }}
+                }});
+                
+                // Initialize without font (fallback)
+                function initWithoutFont() {{
+                    config.font = null;
+                    initCanvas();
+                    prepareCharacterPaths();
+                }}
+                
+                // Initialize canvas system
+                function initCanvas() {{
+                    config.canvas = document.getElementById('animationCanvas');
+                    config.scrollContainer = document.getElementById('scrollContainer');
+                    
+                    // Calculate optimal canvas dimensions
+                    const textLength = config.text.length;
+                    const estimatedWidth = Math.max(900, textLength * 130);
+                    config.canvasWidth = estimatedWidth;
+                    config.canvas.width = config.canvasWidth;
+                    config.canvas.height = config.canvasHeight;
+                    config.ctx = config.canvas.getContext('2d');
+                    
+                    // Create offscreen canvases for compositing
+                    config.glyphCanvas = document.createElement('canvas');
+                    config.glyphCanvas.width = config.canvasWidth;
+                    config.glyphCanvas.height = config.canvasHeight;
+                    config.glyphCtx = config.glyphCanvas.getContext('2d');
+                    
+                    config.maskCanvas = document.createElement('canvas');
+                    config.maskCanvas.width = config.canvasWidth;
+                    config.maskCanvas.height = config.canvasHeight;
+                    config.maskCtx = config.maskCanvas.getContext('2d');
+                    
+                    // Configure rendering contexts for quality
+                    [config.ctx, config.glyphCtx, config.maskCtx].forEach(ctx => {{
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                    }});
+                    
+                    // Calculate nib size based on font size
+                    config.nibRadius = config.fontSize * 0.04;
+                    
+                    config.scrollContainer.scrollLeft = 0;
+                }}
+
+                // Prepare character paths using fluid continuous path system
+                function prepareCharacterPaths() {{
+                    const padding = 120;
+                    const baseY = config.canvasHeight / 2 + config.fontSize / 4;
+                    let currentX = padding;
+                    
+                    config.characters = [];
+                    
+                    // Clear and prepare glyph canvas
+                    config.glyphCtx.fillStyle = 'white';
+                    config.glyphCtx.fillRect(0, 0, config.canvasWidth, config.canvasHeight);
+                    
+                    for (let i = 0; i < config.text.length; i++) {{
+                        const char = config.text[i];
+                        
+                        if (char === ' ') {{
+                            const spaceWidth = config.font ? 
+                                config.font.getAdvanceWidth(' ', config.fontSize) : 
+                                config.fontSize * 0.3;
+                            currentX += spaceWidth;
+                            config.characters.push({{
+                                char: ' ',
+                                type: 'space',
+                                x: currentX,
+                                y: baseY,
+                                width: spaceWidth,
+                                points: [] // No drawing points for spaces
+                            }});
+                            continue;
+                        }}
+                        
+                        // Render glyph to offscreen canvas
+                        if (config.font) {{
+                            config.glyphCtx.font = `${{config.fontSize}}px 'Noto Sans Ethiopic'`;
+                        }} else {{
+                            config.glyphCtx.font = `${{config.fontSize}}px 'Noto Sans Ethiopic', serif`;
+                        }}
+                        config.glyphCtx.fillStyle = config.inkColor;
+                        config.glyphCtx.fillText(char, currentX, baseY);
+                        
+                        // Generate continuous path for character
+                        const continuousPath = generateContinuousPath(char, currentX, baseY);
+                        
+                        config.characters.push({{
+                            char: char,
+                            type: 'character',
+                            x: currentX,
+                            y: baseY,
+                            points: continuousPath
+                        }});
+                        
+                        // Advance to next character position
+                        const charWidth = config.font ? 
+                            config.font.getAdvanceWidth(char, config.fontSize) : 
+                            config.fontSize * 0.7;
+                        currentX += charWidth;
+                    }}
+                    
+                    updateStatus(`Prepared ${{config.characters.length}} characters with continuous paths`);
+                }}
+
+                // Generate continuous path for a character (CORE FLUID ALGORITHM)
+                function generateContinuousPath(char, offsetX, offsetY) {{
+                    if (!config.font) {{
+                        // Fallback: simple path for when font is not available
+                        return generateFallbackPath(char, offsetX, offsetY);
+                    }}
+                    
+                    try {{
+                        const fontPath = config.font.getPath(char, offsetX, offsetY, config.fontSize);
+                        return convertToFluidPath(fontPath, offsetX, offsetY);
+                    }} catch (error) {{
+                        console.warn(`Error generating path for '${{char}}':`, error);
+                        return generateFallbackPath(char, offsetX, offsetY);
+                    }}
+                }}
+
+                // Convert OpenType path to fluid continuous path
+                function convertToFluidPath(path, offsetX, offsetY) {{
+                    const contours = extractPathContours(path);
+                    if (contours.length === 0) return [];
+                    
+                    // Find optimal entry point (usually leftmost)
+                    const entryPoint = findOptimalEntryPoint(contours);
+                    
+                    // Create continuous path by connecting contours intelligently
+                    const fluidPath = createFluidContourPath(contours, entryPoint);
+                    
+                    // Resample path at fixed step size for smooth animation
+                    return resamplePath(fluidPath, config.stepSize);
+                }}
+
+                // Extract contours from OpenType path commands
+                function extractPathContours(path) {{
+                    const contours = [];
+                    let currentContour = [];
+                    
+                    for (const cmd of path.commands) {{
+                        switch (cmd.type) {{
+                            case 'M': // MoveTo
+                                if (currentContour.length > 0) {{
+                                    contours.push([...currentContour]);
+                                }}
+                                currentContour = [{{x: cmd.x, y: cmd.y}}];
+                                break;
+                                
+                            case 'L': // LineTo
+                                currentContour.push({{x: cmd.x, y: cmd.y}});
+                                break;
+                                
+                            case 'Q': // Quadratic Bezier
+                                const qStart = currentContour[currentContour.length - 1];
+                                const qCurve = sampleQuadraticBezier(qStart, {{x: cmd.x1, y: cmd.y1}}, {{x: cmd.x, y: cmd.y}}, 0.1);
+                                currentContour.push(...qCurve.slice(1)); // Skip first point (duplicate)
+                                break;
+                                
+                            case 'C': // Cubic Bezier
+                                const cStart = currentContour[currentContour.length - 1];
+                                const cCurve = sampleCubicBezier(cStart, {{x: cmd.x1, y: cmd.y1}}, {{x: cmd.x2, y: cmd.y2}}, {{x: cmd.x, y: cmd.y}}, 0.1);
+                                currentContour.push(...cCurve.slice(1)); // Skip first point (duplicate)
+                                break;
+                                
+                            case 'Z': // ClosePath
+                                if (currentContour.length > 0) {{
+                                    contours.push([...currentContour]);
+                                    currentContour = [];
+                                }}
+                                break;
+                        }}
+                    }}
+                    
+                    if (currentContour.length > 0) {{
+                        contours.push(currentContour);
+                    }}
+                    
+                    return contours;
+                }}
+
+                // Sample quadratic Bezier curve
+                function sampleQuadraticBezier(p0, p1, p2, step) {{
+                    const points = [];
+                    for (let t = 0; t <= 1; t += step) {{
+                        const x = Math.pow(1-t, 2) * p0.x + 2*(1-t)*t * p1.x + Math.pow(t, 2) * p2.x;
+                        const y = Math.pow(1-t, 2) * p0.y + 2*(1-t)*t * p1.y + Math.pow(t, 2) * p2.y;
+                        points.push({{x, y}});
+                    }}
+                    return points;
+                }}
+
+                // Sample cubic Bezier curve
+                function sampleCubicBezier(p0, p1, p2, p3, step) {{
+                    const points = [];
+                    for (let t = 0; t <= 1; t += step) {{
+                        const x = Math.pow(1-t, 3) * p0.x + 3 * Math.pow(1-t, 2) * t * p1.x + 
+                                3 * (1-t) * Math.pow(t, 2) * p2.x + Math.pow(t, 3) * p3.x;
+                        const y = Math.pow(1-t, 3) * p0.y + 3 * Math.pow(1-t, 2) * t * p1.y + 
+                                3 * (1-t) * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
+                        points.push({{x, y}});
+                    }}
+                    return points;
+                }}
+
+                // Find optimal entry point for writing
+                function findOptimalEntryPoint(contours) {{
+                    if (contours.length === 0) return null;
+                    
+                    let leftmostPoint = null;
+                    let minX = Infinity;
+                    
+                    contours.forEach((contour, contourIndex) => {{
+                        contour.forEach((point, pointIndex) => {{
+                            if (point.x < minX) {{
+                                minX = point.x;
+                                leftmostPoint = {{contourIndex, pointIndex, point}};
+                            }}
+                        }});
+                    }});
+                    
+                    return leftmostPoint;
+                }}
+
+                // Create fluid path by intelligently connecting contours
+                function createFluidContourPath(contours, entryPoint) {{
+                    if (!entryPoint || contours.length === 0) return [];
+                    
+                    const fluidPath = [];
+                    const processedContours = new Set();
+                    
+                    // Start with entry contour
+                    const startContour = contours[entryPoint.contourIndex];
+                    const reorderedStartContour = reorderContourFromPoint(startContour, entryPoint.pointIndex);
+                    fluidPath.push(...reorderedStartContour);
+                    processedContours.add(entryPoint.contourIndex);
+                    
+                    // Connect remaining contours using shortest path
+                    while (processedContours.size < contours.length) {{
+                        const lastPoint = fluidPath[fluidPath.length - 1];
+                        let nearestContour = null;
+                        let nearestDistance = Infinity;
+                        let nearestStartIndex = 0;
+                        
+                        contours.forEach((contour, index) => {{
+                            if (processedContours.has(index)) return;
+                            
+                            contour.forEach((point, pointIndex) => {{
+                                const distance = Math.sqrt(
+                                    Math.pow(point.x - lastPoint.x, 2) + 
+                                    Math.pow(point.y - lastPoint.y, 2)
+                                );
+                                if (distance < nearestDistance) {{
+                                    nearestDistance = distance;
+                                    nearestContour = index;
+                                    nearestStartIndex = pointIndex;
+                                }}
+                            }});
+                        }});
+                        
+                        if (nearestContour !== null) {{
+                            // Add connecting line if distance is significant
+                            if (nearestDistance > config.stepSize * 2) {{
+                                const connectPoint = contours[nearestContour][nearestStartIndex];
+                                fluidPath.push(...interpolatePoints(lastPoint, connectPoint, config.stepSize));
+                            }}
+                            
+                            // Add reordered contour
+                            const nextContour = reorderContourFromPoint(contours[nearestContour], nearestStartIndex);
+                            fluidPath.push(...nextContour);
+                            processedContours.add(nearestContour);
+                        }} else {{
+                            break; // Safety break
+                        }}
+                    }}
+                    
+                    return fluidPath;
+                }}
+
+                // Reorder contour points starting from specific index
+                function reorderContourFromPoint(contour, startIndex) {{
+                    if (startIndex === 0) return [...contour];
+                    return [...contour.slice(startIndex), ...contour.slice(0, startIndex)];
+                }}
+
+                // Interpolate points between two locations
+                function interpolatePoints(start, end, stepSize) {{
+                    const points = [];
+                    const distance = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
+                    const steps = Math.ceil(distance / stepSize);
+                    
+                    for (let i = 1; i <= steps; i++) {{
+                        const t = i / steps;
+                        points.push({{
+                            x: start.x + (end.x - start.x) * t,
+                            y: start.y + (end.y - start.y) * t
+                        }});
+                    }}
+                    
+                    return points;
+                }}
+
+                // Resample path at fixed step size
+                function resamplePath(path, stepSize) {{
+                    if (path.length < 2) return path;
+                    
+                    const resampled = [path[0]];
+                    let currentDistance = 0;
+                    
+                    for (let i = 1; i < path.length; i++) {{
+                        const prev = path[i - 1];
+                        const curr = path[i];
+                        const segmentLength = Math.sqrt(
+                            Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2)
+                        );
+                        
+                        currentDistance += segmentLength;
+                        
+                        while (currentDistance >= stepSize) {{
+                            const t = (stepSize - (currentDistance - segmentLength)) / segmentLength;
+                            const interpolated = {{
+                                x: prev.x + (curr.x - prev.x) * t,
+                                y: prev.y + (curr.y - prev.y) * t
+                            }};
+                            resampled.push(interpolated);
+                            currentDistance -= stepSize;
+                        }}
+                    }}
+                    
+                    // Always include the last point
+                    if (path.length > 0) {{
+                        resampled.push(path[path.length - 1]);
+                    }}
+                    
+                    return resampled;
+                }}
+
+                // Generate fallback path when font is not available
+                function generateFallbackPath(char, offsetX, offsetY) {{
+                    const charWidth = config.fontSize * 0.6;
+                    const charHeight = config.fontSize * 0.8;
+                    
+                    // Simple rectangular path as fallback
+                    return [
+                        {{x: offsetX, y: offsetY - charHeight * 0.7}},
+                        {{x: offsetX + charWidth, y: offsetY - charHeight * 0.7}},
+                        {{x: offsetX + charWidth, y: offsetY}},
+                        {{x: offsetX, y: offsetY}},
+                        {{x: offsetX, y: offsetY - charHeight * 0.7}}
+                    ];
+                }}
+
+                // Enhanced nib painting with pressure variation
+                function paintNib(x, y, pressure = 1.0) {{
+                    config.maskCtx.save();
+                    config.maskCtx.translate(x, y);
+                    
+                    const radius = config.nibRadius * pressure;
+                    
+                    if (config.penStyle === "Brush") {{
+                        // Brush-like nib with texture
+                        const gradient = config.maskCtx.createRadialGradient(0, 0, 0, 0, 0, radius);
+                        gradient.addColorStop(0, 'black');
+                        gradient.addColorStop(0.7, 'rgba(0,0,0,0.8)');
+                        gradient.addColorStop(1, 'rgba(0,0,0,0.3)');
+                        config.maskCtx.fillStyle = gradient;
+                    }} else {{
+                        config.maskCtx.fillStyle = 'black';
+                    }}
+                    
+                    config.maskCtx.beginPath();
+                    config.maskCtx.arc(0, 0, radius, 0, Math.PI * 2);
+                    config.maskCtx.fill();
+                    
+                    config.maskCtx.restore();
+                }}
+
+                // Enhanced pen rendering
+                function drawPen(x, y, angle = 0, pressure = 1.0) {{
+                    const ctx = config.ctx;
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(angle);
+                    
+                    const scale = 0.8 + pressure * 0.4; // Pen size varies with pressure
+                    ctx.scale(scale, scale);
+                    
+                    // Pen shadow
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                    ctx.fillRect(-4, 4, 8, 35);
+                    
+                    // Pen body gradient
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 30);
+                    gradient.addColorStop(0, '#4169E1');
+                    gradient.addColorStop(0.5, '#6495ED');
+                    gradient.addColorStop(1, '#1E3A8A');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(-3.5, 0, 7, 30);
+                    
+                    // Pen grip
+                    ctx.fillStyle = '#696969';
+                    ctx.fillRect(-4, 10, 8, 10);
+                    
+                    // Pen tip
+                    ctx.fillStyle = '#000080';
+                    ctx.beginPath();
+                    ctx.arc(0, -2, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Highlight
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+                    ctx.fillRect(-1, 2, 2, 15);
+                    
+                    ctx.restore();
+                }}
+
+                // Auto-scroll to follow pen movement
+                function scrollToPosition(x) {{
+                    if (!config.scrollContainer) return;
+                    
+                    const containerWidth = config.scrollContainer.clientWidth;
+                    const scrollLeft = config.scrollContainer.scrollLeft;
+                    const scrollRight = scrollLeft + containerWidth;
+                    const padding = 120;
+                    
+                    if (x < scrollLeft + padding) {{
+                        config.scrollContainer.scrollLeft = Math.max(0, x - padding);
+                    }} else if (x > scrollRight - padding) {{
+                        config.scrollContainer.scrollLeft = x - containerWidth + padding;
+                    }}
+                }}
+
+                // Composite frame using mask system
+                function compositeFrame() {{
+                    const ctx = config.ctx;
+                    
+                    // Clear main canvas
+                    ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+                    
+                    // Draw paper background
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+                    
+                    // Draw filled glyph layer
+                    ctx.drawImage(config.glyphCanvas, 0, 0);
+                    
+                    // Apply ink mask (reveal only where ink has been painted)
+                    ctx.globalCompositeOperation = 'destination-in';
+                    ctx.drawImage(config.maskCanvas, 0, 0);
+                    ctx.globalCompositeOperation = 'source-over';
+                    
+                    // Draw pen at current position
+                    if (config.isAnimating) {{
+                        drawPen(config.penX, config.penY - 40, 0, config.penPressure);
+                    }}
+                }}
+
+                // Calculate pen pressure based on speed and position
+                function calculatePenPressure(speed, pointIndex, totalPoints) {{
+                    // Base pressure
+                    let pressure = 1.0;
+                    
+                    // Vary pressure based on speed (slower = more pressure)
+                    if (speed > 0) {{
+                        pressure *= Math.max(0.5, 2.0 - speed / 10);
+                    }}
+                    
+                    // Slight pressure variation at start and end of strokes
+                    const progress = pointIndex / totalPoints;
+                    if (progress < 0.1) {{
+                        pressure *= 0.7 + progress * 3; // Fade in
+                    }} else if (progress > 0.9) {{
+                        pressure *= 0.7 + (1 - progress) * 3; // Fade out
+                    }}
+                    
+                    // Add subtle random variation
+                    pressure *= 0.9 + Math.random() * 0.2;
+                    
+                    return Math.max(0.3, Math.min(1.5, pressure));
+                }}
+
+                // Control functions
+                function startAnimation() {{
+                    if (config.isAnimating) return;
+                    
+                    resetAnimationState();
+                    config.isAnimating = true;
+                    config.isPaused = false;
+                    
+                    // Clear mask canvas
+                    config.maskCtx.clearRect(0, 0, config.canvasWidth, config.canvasHeight);
+                    
+                    // Update UI
+                    document.getElementById('startBtn').disabled = true;
+                    document.getElementById('pauseBtn').disabled = false;
+                    document.getElementById('resetBtn').disabled = true;
+                    
+                    updateStatus('Animation starting...');
+                    
+                    // Start animation loop
+                    config.lastFrameTime = performance.now();
+                    animateNextFrame();
+                }}
+
+                function togglePause() {{
+                    if (!config.isAnimating) return;
+                    
+                    config.isPaused = !config.isPaused;
+                    const pauseBtn = document.getElementById('pauseBtn');
+                    
+                    if (config.isPaused) {{
+                        pauseBtn.textContent = '▶️ Resume';
+                        updateStatus('Animation paused');
+                        if (config.animationFrame) {{
+                            cancelAnimationFrame(config.animationFrame);
+                        }}
+                    }} else {{
+                        pauseBtn.textContent = '⏸️ Pause';
+                        updateStatus('Animation resumed');
+                        config.lastFrameTime = performance.now();
+                        animateNextFrame();
+                    }}
+                }}
+
+                function resetAnimation() {{
+                    // Stop current animation
+                    config.isAnimating = false;
+                    config.isPaused = false;
+                    if (config.animationFrame) {{
+                        cancelAnimationFrame(config.animationFrame);
+                    }}
+                    
+                    // Reset animation state
+                    resetAnimationState();
+                    
+                    // Clear canvases
+                    config.ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+                    config.maskCtx.clearRect(0, 0, config.canvasWidth, config.canvasHeight);
+                    
+                    // Reset UI
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('pauseBtn').disabled = true;
+                    document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+                    document.getElementById('resetBtn').disabled = false;
+                    document.getElementById('progressFill').style.width = '0%';
+                    
+                    // Reset scroll position
+                    config.scrollContainer.scrollLeft = 0;
+                    
+                    updateStatus('Ready to start animation');
+                }}
+
+                function resetAnimationState() {{
+                    config.currentCharIndex = 0;
+                    config.currentPointIndex = 0;
+                    config.penX = 0;
+                    config.penY = 0;
+                    config.penPressure = 1.0;
+                    config.penSpeed = 0;
+                    config.frameCount = 0;
+                }}
+
+                // Main animation loop with enhanced fluid movement
+                function animateNextFrame() {{
+                    if (!config.isAnimating || config.isPaused) return;
+                    
+                    const currentTime = performance.now();
+                    const deltaTime = currentTime - config.lastFrameTime;
+                    config.lastFrameTime = currentTime;
+                    config.frameCount++;
+                    
+                    // Check if animation is complete
+                    if (config.currentCharIndex >= config.characters.length) {{
+                        completeAnimation();
+                        return;
+                    }}
+                    
+                    const character = config.characters[config.currentCharIndex];
+                    
+                    // Update progress
+                    const totalPoints = config.characters.reduce((sum, char) => sum + char.points.length, 0);
+                    const currentPoints = config.characters.slice(0, config.currentCharIndex).reduce((sum, char) => sum + char.points.length, 0) + config.currentPointIndex;
+                    const progress = totalPoints > 0 ? (currentPoints / totalPoints) * 100 : 0;
+                    document.getElementById('progressFill').style.width = progress + '%';
+                    
+                    if (character.type === 'space') {{
+                        // Handle space - quick movement without drawing
+                        config.penX = character.x;
+                        config.penY = character.y;
+                        scrollToPosition(config.penX);
+                        compositeFrame();
+                        
+                        setTimeout(() => {{
+                            config.currentCharIndex++;
+                            config.currentPointIndex = 0;
+                            config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        }}, 200 / config.animationSpeed);
+                        return;
+                    }}
+                    
+                    // Handle character with continuous path
+                    if (config.currentPointIndex >= character.points.length) {{
+                        // Move to next character
+                        config.currentCharIndex++;
+                        config.currentPointIndex = 0;
+                        setTimeout(() => {{
+                            config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        }}, 100 / config.animationSpeed);
+                        return;
+                    }}
+                    
+                    // Get current point
+                    const point = character.points[config.currentPointIndex];
+                    if (!point) {{
+                        config.currentPointIndex++;
+                        config.animationFrame = requestAnimationFrame(animateNextFrame);
+                        return;
+                    }}
+                    
+                    // Calculate pen speed for pressure variation
+                    if (config.currentPointIndex > 0) {{
+                        const prevPoint = character.points[config.currentPointIndex - 1];
+                        config.penSpeed = Math.sqrt(
+                            Math.pow(point.x - prevPoint.x, 2) + 
+                            Math.pow(point.y - prevPoint.y, 2)
+                        );
+                    }}
+                    
+                    // Update pen position and pressure
+                    config.penX = point.x;
+                    config.penY = point.y;
+                    config.penPressure = calculatePenPressure(config.penSpeed, config.currentPointIndex, character.points.length);
+                    
+                    // Paint ink at current position
+                    paintNib(config.penX, config.penY, config.penPressure);
+                    
+                    // Render frame
+                    compositeFrame();
+                    scrollToPosition(config.penX);
+                    
+                    config.currentPointIndex++;
+                    
+                    // Schedule next frame with dynamic timing
+                    const baseDelay = 20; // Base delay in ms
+                    const speedAdjustedDelay = Math.max(5, baseDelay / config.animationSpeed);
+                    
+                    setTimeout(() => {{
+                        config.animationFrame = requestAnimationFrame(animateNextFrame);
+                    }}, speedAdjustedDelay);
+                }}
+
+                function completeAnimation() {{
+                    config.isAnimating = false;
+                    
+                    // Update UI
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('pauseBtn').disabled = true;
+                    document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+                    document.getElementById('resetBtn').disabled = false;
+                    document.getElementById('progressFill').style.width = '100%';
+                    
+                    updateStatus(`Animation complete! (${{config.frameCount}} frames rendered)`);
+                    
+                    // Final render without pen
+                    config.ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+                    config.ctx.fillStyle = 'white';
+                    config.ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+                    config.ctx.drawImage(config.glyphCanvas, 0, 0);
+                    config.ctx.globalCompositeOperation = 'destination-in';
+                    config.ctx.drawImage(config.maskCanvas, 0, 0);
+                    config.ctx.globalCompositeOperation = 'source-over';
+                }}
+
+                function updateStatus(message) {{
+                    document.getElementById('status').textContent = message;
+                }}
+            </script>
+        </body>
+        </html>
+    """
+    return html_content
+
+
+# Example usage and additional utility functions
+def create_demo_animations():
+    """Create several demo animations with different settings"""
+    
+    demos = [
+        {
+            'text': 'ሰላም ዓለም',  # Hello World in Tigrinya
+            'pen_style': 'Realistic',
+            'writing_style': 'Natural',
+            'speed': 3.0,
+            'step_size': 2
+        },
+        {
+            'text': 'Beautiful Script',
+            'pen_style': 'Brush',
+            'writing_style': 'Cursive',
+            'speed': 2.5,
+            'step_size': 1
+        },
+        {
+            'text': 'Fast Writing Demo',
+            'pen_style': 'Simple',
+            'writing_style': 'Formal',
+            'speed': 6.0,
+            'step_size': 3
+        }
+    ]
+    
+    for i, demo in enumerate(demos):
+        html_content = create_fluid_handwriting_animation(
+            text=demo['text'],
+            pen_style=demo['pen_style'],
+            writing_style=demo['writing_style'],
+            animation_speed=demo['speed'],
+            step_size=demo['step_size']
+        )
+        
+        filename = f"handwriting_demo_{i+1}.html"
+        with open(filename, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+        
+        print(f"Created {filename}: {demo['text']} ({demo['pen_style']}, {demo['speed']}x speed)")
+
 def main():
     # Page configuration
     st.set_page_config(
