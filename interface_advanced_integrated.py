@@ -1782,7 +1782,7 @@ def quiz_page():
             "Choose the correct translation:",
             question['options'],
             disabled=stats['answered'],
-            key=f"quiz_answer_{stats['total']}"
+            key=f"quiz_answer_{question['word']}"
         )
         
         if not stats['answered']:
