@@ -3,6 +3,8 @@
 # Vowel system: e=0, ə=5, E=4
 # Fixed phonetic mapping for proper transliteration
 # ============================================================
+# CLIENT TRANSLATION V2
+
 
 import re
 import gradio as gr
