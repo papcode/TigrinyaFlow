@@ -11,6 +11,8 @@ import random
 import time
 from typing import Optional, Dict, List
 import streamlit.components.v1 as components
+import base64
+
 
 # Enhanced vocabulary dictionary with categories
 VOCAB_CATEGORIES = {
@@ -3095,7 +3097,7 @@ def main():
     # Page configuration
     st.set_page_config(
         page_title="Tigrinya Vocabulary Learning App",
-        page_icon="📚",
+        page_icon="C:/WORKSPACE/AMAL/trigano/images/logo.png",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -3115,9 +3117,22 @@ def main():
     </style>
     """, unsafe_allow_html=True)
     
-    # Main title
-    st.title("📚 English-Tigrinya Vocabulary Learning App")
-    st.markdown("*Learn Tigrinya vocabulary with visual aids, interactive quizzes, and handwriting animations*")
+    def get_base64_image(image_path):
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+
+    # Get base64 string
+    img_base64 = get_base64_image("images/logo.png")
+
+    st.markdown(
+        f"""
+        <h1 style='display: flex; align-items: center; gap: 10px;'>
+            <img src='data:image/png;base64,{img_base64}' width='40'>
+            English–Tigrinya Vocabulary Learning App
+        </h1>
+        """,
+        unsafe_allow_html=True
+    )
     
     # Sidebar navigation
     st.sidebar.title("Navigation")
