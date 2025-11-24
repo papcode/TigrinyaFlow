@@ -1,5 +1,9 @@
-streamlit
-Pillow
-requests
-deep_translator
-gradio
+streamlit>=1.28.0
+Pillow>=9.0.0
+requests>=2.25.0
+deep_translator>=1.11.0
+gradio>=3.0.0
+pandas>=1.3.0
+plotly>=5.0.0
+numpy>=1.21.0
+opentype>=0.2.0
