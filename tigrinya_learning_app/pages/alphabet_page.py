@@ -1,586 +1,751 @@
 """
-Alphabet page module
-Provides Geʽez/Tigrinya alphabet display with handwriting animations
+Alphabet page module - Enhanced with auto-starting handwriting animations
+Replicates the exact flow from interface_reference.py for proper character animation
 """
 
+import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 from utils.image_loader import ImageLoader
 
-from clientTranslation import alef_row, feedel_rows
+from clientTranslation import alef_row, feedel_rows, geez_to_latin_syllable
 
 
-def create_handwriting_animation_html(character, char_name=""):
-    """Create a simple handwriting animation for a character"""
+# Create TIGRINYA_ALPHABETS data structure from existing feedel_rows and alef_row
+def create_tigrinya_alphabets():
+    """Create the alphabet data structure matching interface_reference.py format"""
+    tigrinya_alphabets = {}
+
+    # Add alef row (vowel-only characters)
+    vowel_names = ["a", "u", "i", "ā", "ē", "ə", "o"]
+    for i, char in enumerate(alef_row):
+        tigrinya_alphabets[char] = {
+            "forms": [char],  # Vowel characters have only one form
+            "phonetic": [vowel_names[i]],
+        }
+
+    # Add consonant rows
+    vowel_sounds = ["e", "u", "i", "a", "ē", "ə", "o"]
+    for consonant, forms in feedel_rows.items():
+        # Use the first form (6th order - base form) as the key
+        base_char = forms[5]  # 6th form is the base consonant
+        tigrinya_alphabets[base_char] = {
+            "forms": list(forms),
+            "phonetic": [f"{consonant}{vowel}" for vowel in vowel_sounds],
+        }
+
+    return tigrinya_alphabets
+
+
+TIGRINYA_ALPHABETS = create_tigrinya_alphabets()
+
+
+def create_auto_start_handwriting_html(
+    text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0
+):
+    """
+    Create HTML5 Canvas-based fluid handwriting animation with auto-start
+    Exact copy from interface_reference.py
+    """
+    import json
+
+    safe_text = json.dumps(text)
+
     html_content = f"""
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <meta charset="UTF-8">
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
-            body {{
-                margin: 0;
-                padding: 20px;
-                font-family: 'Noto Sans Ethiopic', 'Ebrima', 'Nyala', sans-serif;
-                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                min-height: 400px;
-            }}
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Fluid Handwriting Animation</title>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
 
-            .character-display {{
-                font-size: 8em;
-                text-align: center;
-                color: #2c3e50;
-                margin: 20px;
-                text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
-                animation: writeIn 2s ease-in-out;
-            }}
+                body {{
+                    margin: 0;
+                    padding: 20px;
+                    font-family: 'Noto Sans Ethiopic', 'Ebrima', 'Nyala', sans-serif;
+                    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }}
 
-            .character-info {{
-                font-size: 1.5em;
-                text-align: center;
-                color: #666;
-                margin: 10px;
-                background: rgba(255,255,255,0.8);
-                padding: 15px;
-                border-radius: 10px;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            }}
+                .container {{
+                    max-width: 1200px;
+                    width: 100%;
+                    background: white;
+                    border-radius: 15px;
+                    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+                    padding: 40px;
+                    margin: 20px;
+                }}
 
-            @keyframes writeIn {{
-                0% {{
-                    opacity: 0;
-                    transform: scale(0.5) rotate(-5deg);
+                .text-display {{
+                    font-size: 1.6em;
+                    text-align: center;
+                    margin: 20px 0;
+                    padding: 20px;
+                    background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
+                    border-radius: 12px;
+                    border: 2px solid rgba(102, 126, 234, 0.2);
+                    color: #2c3e50;
+                    font-weight: 500;
                 }}
-                50% {{
-                    opacity: 0.7;
-                    transform: scale(1.1) rotate(2deg);
-                }}
-                100% {{
-                    opacity: 1;
-                    transform: scale(1) rotate(0deg);
-                }}
-            }}
 
-            .stroke-animation {{
-                animation: strokeDraw 3s ease-in-out infinite;
-            }}
+                .animation-area {{
+                    position: relative;
+                    background: #fefefe;
+                    border: 2px solid #e1e8ed;
+                    border-radius: 15px;
+                    margin: 25px 0;
+                    min-height: 350px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 15px;
+                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+                }}
 
-            @keyframes strokeDraw {{
-                0%, 100% {{
-                    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                .scroll-container {{
+                    width: 100%;
+                    max-width: 1000px;
+                    max-height: 450px;
+                    overflow: auto;
+                    border-radius: 10px;
+                    border: 1px solid #ddd;
+                    background: white;
+                    position: relative;
+                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
                 }}
-                50% {{
-                    text-shadow: 0 0 20px rgba(102,126,234,0.8), 2px 2px 4px rgba(0,0,0,0.2);
+
+                #animationCanvas {{
+                    display: block;
+                    background: white;
+                    border-radius: 8px;
                 }}
-            }}
-        </style>
-    </head>
-    <body>
-        <div class="character-display stroke-animation">{character}</div>
-        <div class="character-info">
-            <strong>{char_name}</strong><br>
-            Click to see handwriting animation
-        </div>
-        <script>
-            document.querySelector('.character-display').addEventListener('click', function() {{
-                this.style.animation = 'none';
-                setTimeout(() => {{
-                    this.style.animation = 'writeIn 2s ease-in-out, strokeDraw 3s ease-in-out infinite';
-                }}, 100);
-            }});
-        </script>
-    </body>
-    </html>
+
+                .progress-bar {{
+                    width: 100%;
+                    height: 8px;
+                    background: #ecf0f1;
+                    border-radius: 4px;
+                    overflow: hidden;
+                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+                    margin: 20px 0;
+                }}
+
+                .progress-fill {{
+                    height: 100%;
+                    background: linear-gradient(90deg, #667eea, #764ba2);
+                    border-radius: 4px;
+                    width: 0%;
+                    transition: width 0.3s ease;
+                    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+                }}
+
+                .status {{
+                    text-align: center;
+                    margin: 15px 0;
+                    font-weight: 600;
+                    font-size: 1.1em;
+                    color: #2c3e50;
+                }}
+
+                .scroll-container::-webkit-scrollbar {{
+                    width: 10px;
+                    height: 10px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-track {{
+                    background: #f1f1f1;
+                    border-radius: 5px;
+                }}
+
+                .scroll-container::-webkit-scrollbar-thumb {{
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    border-radius: 5px;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="text-display">
+                    <strong>Animating:</strong> {text}
+                </div>
+
+                <div class="animation-area">
+                    <div class="scroll-container" id="scrollContainer">
+                        <canvas id="animationCanvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="status" id="status">Loading font and preparing animation...</div>
+            </div>
+
+            <script>
+                const config = {{
+                    text: {safe_text},
+                    penStyle: "{pen_style}",
+                    animationSpeed: {animation_speed},
+                    canvas: null,
+                    ctx: null,
+                    glyphCanvas: null,
+                    glyphCtx: null,
+                    maskCanvas: null,
+                    maskCtx: null,
+                    isAnimating: false,
+                    currentCharIndex: 0,
+                    currentPointIndex: 0,
+                    font: null,
+                    fontSize: 120,
+                    characters: [],
+                    scrollContainer: null,
+                    canvasWidth: 2400,
+                    canvasHeight: 400,
+                    nibRadius: 0,
+                    inkColor: '#2c3e50',
+                    penX: 0,
+                    penY: 0,
+                    penPressure: 1.0,
+                    animationFrame: null,
+                    lastFrameTime: 0,
+                    frameCount: 0
+                }};
+
+                // Load font and auto-start animation
+                opentype.load('https://fonts.gstatic.com/s/notosansethiopic/v49/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK6Dj.ttf', function (err, font) {{
+                    if (err) {{
+                        console.error('Font loading error:', err);
+                        document.getElementById('status').textContent = 'Using fallback font - Starting animation...';
+                        initWithoutFont();
+                        setTimeout(startAnimation, 800);
+                    }} else {{
+                        config.font = font;
+                        document.getElementById('status').textContent = 'Font loaded - Starting animation...';
+                        initCanvas();
+                        prepareCharacterPaths();
+                        setTimeout(startAnimation, 500);
+                    }}
+                }});
+
+                function initWithoutFont() {{
+                    config.font = null;
+                    initCanvas();
+                    prepareCharacterPaths();
+                }}
+
+                function initCanvas() {{
+                    config.canvas = document.getElementById('animationCanvas');
+                    config.scrollContainer = document.getElementById('scrollContainer');
+
+                    const textLength = config.text.length;
+                    const estimatedWidth = Math.max(900, textLength * 130);
+                    config.canvasWidth = estimatedWidth;
+                    config.canvas.width = config.canvasWidth;
+                    config.canvas.height = config.canvasHeight;
+                    config.ctx = config.canvas.getContext('2d');
+
+                    config.glyphCanvas = document.createElement('canvas');
+                    config.glyphCanvas.width = config.canvasWidth;
+                    config.glyphCanvas.height = config.canvasHeight;
+                    config.glyphCtx = config.glyphCanvas.getContext('2d');
+
+                    config.maskCanvas = document.createElement('canvas');
+                    config.maskCanvas.width = config.canvasWidth;
+                    config.maskCanvas.height = config.canvasHeight;
+                    config.maskCtx = config.maskCanvas.getContext('2d');
+
+                    [config.ctx, config.glyphCtx, config.maskCtx].forEach(ctx => {{
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.lineCap = 'round';
+                        ctx.lineJoin = 'round';
+                    }});
+
+                    config.nibRadius = config.fontSize * 0.04;
+                    config.scrollContainer.scrollLeft = 0;
+                }}
+
+                function prepareCharacterPaths() {{
+                    const baseY = config.canvasHeight / 2 + config.fontSize / 4;
+                    let totalTextWidth = 0;
+
+                    for (let i = 0; i < config.text.length; i++) {{
+                        const char = config.text[i];
+                        if (char === ' ') {{
+                            const spaceWidth = config.font ?
+                                config.font.getAdvanceWidth(' ', config.fontSize) :
+                                config.fontSize * 0.3;
+                            totalTextWidth += spaceWidth;
+                        }} else {{
+                            const charWidth = config.font ?
+                                config.font.getAdvanceWidth(char, config.fontSize) :
+                                config.fontSize * 0.6;
+                            totalTextWidth += charWidth;
+                        }}
+                    }}
+
+                    const padding = 50;
+                    const availableWidth = config.canvasWidth - (2 * padding);
+                    const startX = padding + (availableWidth - totalTextWidth) / 2;
+                    let currentX = Math.max(padding, startX);
+
+                    config.characters = [];
+                    config.glyphCtx.fillStyle = 'white';
+                    config.glyphCtx.fillRect(0, 0, config.canvasWidth, config.canvasHeight);
+
+                    for (let i = 0; i < config.text.length; i++) {{
+                        const char = config.text[i];
+
+                        if (char === ' ') {{
+                            const spaceWidth = config.font ?
+                                config.font.getAdvanceWidth(' ', config.fontSize) :
+                                config.fontSize * 0.3;
+                            currentX += spaceWidth;
+                            config.characters.push({{
+                                char: ' ',
+                                type: 'space',
+                                x: currentX,
+                                y: baseY,
+                                points: []
+                            }});
+                            continue;
+                        }}
+
+                        if (config.font) {{
+                            config.glyphCtx.font = `${{config.fontSize}}px 'Noto Sans Ethiopic'`;
+                        }} else {{
+                            config.glyphCtx.font = `${{config.fontSize}}px 'Noto Sans Ethiopic', serif`;
+                        }}
+                        config.glyphCtx.fillStyle = config.inkColor;
+                        config.glyphCtx.fillText(char, currentX, baseY);
+
+                        const continuousPath = generateContinuousPath(char, currentX, baseY);
+
+                        config.characters.push({{
+                            char: char,
+                            type: 'character',
+                            x: currentX,
+                            y: baseY,
+                            points: continuousPath
+                        }});
+
+                        const charWidth = config.font ?
+                            config.font.getAdvanceWidth(char, config.fontSize) :
+                            config.fontSize * 0.7;
+                        currentX += charWidth;
+                    }}
+
+                    updateStatus(`Prepared ${{config.characters.length}} characters - Starting animation...`);
+                }}
+
+                function generateContinuousPath(char, offsetX, offsetY) {{
+                    if (!config.font) {{
+                        return generateFallbackPath(char, offsetX, offsetY);
+                    }}
+
+                    try {{
+                        const fontPath = config.font.getPath(char, offsetX, offsetY, config.fontSize);
+                        return convertToFluidPath(fontPath);
+                    }} catch (error) {{
+                        return generateFallbackPath(char, offsetX, offsetY);
+                    }}
+                }}
+
+                function convertToFluidPath(path) {{
+                    const points = [];
+                    let currentPoint = null;
+
+                    for (const cmd of path.commands) {{
+                        switch (cmd.type) {{
+                            case 'M':
+                                currentPoint = {{x: cmd.x, y: cmd.y}};
+                                points.push(currentPoint);
+                                break;
+                            case 'L':
+                                points.push({{x: cmd.x, y: cmd.y}});
+                                break;
+                            case 'Q':
+                                if (currentPoint) {{
+                                    for (let t = 0.1; t <= 1; t += 0.1) {{
+                                        const x = Math.pow(1-t, 2) * currentPoint.x + 2*(1-t)*t * cmd.x1 + Math.pow(t, 2) * cmd.x;
+                                        const y = Math.pow(1-t, 2) * currentPoint.y + 2*(1-t)*t * cmd.y1 + Math.pow(t, 2) * cmd.y;
+                                        points.push({{x, y}});
+                                    }}
+                                    currentPoint = {{x: cmd.x, y: cmd.y}};
+                                }}
+                                break;
+                            case 'C':
+                                if (currentPoint) {{
+                                    for (let t = 0.1; t <= 1; t += 0.1) {{
+                                        const x = Math.pow(1-t, 3) * currentPoint.x + 3 * Math.pow(1-t, 2) * t * cmd.x1 +
+                                                3 * (1-t) * Math.pow(t, 2) * cmd.x2 + Math.pow(t, 3) * cmd.x;
+                                        const y = Math.pow(1-t, 3) * currentPoint.y + 3 * Math.pow(1-t, 2) * t * cmd.y1 +
+                                                3 * (1-t) * Math.pow(t, 2) * cmd.y2 + Math.pow(t, 3) * cmd.y;
+                                        points.push({{x, y}});
+                                    }}
+                                    currentPoint = {{x: cmd.x, y: cmd.y}};
+                                }}
+                                break;
+                        }}
+                    }}
+
+                    return points;
+                }}
+
+                function generateFallbackPath(char, offsetX, offsetY) {{
+                    const charWidth = config.fontSize * 0.6;
+                    const charHeight = config.fontSize * 0.8;
+
+                    return [
+                        {{x: offsetX, y: offsetY - charHeight * 0.7}},
+                        {{x: offsetX + charWidth, y: offsetY - charHeight * 0.7}},
+                        {{x: offsetX + charWidth, y: offsetY}},
+                        {{x: offsetX, y: offsetY}},
+                        {{x: offsetX, y: offsetY - charHeight * 0.7}}
+                    ];
+                }}
+
+                function paintNib(x, y, pressure = 1.0) {{
+                    config.maskCtx.save();
+                    config.maskCtx.translate(x, y);
+
+                    const radius = config.nibRadius * pressure;
+                    config.maskCtx.fillStyle = 'black';
+                    config.maskCtx.beginPath();
+                    config.maskCtx.arc(0, 0, radius, 0, Math.PI * 2);
+                    config.maskCtx.fill();
+
+                    config.maskCtx.restore();
+                }}
+
+                function drawPen(x, y, pressure = 1.0) {{
+                    const ctx = config.ctx;
+                    ctx.save();
+                    ctx.translate(x, y);
+
+                    const scale = 0.8 + pressure * 0.4;
+                    ctx.scale(scale, scale);
+
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+                    ctx.fillRect(-4, 4, 8, 35);
+
+                    const gradient = ctx.createLinearGradient(0, 0, 0, 30);
+                    gradient.addColorStop(0, '#4169E1');
+                    gradient.addColorStop(0.5, '#6495ED');
+                    gradient.addColorStop(1, '#1E3A8A');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(-3.5, 0, 7, 30);
+
+                    ctx.fillStyle = '#696969';
+                    ctx.fillRect(-4, 10, 8, 10);
+
+                    ctx.fillStyle = '#000080';
+                    ctx.beginPath();
+                    ctx.arc(0, -2, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.restore();
+                }}
+
+                function scrollToPosition(x) {{
+                    if (!config.scrollContainer) return;
+
+                    const containerWidth = config.scrollContainer.clientWidth;
+                    const scrollLeft = config.scrollContainer.scrollLeft;
+                    const scrollRight = scrollLeft + containerWidth;
+                    const padding = 120;
+
+                    if (x < scrollLeft + padding) {{
+                        config.scrollContainer.scrollLeft = Math.max(0, x - padding);
+                    }} else if (x > scrollRight - padding) {{
+                        config.scrollContainer.scrollLeft = x - containerWidth + padding;
+                    }}
+                }}
+
+                function compositeFrame() {{
+                    const ctx = config.ctx;
+
+                    ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
+                    ctx.fillStyle = 'white';
+                    ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
+                    ctx.drawImage(config.glyphCanvas, 0, 0);
+                    ctx.globalCompositeOperation = 'destination-in';
+                    ctx.drawImage(config.maskCanvas, 0, 0);
+                    ctx.globalCompositeOperation = 'source-over';
+
+                    if (config.isAnimating) {{
+                        drawPen(config.penX, config.penY - 40, config.penPressure);
+                    }}
+                }}
+
+                function startAnimation() {{
+                    if (config.isAnimating) return;
+
+                    config.currentCharIndex = 0;
+                    config.currentPointIndex = 0;
+                    config.isAnimating = true;
+
+                    config.maskCtx.clearRect(0, 0, config.canvasWidth, config.canvasHeight);
+                    updateStatus('Animating...');
+
+                    animateNextFrame();
+                }}
+
+                function animateNextFrame() {{
+                    if (!config.isAnimating) return;
+
+                    if (config.currentCharIndex >= config.characters.length) {{
+                        config.isAnimating = false;
+                        document.getElementById('progressFill').style.width = '100%';
+                        updateStatus('Animation complete!');
+                        compositeFrame();
+                        return;
+                    }}
+
+                    const character = config.characters[config.currentCharIndex];
+
+                    // Update progress
+                    const totalPoints = config.characters.reduce((sum, char) => sum + char.points.length, 0);
+                    const currentPoints = config.characters.slice(0, config.currentCharIndex).reduce((sum, char) => sum + char.points.length, 0) + config.currentPointIndex;
+                    const progress = totalPoints > 0 ? (currentPoints / totalPoints) * 100 : 0;
+                    document.getElementById('progressFill').style.width = progress + '%';
+
+                    if (character.type === 'space') {{
+                        config.penX = character.x;
+                        config.penY = character.y;
+                        scrollToPosition(config.penX);
+                        compositeFrame();
+
+                        setTimeout(() => {{
+                            config.currentCharIndex++;
+                            config.currentPointIndex = 0;
+                            animateNextFrame();
+                        }}, 200 / config.animationSpeed);
+                        return;
+                    }}
+
+                    if (config.currentPointIndex >= character.points.length) {{
+                        config.currentCharIndex++;
+                        config.currentPointIndex = 0;
+                        setTimeout(() => {{
+                            animateNextFrame();
+                        }}, 100 / config.animationSpeed);
+                        return;
+                    }}
+
+                    const point = character.points[config.currentPointIndex];
+                    if (!point) {{
+                        config.currentPointIndex++;
+                        animateNextFrame();
+                        return;
+                    }}
+
+                    config.penX = point.x;
+                    config.penY = point.y;
+                    config.penPressure = 0.8 + Math.random() * 0.4;
+
+                    paintNib(config.penX, config.penY, config.penPressure);
+                    compositeFrame();
+                    scrollToPosition(config.penX);
+
+                    config.currentPointIndex++;
+
+                    const delay = Math.max(5, 20 / config.animationSpeed);
+                    setTimeout(() => {{
+                        animateNextFrame();
+                    }}, delay);
+                }}
+
+                function updateStatus(message) {{
+                    document.getElementById('status').textContent = message;
+                }}
+            </script>
+        </body>
+        </html>
     """
     return html_content
 
 
-def create_character_grid(characters_dict, title="Characters", cols=7):
-    """Create a grid of characters with click handlers"""
-    st.markdown(f"### {title}")
-
-    characters = (
-        list(characters_dict.items())
-        if isinstance(characters_dict, dict)
-        else list(enumerate(characters_dict))
-    )
-
-    # Create rows
-    for i in range(0, len(characters), cols):
-        row_chars = characters[i : i + cols]
-        columns = st.columns(cols)
-
-        for j, (key, char) in enumerate(row_chars):
-            with columns[j]:
-                char_name = key if isinstance(key, str) else f"Form {key + 1}"
-
-                # Create clickable character button
-                if st.button(
-                    char,
-                    key=f"char_{title}_{i}_{j}",
-                    help=f"Click to see {char} handwriting animation",
-                ):
-                    st.session_state[f"selected_char"] = char
-                    st.session_state[f"selected_char_name"] = char_name
-
-
 def render():
-    """Main render function for alphabet page"""
-    st.subheader("✍️ ፊደላት (Alphabets) - Geʽez Script")
+    """Enhanced alphabets page with automatic handwriting animation - exact replica of interface_reference.py"""
+    st.subheader("ፊደላት (Tigrinya Alphabets)")
 
-    # Introduction
-    st.markdown("""
-    The Geʽez script (ፊደል) is used to write Tigrinya, Amharic, and other Ethiopian languages.
-    Each character represents a consonant-vowel combination. Click on any character to see its handwriting animation!
-    """)
+    # Initialize session state for selected character and animation character
+    if "selected_character" not in st.session_state:
+        st.session_state.selected_character = None
+    if "animation_character" not in st.session_state:
+        st.session_state.animation_character = None
 
-    # Create tabs for different views
-    tab1, tab2, tab3, tab4 = st.tabs(
-        ["🔤 Full Alphabet", "🎯 Character Finder", "✍️ Practice", "📚 Learning Guide"]
-    )
+    # Display alphabet grid
+    st.markdown("### Click any character to see automatic handwriting animation:")
 
-    with tab1:
-        # Alef row (vowel-only characters)
-        st.markdown("#### Vowel Characters (አ-series)")
-        vowel_names = ["a", "u", "i", "ā", "ē", "ə", "o"]
-        alef_dict = {name: char for name, char in zip(vowel_names, alef_row)}
-        create_character_grid(alef_dict, "Alef_Row", cols=7)
+    # Create alphabet grid with clickable buttons
+    cols_per_row = 7
+    alphabet_keys = list(TIGRINYA_ALPHABETS.keys())
+
+    for i in range(0, len(alphabet_keys), cols_per_row):
+        cols = st.columns(cols_per_row)
+        for j, col in enumerate(cols):
+            if i + j < len(alphabet_keys):
+                alphabet_key = alphabet_keys[i + j]
+                alphabet_data = TIGRINYA_ALPHABETS[alphabet_key]
+
+                with col:
+                    if st.button(
+                        f"{alphabet_key}",
+                        key=f"alphabet_{alphabet_key}",
+                        help=f"Click to animate {alphabet_key}",
+                        use_container_width=True,
+                    ):
+                        st.session_state.selected_character = alphabet_key
+                        st.session_state.animation_character = alphabet_key
+                        st.rerun()
+
+    # Display selected character details and animation
+    if st.session_state.selected_character:
+        selected_char = st.session_state.selected_character
+        char_data = TIGRINYA_ALPHABETS[selected_char]
 
         st.markdown("---")
 
-        # Main feedel rows
-        st.markdown("#### Consonant-Vowel Characters")
-
-        # Group characters by common consonants for better display
-        common_consonants = ["h", "l", "m", "r", "s", "t", "b", "n"]
-        special_consonants = [
-            "ḥ",
-            "x",
-            "ḫ",
-            "ʿ",
-            "š",
-            "q",
-            "ṭ",
-            "č",
-            "č̣",
-            "p",
-            "p̣",
-            "g",
-            "d",
-            "f",
-            "z",
-            "ž",
-            "y",
-            "w",
-            "j",
-            "ñ",
-            "ṣ",
-        ]
-
-        # Display common consonants first
-        st.markdown("##### Common Consonants")
-        for consonant in common_consonants:
-            if consonant in feedel_rows:
-                st.markdown(f"**{consonant.upper()} ({consonant})**")
-                vowel_forms = {
-                    f"{consonant}{vowel}": char
-                    for vowel, char in zip(
-                        ["e", "u", "i", "a", "ē", "ə", "o"], feedel_rows[consonant]
-                    )
-                }
-                create_character_grid(vowel_forms, f"feedel_{consonant}", cols=7)
-
-        # Display special characters
-        with st.expander("🔍 Special Characters & Rare Consonants", expanded=False):
-            for consonant in special_consonants:
-                if consonant in feedel_rows:
-                    st.markdown(f"**{consonant.upper()} ({consonant})**")
-                    vowel_forms = {
-                        f"{consonant}{vowel}": char
-                        for vowel, char in zip(
-                            ["e", "u", "i", "a", "ē", "ə", "o"], feedel_rows[consonant]
-                        )
-                    }
-                    create_character_grid(vowel_forms, f"special_{consonant}", cols=7)
-
-    with tab2:
-        st.markdown("### 🎯 Find and Practice Characters")
-
+        # Character information
         col1, col2 = st.columns([1, 2])
 
         with col1:
-            # Character search
-            search_method = st.radio(
-                "Search by:", ["Latin letter", "Geʽez character", "Browse all"]
+            st.markdown(
+                f"""
+            <div style='
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 30px;
+                border-radius: 15px;
+                color: white;
+                text-align: center;
+                margin: 20px 0;
+            '>
+                <h1 style='font-size: 4em; margin: 0; font-family: "Noto Sans Ethiopic", serif;'>{selected_char}</h1>
+                <h3 style='margin: 10px 0;'>Base Character</h3>
+            </div>
+            """,
+                unsafe_allow_html=True,
             )
 
-            if search_method == "Latin letter":
-                latin_input = st.text_input(
-                    "Enter Latin character(s):", placeholder="h, ha, hab..."
-                )
+            # Character forms table
+            st.markdown("#### All Forms:")
+            forms_df = []
+            for i, (form, phonetic) in enumerate(
+                zip(char_data["forms"], char_data["phonetic"])
+            ):
+                forms_df.append({"Form": form, "Sound": phonetic, "Order": i + 1})
 
-                if latin_input:
-                    # Find matching characters
-                    matches = []
-                    for cons, row in feedel_rows.items():
-                        if latin_input.lower() in cons.lower():
-                            for i, char in enumerate(row):
-                                vowel = ["e", "u", "i", "a", "ē", "ə", "o"][i]
-                                matches.append((f"{cons}{vowel}", char))
+            df = pd.DataFrame(forms_df)
+            st.dataframe(df, use_container_width=True, hide_index=True)
 
-                    if matches:
-                        st.success(f"Found {len(matches)} matches")
-                        for latin, geez in matches[:10]:  # Show first 10
-                            if st.button(f"{latin} → {geez}", key=f"match_{latin}"):
-                                st.session_state["selected_char"] = geez
-                                st.session_state["selected_char_name"] = latin
-                    else:
-                        st.warning("No matches found")
+            # Related characters or similar forms - Click to animate on same canvas
+            st.markdown("#### Related Forms - Click to animate")
+            related_forms = char_data["forms"]
+            related_phonetics = char_data["phonetic"]
 
-            elif search_method == "Geʽez character":
-                geez_input = st.text_input(
-                    "Enter Geʽez character:", placeholder="ሀ, ለ, መ..."
-                )
+            # Display related forms as buttons in a 2x2 grid
+            for i in range(0, len(related_forms), 2):
+                form_cols = st.columns(2)
 
-                if geez_input and len(geez_input) == 1:
-                    # Find character info
-                    char_found = False
-                    for cons, row in feedel_rows.items():
-                        if geez_input in row:
-                            vowel_index = row.index(geez_input)
-                            vowel = ["e", "u", "i", "a", "ē", "ə", "o"][vowel_index]
-                            st.success(f"Character: {geez_input}")
-                            st.info(f"Consonant: {cons}")
-                            st.info(f"Vowel: {vowel}")
-                            st.info(f"Romanization: {cons}{vowel}")
+                # First form in the row
+                with form_cols[0]:
+                    form = related_forms[i]
+                    phonetic = related_phonetics[i]
+                    if st.button(
+                        f"{form}",
+                        key=f"related_{form}_{selected_char}_{i}",
+                        help=f"Animate {form} ({phonetic})",
+                        use_container_width=True,
+                    ):
+                        # Set this form to be animated on main canvas
+                        st.session_state.animation_character = form
+                        st.rerun()
 
-                            if st.button("Practice this character"):
-                                st.session_state["selected_char"] = geez_input
-                                st.session_state["selected_char_name"] = (
-                                    f"{cons}{vowel}"
-                                )
-                            char_found = True
-                            break
-
-                    if not char_found and geez_input in alef_row:
-                        vowel_index = alef_row.index(geez_input)
-                        vowel = ["a", "u", "i", "ā", "ē", "ə", "o"][vowel_index]
-                        st.success(f"Vowel character: {geez_input}")
-                        st.info(f"Romanization: {vowel}")
-                        char_found = True
-
-                    if not char_found:
-                        st.warning("Character not found in the alphabet")
-
-            else:  # Browse all
-                st.markdown("**Quick Character Access:**")
-                quick_chars = ["ሀ", "ለ", "መ", "ረ", "ሰ", "ተ", "በ", "ነ"]
-                for char in quick_chars:
-                    if st.button(char, key=f"quick_{char}"):
-                        st.session_state["selected_char"] = char
-                        st.session_state["selected_char_name"] = char
+                # Second form in the row (if exists)
+                if i + 1 < len(related_forms):
+                    with form_cols[1]:
+                        form = related_forms[i + 1]
+                        phonetic = related_phonetics[i + 1]
+                        if st.button(
+                            f"{form}",
+                            key=f"related_{form}_{selected_char}_{i + 1}",
+                            help=f"Animate {form} ({phonetic})",
+                            use_container_width=True,
+                        ):
+                            # Set this form to be animated on main canvas
+                            st.session_state.animation_character = form
+                            st.rerun()
 
         with col2:
-            # Display selected character animation
-            if "selected_char" in st.session_state:
-                char = st.session_state["selected_char"]
-                char_name = st.session_state.get("selected_char_name", char)
+            # Main handwriting animation canvas
+            st.markdown("#### Handwriting Animation")
 
-                st.markdown(f"### Selected Character: {char}")
+            # Show what character is being animated
+            character_to_animate = st.session_state.get(
+                "animation_character", selected_char
+            )
 
-                # Create handwriting animation
-                animation_html = create_handwriting_animation_html(char, char_name)
-                st.components.v1.html(animation_html, height=500)
-
-                # Character information
-                st.markdown("#### Character Information")
-                st.markdown(f"**Character:** {char}")
-                st.markdown(f"**Name:** {char_name}")
-
-                # Find character in alphabet
-                for cons, row in feedel_rows.items():
-                    if char in row:
-                        vowel_index = row.index(char)
-                        vowel = ["e", "u", "i", "a", "ē", "ə", "o"][vowel_index]
-                        st.markdown(f"**Consonant:** {cons}")
-                        st.markdown(f"**Vowel:** {vowel}")
-                        st.markdown(f"**Full form:** {cons}{vowel}")
-                        break
-
-                # Show related characters (same consonant)
-                if char not in alef_row:
-                    for cons, row in feedel_rows.items():
-                        if char in row:
-                            st.markdown("#### Related Characters (same consonant)")
-                            related_dict = {
-                                f"{cons}{vowel}": c
-                                for vowel, c in zip(
-                                    ["e", "u", "i", "a", "ē", "ə", "o"], row
-                                )
-                            }
-                            create_character_grid(
-                                related_dict, f"related_{cons}", cols=7
-                            )
-                            break
+            if (
+                st.session_state.get("animation_character")
+                and st.session_state.animation_character != selected_char
+            ):
+                st.info(f"Now animating: {st.session_state.animation_character}")
             else:
-                st.info(
-                    "Select a character from the left panel to see its handwriting animation"
-                )
+                st.info("Animation starting automatically...")
 
-    with tab3:
-        st.markdown("### ✍️ Handwriting Practice")
+            # Generate and display handwriting animation that auto-starts
+            animation_html = create_auto_start_handwriting_html(
+                text=character_to_animate,
+                pen_style="Realistic",
+                writing_style="Natural",
+                animation_speed=4.0,
+            )
 
-        # Practice modes
-        practice_mode = st.selectbox(
-            "Choose practice mode:",
-            ["Character Recognition", "Vowel Forms", "Common Words", "Random Practice"],
+            # Use st.empty() to ensure proper refresh
+            animation_placeholder = st.empty()
+            with animation_placeholder.container():
+                components.html(animation_html, height=600, scrolling=True)
+
+            # Character practice section
+            st.markdown("#### Practice Writing")
+            st.info("Try writing this character on paper while watching the animation!")
+
+    else:
+        st.info(
+            "Select a character above to see its automatic handwriting animation and details!"
         )
 
-        if practice_mode == "Character Recognition":
-            st.markdown("#### Identify the Character")
-
-            if st.button("Show Random Character", type="primary"):
-                # Select random character
-                import random
-
-                all_chars = []
-                for row in feedel_rows.values():
-                    all_chars.extend(row)
-                all_chars.extend(alef_row)
-
-                random_char = random.choice(all_chars)
-                st.session_state["practice_char"] = random_char
-
-            if "practice_char" in st.session_state:
-                char = st.session_state["practice_char"]
-
-                # Display character large
-                st.markdown(
-                    f"""
-                <div style='
-                    font-size: 8em;
-                    text-align: center;
-                    padding: 40px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    border-radius: 15px;
-                    margin: 20px 0;
-                '>
-                    {char}
-                </div>
-                """,
-                    unsafe_allow_html=True,
-                )
-
-                # Answer input
-                user_answer = st.text_input(
-                    "What is this character in Latin script?", key="recognition_answer"
-                )
-
-                if st.button("Check Answer"):
-                    # Find correct answer
-                    correct_answer = None
-                    for cons, row in feedel_rows.items():
-                        if char in row:
-                            vowel_index = row.index(char)
-                            vowel = ["e", "u", "i", "a", "ē", "ə", "o"][vowel_index]
-                            correct_answer = f"{cons}{vowel}"
-                            break
-
-                    if char in alef_row:
-                        vowel_index = alef_row.index(char)
-                        correct_answer = ["a", "u", "i", "ā", "ē", "ə", "o"][
-                            vowel_index
-                        ]
-
-                    if user_answer.lower() == correct_answer.lower():
-                        st.success(f"Correct! {char} = {correct_answer}")
-                    else:
-                        st.error(f"Not quite. {char} = {correct_answer}")
-
-        elif practice_mode == "Vowel Forms":
-            st.markdown("#### Practice Vowel Forms")
-
-            consonant_choice = st.selectbox(
-                "Choose consonant:", list(feedel_rows.keys())
-            )
-
-            if consonant_choice:
-                st.markdown(
-                    f"**Practice {consonant_choice.upper()} with different vowels:**"
-                )
-
-                vowel_forms = feedel_rows[consonant_choice]
-                vowel_names = ["e", "u", "i", "a", "ē", "ə", "o"]
-
-                practice_dict = {
-                    f"{consonant_choice}{vowel}": char
-                    for vowel, char in zip(vowel_names, vowel_forms)
-                }
-                create_character_grid(
-                    practice_dict, f"practice_{consonant_choice}", cols=7
-                )
-
-        elif practice_mode == "Common Words":
-            st.markdown("#### Practice with Common Words")
-
-            # Common Tigrinya words broken down by characters
-            common_words = {
-                "ሰላም": ["ሰ", "ላ", "ም"],  # salam - peace/hello
-                "ማይ": ["ማ", "ይ"],  # may - water
-                "ኣቦ": ["ኣ", "ቦ"],  # abo - father
-                "እንዳ": ["እ", "ን", "ዳ"],  # ǝnda - mother
-            }
-
-            selected_word = st.selectbox(
-                "Choose a word to practice:", list(common_words.keys())
-            )
-
-            if selected_word:
-                characters = common_words[selected_word]
-
-                st.markdown(f"**Word: {selected_word}**")
-                st.markdown("**Characters in this word:**")
-
-                cols = st.columns(len(characters))
-                for i, char in enumerate(characters):
-                    with cols[i]:
-                        st.markdown(
-                            f"""
-                        <div style='
-                            font-size: 4em;
-                            text-align: center;
-                            padding: 20px;
-                            background: #f8f9fa;
-                            border-radius: 10px;
-                            margin: 10px 0;
-                            border: 2px solid #dee2e6;
-                        '>
-                            {char}
-                        </div>
-                        """,
-                            unsafe_allow_html=True,
-                        )
-
-        else:  # Random Practice
-            st.markdown("#### Random Character Practice")
-
-            difficulty = st.select_slider("Difficulty:", ["Easy", "Medium", "Hard"])
-
-            if st.button("Generate Random Practice Set", type="primary"):
-                import random
-
-                if difficulty == "Easy":
-                    # Common consonants only
-                    practice_consonants = ["h", "l", "m", "r", "s", "t", "b", "n"]
-                elif difficulty == "Medium":
-                    practice_consonants = list(feedel_rows.keys())[:15]
-                else:
-                    practice_consonants = list(feedel_rows.keys())
-
-                # Generate 6 random characters
-                random_chars = []
-                for _ in range(6):
-                    cons = random.choice(practice_consonants)
-                    char_index = random.randint(0, 6)
-                    char = feedel_rows[cons][char_index]
-                    vowel = ["e", "u", "i", "a", "ē", "ə", "o"][char_index]
-                    random_chars.append((char, f"{cons}{vowel}"))
-
-                st.session_state["random_practice"] = random_chars
-
-            if "random_practice" in st.session_state:
-                st.markdown("**Practice these characters:**")
-
-                chars_dict = {
-                    name: char for char, name in st.session_state["random_practice"]
-                }
-                create_character_grid(chars_dict, "random_practice", cols=3)
-
-    with tab4:
-        st.markdown("### 📚 Learning Guide")
-
-        # Learning tips and information
-        st.markdown("""
-        #### 🎯 How to Learn the Geʽez Alphabet
-
-        **1. Start with the Vowel Sounds**
-        - Learn the 7 vowel sounds: e, u, i, a, ē, ə, o
-        - The አ series shows these vowels without consonants
-
-        **2. Master Common Consonants First**
-        - Begin with: h, l, m, r, s, t, b, n
-        - Each consonant has 7 forms (one for each vowel)
-
-        **3. Practice Pattern Recognition**
-        - Notice how vowel markers change the base character
-        - The 6th form (ə) is the base consonant without vowel marking
-
-        **4. Use Memory Techniques**
-        - Associate characters with familiar shapes
-        - Practice writing characters by hand
-        - Use spaced repetition for memorization
-        """)
-
-        # Character learning order
-        st.markdown("#### 📖 Recommended Learning Order")
-
-        learning_stages = {
-            "Stage 1 - Vowels": list(alef_row),
-            "Stage 2 - Basic Consonants": [
-                feedel_rows["h"][0],
-                feedel_rows["l"][0],
-                feedel_rows["m"][0],
-                feedel_rows["r"][0],
-            ],
-            "Stage 3 - Common Letters": [
-                feedel_rows["s"][0],
-                feedel_rows["t"][0],
-                feedel_rows["b"][0],
-                feedel_rows["n"][0],
-            ],
-        }
-
-        for stage, characters in learning_stages.items():
-            with st.expander(stage, expanded=False):
-                chars_dict = {f"char_{i}": char for i, char in enumerate(characters)}
-                create_character_grid(chars_dict, stage, cols=4)
-
-        # Learning resources
-        st.markdown("---")
-        st.markdown("#### 📱 Practice Tips")
-
-        tips = [
-            "🖊️ **Write by hand** - Physical writing helps memorization",
-            "🔄 **Use spaced repetition** - Review characters at increasing intervals",
-            "📝 **Practice daily** - Even 10 minutes daily is better than long sessions",
-            "🎯 **Focus on patterns** - Learn vowel modifications systematically",
-            "📚 **Read simple words** - Apply character knowledge in context",
-            "🎵 **Use mnemonics** - Create memory aids for difficult characters",
-        ]
-
-        for tip in tips:
-            st.markdown(tip)
-
-    # Footer with statistics
+    # Traditional alphabet table for reference
     st.markdown("---")
-    col1, col2, col3, col4 = st.columns(4)
+    st.markdown("### Traditional Alphabet Reference")
 
-    total_characters = sum(len(row) for row in feedel_rows.values()) + len(alef_row)
+    # Show traditional grid format using our data
+    sample_alphabets = [
+        ["በ (be)", "ቡ (bu)", "ቢ (bi)", "ባ (ba)", "ቤ (bie)", "ብ (b)", "ቦ (bo)"],
+        ["ከ (ke)", "ኩ (ku)", "ኪ (ki)", "ካ (ka)", "ኬ (kie)", "ክ (k)", "ኮ (ko)"],
+        ["ሰ (se)", "ሱ (su)", "ሲ (si)", "ሳ (sa)", "ሴ (sie)", "ስ (s)", "ሶ (so)"],
+        ["ሸ (Se)", "ሹ (Su)", "ሺ (Si)", "ሻ (Sa)", "ሼ (Sie)", "ሽ (S)", "ሾ (So)"],
+    ]
 
-    with col1:
-        st.metric("Total Characters", total_characters)
-    with col2:
-        st.metric("Consonant Rows", len(feedel_rows))
-    with col3:
-        st.metric("Vowel Forms", 7)
-    with col4:
-        practice_count = len(st.session_state.get("random_practice", []))
-        st.metric("Practice Set", practice_count)
+    table_header = """
+| 1st Order | 2nd Order | 3rd Order | 4th Order | 5th Order | 6th Order | 7th Order |
+|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
+"""
+
+    table_rows = ""
+    for row in sample_alphabets:
+        table_rows += f"| {' | '.join(row)} |\n"
+
+    st.markdown(table_header + table_rows, unsafe_allow_html=True)
 
 
 if __name__ == "__main__":
