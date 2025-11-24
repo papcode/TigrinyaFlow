@@ -1,0 +1,5 @@
+streamlit
+Pillow
+requests
+deep_translator
+gradio
