@@ -12,7 +12,7 @@ from utils.vocab_data import VOCAB_CATEGORIES, VOCAB_DICT, VOCAB_STATS, get_rand
 from clientTranslation import geez_to_latin_syllable
 
 
-def create_vocabulary_grid(words_dict, cols=3):
+def create_vocabulary_grid(words_dict, cols=3, key_prefix=""):
     """Create a grid layout for vocabulary words"""
     words = list(words_dict.items())
 
@@ -43,7 +43,7 @@ def create_vocabulary_grid(words_dict, cols=3):
             )
 
             # Add to practice session button
-            if st.button(f"Add to Practice", key=f"practice_{english}_{i}"):
+            if st.button(f"Add to Practice", key=f"{key_prefix}_practice_{english}_{i}"):
                 if "practice_words" not in st.session_state:
                     st.session_state.practice_words = []
 
@@ -119,7 +119,7 @@ def create_word_of_the_day():
         st.image(
             image,
             caption=f"{word_data['english']} - {word_data['tigrinya']}",
-            use_container_width=True,
+            width='stretch',
         )
 
 
@@ -189,7 +189,7 @@ def render():
                 for category, words in list(VOCAB_CATEGORIES.items())[:3]:
                     st.markdown(f"**{category.title()} (Sample):**")
                     sample_words = dict(list(words.items())[:6])
-                    create_vocabulary_grid(sample_words, cols=2)
+                    create_vocabulary_grid(sample_words, cols=2, key_prefix=f"all_{category}")
 
                     if len(words) > 6:
                         st.caption(f"... and {len(words) - 6} more words in {category}")
@@ -214,12 +214,12 @@ def render():
                     }
                     if filtered_words:
                         st.success(f"Found {len(filtered_words)} matching words")
-                        create_vocabulary_grid(filtered_words)
+                        create_vocabulary_grid(filtered_words, key_prefix=f"{selected_category}_search")
                     else:
                         st.warning(f"No words found matching '{search_term}'")
                 else:
                     # Display all words in category
-                    create_vocabulary_grid(category_words)
+                    create_vocabulary_grid(category_words, key_prefix=selected_category)
 
     with tab2:
         st.markdown("### 🎲 Random Word Discovery")
@@ -257,7 +257,7 @@ def render():
             # Display random words
             if "random_words" in st.session_state:
                 st.markdown(f"### Random Words ({len(st.session_state.random_words)})")
-                create_vocabulary_grid(st.session_state.random_words)
+                create_vocabulary_grid(st.session_state.random_words, key_prefix="random")
 
                 # Practice all random words button
                 if st.button("📝 Practice All These Words"):
@@ -301,7 +301,7 @@ def render():
                     for word in word_list
                     if word in VOCAB_CATEGORIES[category]
                 }
-                create_vocabulary_grid(essential_category_words, cols=3)
+                create_vocabulary_grid(essential_category_words, cols=3, key_prefix=category)
 
         # Learning recommendations
         st.markdown("---")
@@ -357,7 +357,7 @@ def render():
             practice_dict = {
                 word["english"]: word["tigrinya"] for word in practice_words
             }
-            create_vocabulary_grid(practice_dict)
+            create_vocabulary_grid(practice_dict, key_prefix="practice")
 
             # Remove individual words
             st.markdown("#### Manage Practice Words:")

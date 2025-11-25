@@ -892,7 +892,7 @@ def render():
                         f"{alphabet_key}",
                         key=f"alphabet_{alphabet_key}",
                         help=f"Click to animate {alphabet_key}",
-                        use_container_width=True,
+                        width='stretch',
                     ):
                         st.session_state.selected_character = alphabet_key
                         st.session_state.animation_character = alphabet_key
@@ -935,7 +935,7 @@ def render():
                 forms_df.append({"Form": form, "Sound": phonetic, "Order": i + 1})
 
             df = pd.DataFrame(forms_df)
-            st.dataframe(df, use_container_width=True, hide_index=True)
+            st.dataframe(df, width='stretch', hide_index=True)
 
             # Related characters or similar forms - Click to animate on same canvas
             st.markdown("#### Related Forms - Click to animate")
@@ -954,7 +954,7 @@ def render():
                         f"{form}",
                         key=f"related_{form}_{selected_char}_{i}",
                         help=f"Animate {form} ({phonetic})",
-                        use_container_width=True,
+                        width='stretch',
                     ):
                         # Set this form to be animated on main canvas
                         st.session_state.animation_character = form
@@ -969,9 +969,8 @@ def render():
                             f"{form}",
                             key=f"related_{form}_{selected_char}_{i + 1}",
                             help=f"Animate {form} ({phonetic})",
-                            use_container_width=True,
-                        ):
-                            # Set this form to be animated on main canvas
+                                                    width='stretch',
+                                                ):                            # Set this form to be animated on main canvas
                             st.session_state.animation_character = form
                             st.rerun()
 

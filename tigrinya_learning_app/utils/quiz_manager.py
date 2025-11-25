@@ -163,6 +163,10 @@ class QuizManager:
                 "current_streak": 0,
                 "best_streak": 0,
                 "most_missed": [],
+                "recent_accuracy": 0,
+                "questions_attempted": 0,
+                "unique_words_seen": 0,
+                "session_started": False,
                 "performance_trend": [],
             }
 

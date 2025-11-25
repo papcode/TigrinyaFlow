@@ -10,6 +10,7 @@ from typing import Optional
 import requests
 import streamlit as st
 from PIL import Image
+from utils.vocab_data import VOCAB_CATEGORIES
 
 
 class ImageLoader:
@@ -23,9 +24,26 @@ class ImageLoader:
     def get_local_image(_self, word: str) -> Optional[bytes]:
         """Load image from local folder"""
         try:
-            # Common image extensions
+            # Find which category the word belongs to
+            word_category = None
+            for category, words in VOCAB_CATEGORIES.items():
+                if word.lower() in words:
+                    word_category = category
+                    break
+
             extensions = [".jpg", ".jpeg", ".png", ".webp", ".gif"]
 
+            # If category is found, search in the category folder first
+            if word_category:
+                for ext in extensions:
+                    image_path = os.path.join(
+                        _self.images_folder, "vocabulary", word_category, f"{word.lower()}{ext}"
+                    )
+                    if os.path.exists(image_path):
+                        with open(image_path, "rb") as file:
+                            return file.read()
+
+            # Fallback to original search logic
             for ext in extensions:
                 image_path = os.path.join(_self.images_folder, f"{word.lower()}{ext}")
                 if os.path.exists(image_path):
@@ -109,7 +127,7 @@ class ImageLoader:
         """Display image with styled caption"""
         image = self.get_image(word)
         if image:
-            st.image(image, use_container_width=True)
+            st.image(image, width='stretch')
             st.markdown(
                 f"""
             <div style='
