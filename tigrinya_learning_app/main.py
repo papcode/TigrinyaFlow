@@ -27,15 +27,12 @@ def main():
         initial_sidebar_state="expanded",
     )
 
-    # Custom CSS for better styling
+# Custom CSS for better styling
     st.markdown(
         """
     <style>
     .main {
         padding-top: 2rem;
-    }
-    .stSelectbox > div > div > div > div {
-        font-size: 16px;
     }
     .stButton > button {
         font-family: 'Noto Sans Ethiopic', serif;
@@ -44,7 +41,6 @@ def main():
     """,
         unsafe_allow_html=True,
     )
-
     # Header with logo
     try:
 
@@ -71,7 +67,7 @@ def main():
     st.sidebar.markdown("Choose a learning mode:")
 
     page = st.sidebar.radio(
-        "Choose a page:",
+        "Navigation",  # Shorter label since it's hidden anyway
         [
             "🔍 Search Translation",
             "📚 Browse Vocabulary",

@@ -64,11 +64,11 @@ class EnhancedDragDropGame:
 
         # Determine number of missing characters based on difficulty
         if difficulty == "easy":
-            num_missing = max(1, len(characters) // 3)
+            num_missing = max(1, min(2, len(characters) // 3))  # 1-2 characters missing
         elif difficulty == "medium":
-            num_missing = max(1, len(characters) // 2)
+            num_missing = max(2, min(3, len(characters) // 2))  # 2-3 characters missing
         else:  # hard
-            num_missing = max(2, (len(characters) * 2) // 3)
+            num_missing = max(3, len(characters) - 1)  # Most characters missing
 
         # Randomly select positions to make blank
         missing_positions = random.sample(
@@ -139,45 +139,49 @@ class EnhancedDragDropGame:
         correct = state["correct_count"]
         accuracy = (correct / total * 100) if total > 0 else 0
 
-        return {"total": total, "correct": correct, "accuracy": accuracy}
+        return {
+            "total": total,
+            "correct": correct,
+            "accuracy": accuracy,
+        }
 
 
 def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
-    """Create HTML with true drag-and-drop functionality"""
+    """Create HTML with true drag-and-drop functionality and complete game system"""
 
-    word_display_html = ""
-    for i, char in enumerate(puzzle_data["characters"]):
-        if i in puzzle_data["missing_positions"]:
-            word_display_html += f"""
-            <div class="drop-zone"
-                 ondrop="drop(event, {i})"
-                 ondragover="allowDrop(event)"
-                 ondragenter="dragEnter(event)"
-                 ondragleave="dragLeave(event)"
-                 data-position="{i}"
-                 id="position-{i}">
-                <span class="placeholder">?</span>
-            </div>
-            """
-        else:
-            word_display_html += f"""
-            <div class="character-fixed">
-                {char}
-            </div>
-            """
-
-    options_html = ""
-    for i, option in enumerate(puzzle_data["options"]):
-        options_html += f"""
-        <div class="draggable-character"
-             draggable="true"
-             ondragstart="drag(event)"
-             ondragend="dragEnd(event)"
-             data-character="{option}"
-             id="option-{i}">
-            {option}
-        </div>
-        """
+    # Complete word bank with more words
+    all_words = {
+        # Animals
+        "ዶሮ": {"translation": "chicken", "category": "animals", "phonetic": "doro"},
+        "ላም": {"translation": "cow", "category": "animals", "phonetic": "lam"},
+        "ድሙ": {"translation": "cat", "category": "animals", "phonetic": "dimu"},
+        "ከልቢ": {"translation": "dog", "category": "animals", "phonetic": "kelbi"},
+        "ጊደር": {"translation": "donkey", "category": "animals", "phonetic": "gider"},
+        "ፈረስ": {"translation": "horse", "category": "animals", "phonetic": "feres"},
+        # Colors
+        "ቀይሕ": {"translation": "red", "category": "colors", "phonetic": "qeyiH"},
+        "ጸሊም": {"translation": "black", "category": "colors", "phonetic": "Selim"},
+        "ጻዕዳ": {"translation": "white", "category": "colors", "phonetic": "Sa'ida"},
+        "ቢጫ": {"translation": "yellow", "category": "colors", "phonetic": "bicha"},
+        "ሰማያዊ": {"translation": "blue", "category": "colors", "phonetic": "semayawi"},
+        # Objects
+        "መጽሓፍ": {"translation": "book", "category": "objects", "phonetic": "meShaf"},
+        "ብርዒ": {"translation": "pen", "category": "objects", "phonetic": "biri"},
+        "ጣውላ": {"translation": "table", "category": "objects", "phonetic": "tawila"},
+        "ገዛ": {"translation": "house", "category": "objects", "phonetic": "geza"},
+        "መኪና": {"translation": "car", "category": "objects", "phonetic": "mekina"},
+        "ፀሓይ": {"translation": "sun", "category": "objects", "phonetic": "SaHay"},
+        # Greetings
+        "ሰላም": {
+            "translation": "peace/hello",
+            "category": "greetings",
+            "phonetic": "selam",
+        },
+        "ጥዕና": {"translation": "health", "category": "greetings", "phonetic": "Tiina"},
+        # Objects/Nature
+        "ማይ": {"translation": "water", "category": "nature", "phonetic": "may"},
+        "ሓሙስ": {"translation": "Thursday", "category": "time", "phonetic": "Hamus"},
+    }
 
     html_code = f"""
     <!DOCTYPE html>
@@ -202,6 +206,31 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
                 margin: 0 auto;
             }}
 
+            .game-header {{
+                text-align: center;
+                margin-bottom: 30px;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 15px;
+                color: white;
+            }}
+
+            .game-stats {{
+                display: flex;
+                justify-content: space-around;
+                margin-bottom: 20px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }}
+
+            .stat-item {{
+                text-align: center;
+                padding: 10px;
+                background: rgba(255,255,255,0.2);
+                border-radius: 10px;
+                min-width: 100px;
+            }}
+
             .puzzle-info {{
                 text-align: center;
                 margin-bottom: 30px;
@@ -210,16 +239,30 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
                 border-radius: 15px;
             }}
 
-            .puzzle-info h3 {{
-                margin: 0 0 10px 0;
-                color: #2c3e50;
-                font-size: 1.5em;
+            .difficulty-selector {{
+                text-align: center;
+                margin-bottom: 20px;
             }}
 
-            .puzzle-info p {{
-                margin: 5px 0;
-                color: #34495e;
-                font-size: 1.1em;
+            .difficulty-btn {{
+                margin: 5px;
+                padding: 8px 16px;
+                border: none;
+                border-radius: 20px;
+                cursor: pointer;
+                font-weight: bold;
+                transition: all 0.3s ease;
+            }}
+
+            .difficulty-btn.active {{
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                transform: scale(1.1);
+            }}
+
+            .difficulty-btn:not(.active) {{
+                background: #ddd;
+                color: #666;
             }}
 
             .word-display {{
@@ -251,7 +294,6 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
                 color: #666;
                 border-style: dashed;
                 border-color: #999;
-                position: relative;
             }}
 
             .drop-zone.drag-over {{
@@ -269,29 +311,12 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
                 color: white;
             }}
 
-            .placeholder {{
-                font-size: 2em;
-                opacity: 0.5;
-            }}
-
-            .options-container {{
-                margin-top: 40px;
-                text-align: center;
-            }}
-
-            .options-title {{
-                font-size: 1.3em;
-                margin-bottom: 20px;
-                color: #2c3e50;
-                font-weight: bold;
-            }}
-
             .options-grid {{
                 display: flex;
                 justify-content: center;
                 gap: 15px;
                 flex-wrap: wrap;
-                margin-bottom: 30px;
+                margin: 30px 0;
             }}
 
             .draggable-character {{
@@ -317,28 +342,17 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
                 box-shadow: 0 10px 20px rgba(232,67,147,0.3);
             }}
 
-            .draggable-character:active {{
-                cursor: grabbing;
-                transform: scale(0.95);
-            }}
-
-            .draggable-character.dragging {{
-                opacity: 0.5;
-                transform: rotate(5deg) scale(1.1);
-            }}
-
             .draggable-character.used {{
                 opacity: 0.3;
                 pointer-events: none;
                 background: linear-gradient(135deg, #bbb 0%, #888 100%);
-                border-color: #666;
             }}
 
             .control-buttons {{
                 display: flex;
                 justify-content: center;
                 gap: 20px;
-                margin-top: 30px;
+                margin: 30px 0;
             }}
 
             .btn {{
@@ -349,18 +363,11 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
                 font-weight: bold;
                 cursor: pointer;
                 transition: all 0.3s ease;
-                text-transform: uppercase;
-                letter-spacing: 1px;
             }}
 
             .btn-check {{
                 background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
                 color: white;
-            }}
-
-            .btn-check:hover:not(:disabled) {{
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(0,184,148,0.3);
             }}
 
             .btn-check:disabled {{
@@ -374,20 +381,14 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
                 color: white;
             }}
 
-            .btn-reset:hover {{
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(253,121,168,0.3);
-            }}
-
             .feedback {{
                 text-align: center;
-                margin-top: 20px;
+                margin: 20px 0;
                 padding: 15px;
                 border-radius: 10px;
                 font-weight: bold;
                 font-size: 1.2em;
                 display: none;
-                animation: slideIn 0.5s ease-out;
             }}
 
             .feedback.success {{
@@ -400,294 +401,317 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
                 color: white;
             }}
 
-            .status-indicator {{
-                text-align: center;
-                margin-bottom: 20px;
-                padding: 10px;
-                border-radius: 10px;
-                font-weight: bold;
-            }}
-
-            .status-indicator.ready {{
-                background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
-                color: white;
-            }}
-
-            .status-indicator.incomplete {{
-                background: linear-gradient(135deg, #fdcb6e 0%, #fd79a8 100%);
-                color: white;
-            }}
-
             @keyframes bounce {{
-                0%, 20%, 50%, 80%, 100% {{
-                    transform: translateY(0);
-                }}
-                40% {{
-                    transform: translateY(-10px);
-                }}
-                60% {{
-                    transform: translateY(-5px);
-                }}
+                0%, 20%, 50%, 80%, 100% {{ transform: translateY(0); }}
+                40% {{ transform: translateY(-10px); }}
+                60% {{ transform: translateY(-5px); }}
             }}
 
-            @keyframes slideIn {{
-                from {{
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }}
-                to {{
-                    opacity: 1;
-                    transform: translateY(0);
-                }}
+            @keyframes balloon-float {{
+                0% {{ transform: translateY(0px); opacity: 1; }}
+                100% {{ transform: translateY(-100vh); opacity: 0; }}
             }}
 
-            .bounce {{
-                animation: bounce 1s;
-            }}
-
-            .progress-bar {{
-                width: 100%;
-                height: 10px;
-                background: #ddd;
-                border-radius: 5px;
-                margin: 20px 0;
-                overflow: hidden;
-            }}
-
-            .progress-fill {{
-                height: 100%;
-                background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
-                border-radius: 5px;
-                transition: width 0.5s ease;
-            }}
+            .bounce {{ animation: bounce 1s; }}
         </style>
     </head>
     <body>
         <div class="game-container">
-            <div class="puzzle-info">
-                <h3>🎯 {puzzle_data["category"].title()}</h3>
-                <p><strong>Translation:</strong> {puzzle_data["translation"]}</p>
-                <p><strong>Phonetic:</strong> {puzzle_data["phonetic"]}</p>
-            </div>
-
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-            </div>
-
-            <div class="word-display" id="word-display">
-                {word_display_html}
-            </div>
-
-            <div class="options-container">
-                <div class="options-title">📝 Drag characters to complete the word:</div>
-                <div class="options-grid" id="options-grid">
-                    {options_html}
+            <div class="game-header">
+                <h1>🎮 Tigrinya Word Builder</h1>
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div>Level</div>
+                        <div id="level-display">1</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Score</div>
+                        <div id="score-display">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Correct</div>
+                        <div id="correct-display">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div>Total</div>
+                        <div id="total-display">0</div>
+                    </div>
+                </div>
+                <div class="difficulty-selector">
+                    <button class="difficulty-btn active" onclick="setDifficulty('easy')">🟢 Easy</button>
+                    <button class="difficulty-btn" onclick="setDifficulty('medium')">🟡 Medium</button>
+                    <button class="difficulty-btn" onclick="setDifficulty('hard')">🔴 Hard</button>
                 </div>
             </div>
 
-            <div class="status-indicator" id="status-indicator">
-                <span id="status-text">Place all characters to check your answer</span>
+            <div class="puzzle-info" id="puzzle-info">
+                <h3 id="category-display">Loading...</h3>
+                <p><strong>Translation:</strong> <span id="translation-display">Loading...</span></p>
+                <p><strong>Phonetic:</strong> <span id="phonetic-display">Loading...</span></p>
             </div>
+
+            <div class="word-display" id="word-display"></div>
+
+            <div class="options-grid" id="options-grid"></div>
 
             <div class="control-buttons">
                 <button class="btn btn-check" id="check-btn" onclick="checkAnswer()" disabled>✅ Check Answer</button>
-                <button class="btn btn-reset" onclick="resetPuzzle()">🔄 Reset</button>
+                <button class="btn btn-reset" onclick="resetCurrentPuzzle()">🔄 Reset</button>
+                <button class="btn btn-reset" onclick="newPuzzle()">🎲 New Puzzle</button>
             </div>
 
             <div class="feedback" id="feedback"></div>
         </div>
 
         <script>
-            let userAnswers = {{}};
-            let usedCharacters = new Set();
-            let totalPositions = {len(puzzle_data["missing_positions"])};
-            let correctAnswers = {json.dumps({pos: puzzle_data["characters"][pos] for pos in puzzle_data["missing_positions"]})};
+            // Game state
+            let gameState = {{
+                level: 1,
+                score: 0,
+                correct: 0,
+                total: 0,
+                difficulty: 'easy',
+                currentPuzzle: null,
+                userAnswers: {{}},
+                usedCharacters: new Set()
+            }};
 
-            function updateProgress() {{
-                let filledCount = Object.keys(userAnswers).length;
-                let progress = (filledCount / totalPositions) * 100;
-                document.getElementById('progress-fill').style.width = progress + '%';
+            // Word bank
+            const WORDS = {json.dumps(all_words, ensure_ascii=False)};
 
-                let statusIndicator = document.getElementById('status-indicator');
-                let statusText = document.getElementById('status-text');
-                let checkBtn = document.getElementById('check-btn');
 
-                if (filledCount === totalPositions) {{
-                    statusIndicator.className = 'status-indicator ready';
-                    statusText.textContent = 'Ready to check your answer! 🎯';
-                    checkBtn.disabled = false;
-                }} else {{
-                    statusIndicator.className = 'status-indicator incomplete';
-                    statusText.textContent = `Place ${{totalPositions - filledCount}} more character(s)`;
-                    checkBtn.disabled = true;
-                }}
-            }}
+                    function generatePuzzle(word, wordInfo) {{
+                        const characters = Array.from(word);
+                        let numMissing;
 
-            function allowDrop(ev) {{
-                ev.preventDefault();
-            }}
+                        // Determine missing characters based on difficulty
+                        if (gameState.difficulty === 'easy') {{
+                            numMissing = Math.max(1, Math.min(2, Math.floor(characters.length / 3)));
+                        }} else if (gameState.difficulty === 'medium') {{
+                            numMissing = Math.max(2, Math.min(3, Math.floor(characters.length / 2)));
+                        }} else {{
+                            numMissing = Math.max(3, characters.length - 1);
+                        }}
 
-            function dragEnter(ev) {{
-                if (!ev.target.classList.contains('filled')) {{
-                    ev.target.classList.add('drag-over');
-                }}
-            }}
+                        // Randomly select positions to make blank
+                        const missingPositions = [];
+                        while (missingPositions.length < numMissing && missingPositions.length < characters.length) {{
+                            const pos = Math.floor(Math.random() * characters.length);
+                            if (!missingPositions.includes(pos)) {{
+                                missingPositions.push(pos);
+                            }}
+                        }}
 
-            function dragLeave(ev) {{
-                ev.target.classList.remove('drag-over');
-            }}
+                        const missingCharacters = missingPositions.map(pos => characters[pos]);
 
-            function drag(ev) {{
-                ev.dataTransfer.setData("text", ev.target.getAttribute('data-character'));
-                ev.dataTransfer.setData("source", ev.target.id);
-                ev.target.classList.add('dragging');
-            }}
+                        // Create distractors
+                        const allChars = Array.from(new Set(Object.keys(WORDS).join('')));
+                        const wrongOptions = allChars.filter(c => !missingCharacters.includes(c));
+                        const shuffledWrong = wrongOptions.sort(() => Math.random() - 0.5);
+                        const options = [...missingCharacters, ...shuffledWrong.slice(0, 3)].sort(() => Math.random() - 0.5);
 
-            function dragEnd(ev) {{
-                ev.target.classList.remove('dragging');
-            }}
+                        return {{
+                            word: word,
+                            characters: characters,
+                            missingPositions: missingPositions,
+                            missingCharacters: missingCharacters,
+                            options: options,
+                            correctAnswers: Object.fromEntries(missingPositions.map(pos => [pos, characters[pos]]))
+                        }};
+                    }}
 
-            function drop(ev) {{
-                ev.preventDefault();
-                ev.target.classList.remove('drag-over');
+                    function newPuzzle() {{
+                        // Select random word
+                        const wordKeys = Object.keys(WORDS);
+                        const randomWord = wordKeys[Math.floor(Math.random() * wordKeys.length)];
+                        const wordInfo = WORDS[randomWord];
 
-                const character = ev.dataTransfer.getData("text");
-                const sourceId = ev.dataTransfer.getData("source");
-                const position = parseInt(ev.target.getAttribute('data-position'));
+                        // Generate puzzle
+                        gameState.currentPuzzle = generatePuzzle(randomWord, wordInfo);
+                        gameState.userAnswers = {{}};
+                        gameState.usedCharacters.clear();
 
-                if (character && !ev.target.classList.contains('filled')) {{
-                    // Check if this position already has a character
-                    if (userAnswers[position]) {{
-                        // Remove the old character from used set
-                        let oldSourceId = findSourceByCharacter(userAnswers[position]);
-                        if (oldSourceId) {{
-                            document.getElementById(oldSourceId).classList.remove('used');
-                            usedCharacters.delete(oldSourceId);
+                        // Update puzzle info
+                        document.getElementById('category-display').textContent = '🎯 ' + wordInfo.category.charAt(0).toUpperCase() + wordInfo.category.slice(1);
+                        document.getElementById('translation-display').textContent = wordInfo.translation;
+                        document.getElementById('phonetic-display').textContent = wordInfo.phonetic;
+
+                        // Render word display
+                        const wordDisplay = document.getElementById('word-display');
+                        wordDisplay.innerHTML = '';
+                        gameState.currentPuzzle.characters.forEach((char, i) => {{
+                            if (gameState.currentPuzzle.missingPositions.includes(i)) {{
+                                wordDisplay.innerHTML += `
+                                    <div class="drop-zone" ondrop="drop(event, ${{i}})" ondragover="allowDrop(event)"
+                                         ondragenter="dragEnter(event)" ondragleave="dragLeave(event)"
+                                         data-position="${{i}}" id="position-${{i}}">
+                                        <span style="font-size: 2em; opacity: 0.5;">?</span>
+                                    </div>
+                                `;
+                            }} else {{
+                                wordDisplay.innerHTML += `
+                                    <div class="character-fixed">${{char}}</div>
+                                `;
+                            }}
+                        }});
+
+                        // Render options
+                        const optionsGrid = document.getElementById('options-grid');
+                        optionsGrid.innerHTML = '';
+                        gameState.currentPuzzle.options.forEach((option, i) => {{
+                            optionsGrid.innerHTML += `
+                                <div class="draggable-character" draggable="true" ondragstart="drag(event)"
+                                     ondragend="dragEnd(event)" data-character="${{option}}" id="option-${{i}}">
+                                    ${{option}}
+                                </div>
+                            `;
+                        }});
+
+                        // Reset button state
+                        document.getElementById('check-btn').disabled = true;
+                        document.getElementById('feedback').style.display = 'none';
+                        updateStats();
+                    }}
+
+                    function setDifficulty(level) {{
+                        gameState.difficulty = level;
+                        document.querySelectorAll('.difficulty-btn').forEach(btn => btn.classList.remove('active'));
+                        event.target.classList.add('active');
+                        newPuzzle(); // Generate new puzzle with new difficulty
+                    }}
+
+                    function updateStats() {{
+                        document.getElementById('level-display').textContent = gameState.level;
+                        document.getElementById('score-display').textContent = gameState.score;
+                        document.getElementById('correct-display').textContent = gameState.correct;
+                        document.getElementById('total-display').textContent = gameState.total;
+                    }}
+
+                    function allowDrop(ev) {{ ev.preventDefault(); }}
+                    function dragEnter(ev) {{ if (!ev.target.classList.contains('filled')) ev.target.classList.add('drag-over'); }}
+                    function dragLeave(ev) {{ ev.target.classList.remove('drag-over'); }}
+                    function drag(ev) {{
+                        ev.dataTransfer.setData("text", ev.target.getAttribute('data-character'));
+                        ev.dataTransfer.setData("source", ev.target.id);
+                        ev.target.style.opacity = '0.5';
+                    }}
+                    function dragEnd(ev) {{ ev.target.style.opacity = '1'; }}
+
+                    function drop(ev) {{
+                        ev.preventDefault();
+                        ev.target.classList.remove('drag-over');
+                        const character = ev.dataTransfer.getData("text");
+                        const sourceId = ev.dataTransfer.getData("source");
+                        const position = parseInt(ev.target.getAttribute('data-position'));
+
+                        if (character) {{
+                            // If position already has a character, free up the old one
+                            if (ev.target.classList.contains('filled') && gameState.userAnswers[position]) {{
+                                const oldCharacter = gameState.userAnswers[position];
+                                // Find and free the old character's source
+                                document.querySelectorAll('.draggable-character').forEach(draggable => {{
+                                    if (draggable.getAttribute('data-character') === oldCharacter && draggable.classList.contains('used')) {{
+                                        draggable.classList.remove('used');
+                                        return;
+                                    }}
+                                }});
+                            }}
+
+                            // Place new character
+                            ev.target.innerHTML = character;
+                            ev.target.classList.add('filled', 'bounce');
+                            document.getElementById(sourceId).classList.add('used');
+                            gameState.userAnswers[position] = character;
+
+                            setTimeout(() => ev.target.classList.remove('bounce'), 1000);
+
+                            // Check if all positions filled
+                            if (Object.keys(gameState.userAnswers).length === gameState.currentPuzzle.missingPositions.length) {{
+                                document.getElementById('check-btn').disabled = false;
+                            }}
                         }}
                     }}
 
-                    // Fill the drop zone
-                    ev.target.innerHTML = character;
-                    ev.target.classList.add('filled', 'bounce');
+                    function checkAnswer() {{
+                        let isCorrect = true;
+                        for (let position in gameState.currentPuzzle.correctAnswers) {{
+                            if (gameState.userAnswers[position] !== gameState.currentPuzzle.correctAnswers[position]) {{
+                                isCorrect = false;
+                                break;
+                            }}
+                        }}
 
-                    // Mark source as used
-                    const sourceElement = document.getElementById(sourceId);
-                    sourceElement.classList.add('used');
-                    usedCharacters.add(sourceId);
+                        gameState.total++;
+                        const feedback = document.getElementById('feedback');
 
-                    // Store answer
-                    userAnswers[position] = character;
+                        if (isCorrect) {{
+                            gameState.correct++;
+                            const points = {{easy: 10, medium: 20, hard: 30}}[gameState.difficulty];
+                            gameState.score += points;
 
-                    // Update progress
-                    updateProgress();
+                            if (gameState.correct % 5 === 0) gameState.level++;
 
-                    // Remove bounce animation after it completes
-                    setTimeout(() => {{
-                        ev.target.classList.remove('bounce');
-                    }}, 1000);
-                }}
-            }}
+                            feedback.innerHTML = `🎉 Correct! +${{points}} points! 🎊`;
+                            feedback.className = 'feedback success';
 
-            function findSourceByCharacter(character) {{
-                let sources = document.querySelectorAll('.draggable-character');
-                for (let source of sources) {{
-                    if (source.getAttribute('data-character') === character) {{
-                        return source.id;
+                            // Create balloons
+                            for (let i = 0; i < 8; i++) {{
+                                const balloon = document.createElement('div');
+                                balloon.innerHTML = ['🎈', '🎊', '🎉', '✨'][Math.floor(Math.random() * 4)];
+                                balloon.style.cssText = `position:fixed; left:${{Math.random() * window.innerWidth}}px; top:100%; font-size:2em; z-index:1000; pointer-events:none; animation:balloon-float 3s ease-out forwards;`;
+                                document.body.appendChild(balloon);
+                                setTimeout(() => balloon.remove(), 3000);
+                            }}
+
+                            setTimeout(() => newPuzzle(), 2500);
+                        }} else {{
+                            feedback.innerHTML = '❌ Try again! Check your character placement.';
+                            feedback.className = 'feedback error';
+                            setTimeout(() => feedback.style.display = 'none', 3000);
+                        }}
+
+                        feedback.style.display = 'block';
+                        updateStats();
                     }}
-                }}
-                return null;
-            }}
 
-            function checkAnswer() {{
-                let isCorrect = true;
-                let feedback = document.getElementById('feedback');
+                    function resetCurrentPuzzle() {{
+                        // Clear all drop zones
+                        const dropZones = document.querySelectorAll('.drop-zone');
+                        dropZones.forEach(zone => {{
+                            if (zone.classList.contains('filled')) {{
+                                zone.innerHTML = '<span style="font-size: 2em; opacity: 0.5;">?</span>';
+                                zone.classList.remove('filled', 'bounce');
+                            }}
+                        }});
 
-                // Check each position
-                for (let position in correctAnswers) {{
-                    if (userAnswers[position] !== correctAnswers[position]) {{
-                        isCorrect = false;
-                        break;
+                        // Reset all draggable items
+                        const draggables = document.querySelectorAll('.draggable-character');
+                        draggables.forEach(draggable => {{
+                            draggable.classList.remove('used');
+                        }});
+
+                        // Clear user answers
+                        gameState.userAnswers = {{}};
+                        gameState.usedCharacters.clear();
+
+                        // Reset button state
+                        document.getElementById('check-btn').disabled = true;
+                        document.getElementById('feedback').style.display = 'none';
+
+                        // Show reset message
+                        const feedback = document.getElementById('feedback');
+                        feedback.innerHTML = '🔄 Puzzle reset! Try again.';
+                        feedback.className = 'feedback success';
+                        feedback.style.display = 'block';
+                        setTimeout(() => {{
+                            feedback.style.display = 'none';
+                        }}, 1500);
                     }}
-                }}
 
-                if (isCorrect) {{
-                    feedback.innerHTML = '🎉 Fantastic! You got it right!';
-                    feedback.className = 'feedback success';
-
-                    // Add celebration effects
-                    document.getElementById('word-display').classList.add('bounce');
-
-                    // Send success message to parent
-                    if (window.parent) {{
-                        window.parent.postMessage({{
-                            type: 'answer_result',
-                            correct: true,
-                            answers: userAnswers
-                        }}, '*');
-                    }}
-                }} else {{
-                    feedback.innerHTML = '❌ Not quite right. Keep trying!';
-                    feedback.className = 'feedback error';
-
-                    // Send failure message to parent
-                    if (window.parent) {{
-                        window.parent.postMessage({{
-                            type: 'answer_result',
-                            correct: false,
-                            answers: userAnswers
-                        }}, '*');
-                    }}
-                }}
-
-                feedback.style.display = 'block';
-
-                // Hide feedback after 3 seconds if incorrect
-                if (!isCorrect) {{
-                    setTimeout(() => {{
-                        feedback.style.display = 'none';
-                    }}, 3000);
-                }}
-            }}
-
-            function resetPuzzle() {{
-                // Clear all drop zones
-                const dropZones = document.querySelectorAll('.drop-zone');
-                dropZones.forEach(zone => {{
-                    zone.innerHTML = '<span class="placeholder">?</span>';
-                    zone.classList.remove('filled', 'drag-over', 'bounce');
-                }});
-
-                // Reset all draggable items
-                const draggables = document.querySelectorAll('.draggable-character');
-                draggables.forEach(draggable => {{
-                    draggable.classList.remove('used');
-                }});
-
-                // Clear data
-                userAnswers = {{}};
-                usedCharacters.clear();
-
-                // Hide feedback
-                document.getElementById('feedback').style.display = 'none';
-
-                // Update progress
-                updateProgress();
-
-                // Remove bounce from word display
-                document.getElementById('word-display').classList.remove('bounce');
-
-                // Notify parent
-                if (window.parent) {{
-                    window.parent.postMessage({{
-                        type: 'reset'
-                    }}, '*');
-                }}
-            }}
-
-            // Initialize progress on load
-            document.addEventListener('DOMContentLoaded', function() {{
-                updateProgress();
-            }});
+                    // Initialize game
+                    document.addEventListener('DOMContentLoaded', function() {{
+                        newPuzzle();
+                    }});
         </script>
     </body>
     </html>
@@ -699,176 +723,53 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
 def render():
     """Main drag and drop learning page"""
     st.subheader("🎮 Drag & Drop Word Builder")
-    st.markdown("*Interactive character placement game with true drag-and-drop*")
+    st.markdown("*Complete self-contained Tigrinya learning game*")
 
+    # Simple info about the game
+    st.info(
+        """
+        🎯 **How to Play:**
+        - All game controls, scoring, and difficulty settings are inside the game below
+        - Drag characters to complete words
+        - Click 'Check Answer' when ready
+        - Game automatically progresses to new puzzles
+        - Try different difficulty levels for more challenge!
+        """
+    )
+
+    # Create the HTML content with initial puzzle data
     game = EnhancedDragDropGame()
+    puzzle = game.generate_puzzle("easy")  # Start with easy
+    html_content = create_drag_drop_html(puzzle, "self_contained_game")
 
-    # Game controls header
-    col1, col2, col3, col4 = st.columns(4)
+    # Render the self-contained game
+    components.html(html_content, height=1200, scrolling=False)
 
-    with col1:
-        if st.button(
-            "🎲 New Puzzle", type="primary", help="Generate a brand new word puzzle"
-        ):
-            game.reset_game()
-            st.rerun()
-
-    with col2:
-        difficulty = st.selectbox(
-            "Difficulty Level:",
-            ["easy", "medium", "hard"],
-            index=0,
-            help="Choose how many characters will be missing",
-        )
-        st.session_state.drag_drop_state["difficulty"] = difficulty
-
-    with col3:
-        stats = game.get_statistics()
-        if stats["total"] > 0:
-            st.metric(
-                "Success Rate",
-                f"{stats['accuracy']:.0f}%",
-                delta=f"+{stats['correct']}" if stats["correct"] > 0 else None,
-            )
-        else:
-            st.metric("Success Rate", "Start playing!")
-
-    with col4:
-        if stats["total"] > 0:
-            st.metric("Puzzles Solved", f"{stats['correct']}/{stats['total']}")
-        else:
-            st.metric("Puzzles Solved", "0/0")
-
+    # Learning information
     st.markdown("---")
 
-    # Generate or display current puzzle
-    if st.session_state.drag_drop_state["current_word"] is None:
-        puzzle = game.generate_puzzle(difficulty)
-    else:
-        puzzle = st.session_state.drag_drop_state["puzzle_data"]
-
-    # Check if puzzle is solved
-    if st.session_state.drag_drop_state["is_solved"]:
-        st.success("🎉 Puzzle Completed Successfully!")
-
-        # Show completion details in an attractive format
-        st.markdown(
-            f"""
-            <div style='
-                background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
-                padding: 30px;
-                border-radius: 20px;
-                color: white;
-                text-align: center;
-                margin: 25px 0;
-                box-shadow: 0 15px 35px rgba(0,184,148,0.3);
-            '>
-                <h1 style='margin: 0 0 15px 0; font-size: 3em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);'>
-                    ✨ {puzzle["word"]} ✨
-                </h1>
-                <h2 style='margin: 0 0 10px 0; font-size: 1.5em;'>"{puzzle["translation"]}"</h2>
-                <p style='margin: 5px 0; font-size: 1.2em; opacity: 0.9;'><strong>Phonetic:</strong> {puzzle["phonetic"]}</p>
-                <p style='margin: 5px 0; font-size: 1.2em; opacity: 0.9;'><strong>Category:</strong> {puzzle["category"].title()}</p>
-                <p style='margin: 20px 0 0 0; font-size: 1.1em; opacity: 0.8;'>
-                    🏆 Attempts: {st.session_state.drag_drop_state["attempts"]}
-                </p>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
-        # Show balloons celebration
-        st.balloons()
-
-        # Next puzzle button
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button("🎲 Try Another Puzzle", type="primary", key="next_puzzle"):
-                game.reset_game()
-                st.rerun()
-
-    else:
-        # Display the interactive drag-drop game
-        component_key = f"drag_drop_{st.session_state.drag_drop_state.get('current_word', 'default')}"
-
-        # Create the HTML content
-        html_content = create_drag_drop_html(puzzle, component_key)
-
-        # Use a container for the game
-        game_container = st.container()
-        with game_container:
-            # Render the HTML component
-            result = components.html(html_content, height=800, scrolling=False)
-
-    # Instructions and tips
-    st.markdown("---")
-
-    # Instructions
-    with st.expander(
-        "📖 How to Play",
-        expanded=not st.session_state.drag_drop_state["is_solved"],
-    ):
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.markdown("""
-            ### 🎯 Game Instructions:
-            1. **Drag** characters from the colored boxes below
-            2. **Drop** them into the correct positions in the word
-            3. Watch the **progress bar** fill up as you place characters
-            4. **Click "Check Answer"** when all positions are filled
-            5. Get **instant feedback** on your solution!
-            """)
-
-        with col2:
-            st.markdown("""
-            ### 💡 Pro Tips:
-            - Use the **translation** hint to guide your choices
-            - The **phonetic** spelling can help with pronunciation
-            - **Category** provides context clues
-            - Characters **glow** when you hover over drop zones
-            - **Progress bar** shows your completion status
-            """)
-
-    # Learning objectives and benefits
-    with st.expander("🎓 Learning Benefits"):
+    with st.expander("🎓 About This Learning Game"):
         st.markdown("""
-        ### What You'll Learn:
-        - **Character Recognition**: Identify individual Tigrinya characters
-        - **Word Building**: Understand how characters combine to form words
-        - **Visual Memory**: Strengthen visual association with character shapes
-        - **Context Learning**: Connect words with their meanings and categories
-        - **Motor Skills**: Develop precise drag-and-drop coordination
+        ### 🎯 Learning Objectives:
+        - **Character Recognition**: Master individual Tigrinya characters
+        - **Word Building**: Learn how characters combine to form words
+        - **Contextual Learning**: Connect words with meanings and categories
+        - **Progressive Difficulty**: Build skills from easy to challenging levels
 
-        ### Why This Method Works:
-        - **Active Learning**: Physical interaction improves retention
-        - **Immediate Feedback**: Quick correction helps reinforce learning
-        - **Progressive Difficulty**: Start easy and build confidence
-        - **Contextual Hints**: Multiple clues support different learning styles
-        - **Gamification**: Fun elements increase engagement and motivation
+        ### 🎮 Game Features:
+        - **Complete Self-Contained Game**: All controls inside the game canvas
+        - **Multiple Difficulty Levels**: Easy, Medium, Hard with different challenges
+        - **Auto-Progression**: Automatic new puzzles after success
+        - **Real-Time Scoring**: Points, levels, and statistics tracking
+        - **Balloon Celebrations**: Fun animations for successful completions
+        - **True Drag & Drop**: Authentic HTML5 drag-and-drop interaction
+
+        ### 💡 Tips for Success:
+        - Use translation and phonetic hints to guide your choices
+        - Try different difficulty levels to challenge yourself
+        - Pay attention to word categories for context clues
+        - Practice regularly to build character recognition skills
         """)
-
-    # Technical features
-    with st.expander("⚙️ Technical Features"):
-        st.markdown("""
-        ### This Enhanced Version Includes:
-        - **True HTML5 Drag & Drop**: Authentic drag-and-drop interaction
-        - **Smooth Animations**: Visual feedback during interactions
-        - **Progress Tracking**: Real-time completion status
-        - **Smart Validation**: Instant answer checking
-        - **Responsive Design**: Works on desktop and tablet devices
-        - **Accessibility**: Keyboard-friendly and screen reader compatible
-        - **Performance**: Fast loading and smooth animations
-        """)
-
-    # Footer with current game state (for debugging)
-    if st.checkbox("🔧 Show Debug Info", value=False):
-        st.json(
-            {
-                "current_state": st.session_state.drag_drop_state,
-                "puzzle_info": puzzle if puzzle else None,
-            }
-        )
 
 
 if __name__ == "__main__":
