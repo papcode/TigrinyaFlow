@@ -13,31 +13,98 @@ from clientTranslation import alef_row, feedel_rows, geez_to_latin_syllable
 
 # Create TIGRINYA_ALPHABETS data structure from existing feedel_rows and alef_row
 def create_tigrinya_alphabets():
-    """Create the alphabet data structure matching interface_reference.py format"""
-    tigrinya_alphabets = {}
+    """Create the alphabet data structure in traditional order as specified"""
+    from collections import OrderedDict
 
-    # Add alef row (vowel-only characters)
-    vowel_names = ["a", "u", "i", "ā", "ē", "ə", "o"]
-    for i, char in enumerate(alef_row):
-        tigrinya_alphabets[char] = {
-            "forms": [char],  # Vowel characters have only one form
-            "phonetic": [vowel_names[i]],
-        }
-
-    # Add consonant rows
+    tigrinya_alphabets = OrderedDict()
     vowel_sounds = ["e", "u", "i", "a", "ē", "ə", "o"]
-    for consonant, forms in feedel_rows.items():
-        # Use the first form (6th order - base form) as the key
+
+    # Define the exact traditional order requested - using base characters for validation
+    traditional_order_chars = [
+        # Group 1: በ ሰ ሸ ከ ኸ ጠ ጨ ሐ
+        "ብ",
+        "ስ",
+        "ሽ",
+        "ክ",
+        "ኽ",
+        "ጥ",
+        "ጭ",
+        "ሕ",
+        # Group 2: ለ አ ጸ ጰ
+        "ል",
+        "አ",
+        "ፅ",
+        "ጵ",
+        # Group 3: ተ ቸ ቀ ገ ነ ኘ ፐ
+        "ት",
+        "ች",
+        "ቅ",
+        "ግ",
+        "ን",
+        "ኝ",
+        "ፕ",
+        # Group 4: ሀ ዐ ወ
+        "ህ",
+        "ዕ",
+        "ው",
+        # Group 5: ደ ጀ
+        "ድ",
+        "ጅ",
+        # Group 6: ረ ፈ
+        "ር",
+        "ፍ",
+        # Group 7: ዘ ዠ
+        "ዝ",
+        "ዥ",
+    ]
+
+    # Map base characters to consonant keys
+    base_to_consonant = {}
+    for cons, forms in feedel_rows.items():
         base_char = forms[5]  # 6th form is the base consonant
-        tigrinya_alphabets[base_char] = {
-            "forms": list(forms),
-            "phonetic": [f"{consonant}{vowel}" for vowel in vowel_sounds],
-        }
+        base_to_consonant[base_char] = cons
+
+    # Add characters in the specified order
+    for base_char in traditional_order_chars:
+        if base_char == "አ":
+            # Special case for አ
+            tigrinya_alphabets[base_char] = {
+                "forms": [base_char],
+                "phonetic": ["a"],
+            }
+        elif base_char in base_to_consonant:
+            cons = base_to_consonant[base_char]
+            forms = feedel_rows[cons]
+            tigrinya_alphabets[base_char] = {
+                "forms": list(forms),
+                "phonetic": [f"{cons}{vowel}" for vowel in vowel_sounds],
+            }
+
+    # Add remaining alef row characters (vowels) at the end
+    vowel_names = ["a", "u", "i", "ā", "ē", "ə", "o"]
+    for i, char in enumerate(alef_row[1:], 1):  # Skip አ as it's already added
+        if char not in tigrinya_alphabets:  # Avoid duplicates
+            tigrinya_alphabets[char] = {
+                "forms": [char],
+                "phonetic": [vowel_names[i]],
+            }
+
+    # Add any remaining characters from feedel_rows that weren't in the traditional order
+    for cons, forms in feedel_rows.items():
+        base_char = forms[5]
+        if base_char not in tigrinya_alphabets:
+            tigrinya_alphabets[base_char] = {
+                "forms": list(forms),
+                "phonetic": [f"{cons}{vowel}" for vowel in vowel_sounds],
+            }
 
     return tigrinya_alphabets
 
 
-TIGRINYA_ALPHABETS = create_tigrinya_alphabets()
+# Create alphabets dynamically to avoid caching issues
+def get_tigrinya_alphabets():
+    """Get fresh alphabet data to avoid caching issues"""
+    return create_tigrinya_alphabets()
 
 
 def create_auto_start_handwriting_html(
@@ -878,29 +945,37 @@ def render():
 
     # Create alphabet grid with clickable buttons
     cols_per_row = 7
+    TIGRINYA_ALPHABETS = get_tigrinya_alphabets()
     alphabet_keys = list(TIGRINYA_ALPHABETS.keys())
 
+    # Display traditional order verification
+    st.info(f"📚 Traditional Alphabet Order - {len(alphabet_keys)} characters total")
+
+    # Create properly structured grid
     for i in range(0, len(alphabet_keys), cols_per_row):
         cols = st.columns(cols_per_row)
-        for j, col in enumerate(cols):
-            if i + j < len(alphabet_keys):
-                alphabet_key = alphabet_keys[i + j]
-                alphabet_data = TIGRINYA_ALPHABETS[alphabet_key]
+        row_keys = alphabet_keys[i : i + cols_per_row]
 
-                with col:
+        for j, col in enumerate(cols):
+            with col:
+                if j < len(row_keys):
+                    alphabet_key = row_keys[j]
+                    # Ensure character is properly encoded
+                    clean_char = str(alphabet_key).strip()
                     if st.button(
-                        f"{alphabet_key}",
-                        key=f"alphabet_{alphabet_key}",
-                        help=f"Click to animate {alphabet_key}",
-                        width='stretch',
+                        clean_char,
+                        key=f"btn_{i}_{j}_{ord(clean_char)}",  # Use Unicode code point for unique key
+                        help=f"Click to animate {clean_char}",
+                        use_container_width=True,
                     ):
-                        st.session_state.selected_character = alphabet_key
-                        st.session_state.animation_character = alphabet_key
+                        st.session_state.selected_character = clean_char
+                        st.session_state.animation_character = clean_char
                         st.rerun()
 
     # Display selected character details and animation
     if st.session_state.selected_character:
         selected_char = st.session_state.selected_character
+        TIGRINYA_ALPHABETS = get_tigrinya_alphabets()
         char_data = TIGRINYA_ALPHABETS[selected_char]
 
         st.markdown("---")
@@ -935,7 +1010,7 @@ def render():
                 forms_df.append({"Form": form, "Sound": phonetic, "Order": i + 1})
 
             df = pd.DataFrame(forms_df)
-            st.dataframe(df, width='stretch', hide_index=True)
+            st.dataframe(df, width="stretch", hide_index=True)
 
             # Related characters or similar forms - Click to animate on same canvas
             st.markdown("#### Related Forms - Click to animate")
@@ -954,7 +1029,7 @@ def render():
                         f"{form}",
                         key=f"related_{form}_{selected_char}_{i}",
                         help=f"Animate {form} ({phonetic})",
-                        width='stretch',
+                        width="stretch",
                     ):
                         # Set this form to be animated on main canvas
                         st.session_state.animation_character = form
@@ -969,8 +1044,8 @@ def render():
                             f"{form}",
                             key=f"related_{form}_{selected_char}_{i + 1}",
                             help=f"Animate {form} ({phonetic})",
-                                                    width='stretch',
-                                                ):                            # Set this form to be animated on main canvas
+                            width="stretch",
+                        ):  # Set this form to be animated on main canvas
                             st.session_state.animation_character = form
                             st.rerun()
 
