@@ -8,7 +8,7 @@ import base64
 import streamlit as st
 
 # Import page modules
-from pages import (
+from page_modules import (
     alphabet_page,
     browse_page,
     drag_drop_page,
