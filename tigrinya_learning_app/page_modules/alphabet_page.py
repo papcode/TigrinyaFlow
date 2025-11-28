@@ -19,43 +19,42 @@ def create_tigrinya_alphabets():
     tigrinya_alphabets = OrderedDict()
     vowel_sounds = ["e", "u", "i", "a", "ē", "ə", "o"]
 
-    # Define the exact traditional order requested - using base characters for validation
+    # Traditional Geʿez/Tigrinya alphabetical order
     traditional_order_chars = [
-        # Group 1: በ ሰ ሸ ከ ኸ ጠ ጨ ሐ
-        "ብ",
-        "ስ",
-        "ሽ",
-        "ክ",
-        "ኽ",
-        "ጥ",
-        "ጭ",
-        "ሕ",
-        # Group 2: ለ አ ጸ ጰ
-        "ል",
-        "አ",
-        "ፅ",
-        "ጵ",
-        # Group 3: ተ ቸ ቀ ገ ነ ኘ ፐ
-        "ት",
-        "ች",
-        "ቅ",
-        "ግ",
-        "ን",
-        "ኝ",
-        "ፕ",
-        # Group 4: ሀ ዐ ወ
-        "ህ",
-        "ዕ",
-        "ው",
-        # Group 5: ደ ጀ
-        "ድ",
-        "ጅ",
-        # Group 6: ረ ፈ
-        "ር",
-        "ፍ",
-        # Group 7: ዘ ዠ
-        "ዝ",
-        "ዥ",
+        # Traditional order: ሀ, ለ, ሐ/ኀ, መ, ሠ, ረ, ሰ, ሸ, ቀ, ቐ
+        "ህ",  # ሀ
+        "ል",  # ለ
+        "ሕ",  # ሐ
+        "ም",  # መ
+        "ር",  # ረ
+        "ስ",  # ሰ
+        "ሽ",  # ሸ
+        "ቅ",  # ቀ
+        # በ, ቨ, ተ, ቸ, ኀ/ኸ, ነ, ኘ, አ
+        "ብ",  # በ
+        "ት",  # ተ
+        "ች",  # ቸ
+        "ኽ",  # ኸ
+        "ን",  # ነ
+        "ኝ",  # ኘ
+        "አ",  # አ
+        # ከ, ኸ, ወ, ዐ/ዘ/ዠ, የ, ደ, ጀ, ገ
+        "ክ",  # ከ
+        "ው",  # ወ
+        "ዕ",  # ዐ
+        "ዝ",  # ዘ
+        "ዥ",  # ዠ
+        "ይ",  # የ
+        "ድ",  # ደ
+        "ጅ",  # ጀ
+        "ግ",  # ገ
+        # ጠ, ጨ, ጰ, ጸ, ፀ, ፈ, ፐ
+        "ጥ",  # ጠ
+        "ጭ",  # ጨ
+        "ጵ",  # ጰ
+        "ፅ",  # ጸ
+        "ፍ",  # ፈ
+        "ፕ",  # ፐ
     ]
 
     # Map base characters to consonant keys
@@ -948,28 +947,21 @@ def render():
     TIGRINYA_ALPHABETS = get_tigrinya_alphabets()
     alphabet_keys = list(TIGRINYA_ALPHABETS.keys())
 
-    # Display traditional order verification
-    st.info(f"📚 Traditional Alphabet Order - {len(alphabet_keys)} characters total")
-
-    # Create properly structured grid
+    # Create alphabet grid with proper traditional order
     for i in range(0, len(alphabet_keys), cols_per_row):
         cols = st.columns(cols_per_row)
-        row_keys = alphabet_keys[i : i + cols_per_row]
-
-        for j, col in enumerate(cols):
-            with col:
-                if j < len(row_keys):
-                    alphabet_key = row_keys[j]
-                    # Ensure character is properly encoded
-                    clean_char = str(alphabet_key).strip()
+        for j in range(cols_per_row):
+            with cols[j]:
+                if i + j < len(alphabet_keys):
+                    char = alphabet_keys[i + j]
                     if st.button(
-                        clean_char,
-                        key=f"btn_{i}_{j}_{ord(clean_char)}",  # Use Unicode code point for unique key
-                        help=f"Click to animate {clean_char}",
+                        char,
+                        key=f"alphabet_{i}_{j}_{ord(char)}",
+                        help=f"Click to animate {char}",
                         use_container_width=True,
                     ):
-                        st.session_state.selected_character = clean_char
-                        st.session_state.animation_character = clean_char
+                        st.session_state.selected_character = char
+                        st.session_state.animation_character = char
                         st.rerun()
 
     # Display selected character details and animation
