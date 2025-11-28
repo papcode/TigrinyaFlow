@@ -1,0 +1,71 @@
+PHOTO ATTRIBUTIONS
+============================================================
+
+As required by Unsplash API Guidelines:
+All photos must be attributed to their photographers.
+
+red (ቀይሕ)
+  Photo by James Lee
+  https://unsplash.com/photos/red-textile-in-close-up-photography-YpDkIh137ws
+  Unsplash: https://unsplash.com
+
+blue (ሰማያዊ)
+  Photo by Krzysztof Kowalik
+  https://unsplash.com/photos/black-mountain-under-white-sky-during-daytime-2pnozU26QBo
+  Unsplash: https://unsplash.com
+
+green (ቀጠልያ)
+  Photo by Andrew Coelho
+  https://unsplash.com/photos/green-pine-trees-during-daytime-aL7SA1ASVdQ
+  Unsplash: https://unsplash.com
+
+yellow (ቢጫ)
+  Photo by Luis Quintero
+  https://unsplash.com/photos/yellow-liquid-cVJsVGkxCoo
+  Unsplash: https://unsplash.com
+
+black (ጸሊም)
+  Photo by Eastman Childs
+  https://unsplash.com/photos/a-black-sky-with-a-lot-of-stars-CEtIM994vaI
+  Unsplash: https://unsplash.com
+
+white (ጻዕዳ)
+  Photo by Drew Beamer
+  https://unsplash.com/photos/a-black-and-white-photo-of-a-white-wall-kUHfMW8awpE
+  Unsplash: https://unsplash.com
+
+orange (ኣራንቾ)
+  Photo by Chang Duong
+  https://unsplash.com/photos/sliced-orange-fruit-on-white-surface-bogrLtEaJ2Q
+  Unsplash: https://unsplash.com
+
+purple (ሊላ)
+  Photo by Luke Chesser
+  https://unsplash.com/photos/blue-to-purple-gradient-eICUFSeirc0
+  Unsplash: https://unsplash.com
+
+brown (ቡናዊ)
+  Photo by Wolfgang Hasselmann
+  https://unsplash.com/photos/dessert-field-pVr6wvUneMk
+  Unsplash: https://unsplash.com
+
+gray (ሓመድ)
+  Photo by H&CO
+  https://unsplash.com/photos/a-black-and-white-photo-of-a-white-wall-06t5GTd8KBQ
+  Unsplash: https://unsplash.com
+
+pink (ሮዛ)
+  Photo by Meiying Ng
+  https://unsplash.com/photos/skyscraper-covered-with-fog-at-daytime-OrwkD-iWgqg
+  Unsplash: https://unsplash.com
+
+silver (ብሩር)
+  Photo by Scottsdale Mint
+  https://unsplash.com/photos/text-xN4QdAn4aJw
+  Unsplash: https://unsplash.com
+
+gold (ወርቂ)
+  Photo by Katie Harp
+  https://unsplash.com/photos/yellow-and-white-area-rug-Em96eDRJPD8
+  Unsplash: https://unsplash.com
+
