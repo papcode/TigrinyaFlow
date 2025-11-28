@@ -12,6 +12,7 @@ from page_modules import (
     alphabet_page,
     browse_page,
     drag_drop_page,
+    match_exercise_page,
     quiz_page,
     search_page,
     statistics_page,
@@ -27,7 +28,7 @@ def main():
         initial_sidebar_state="expanded",
     )
 
-# Custom CSS for better styling
+    # Custom CSS for better styling
     st.markdown(
         """
     <style>
@@ -73,6 +74,7 @@ def main():
             "📚 Browse Vocabulary",
             "✍️ ፊደላት (Alphabets)",
             "🎮 Drag & Drop",
+            "🔗 Match the Following",
             "🎯 Quiz Mode",
             "📊 Statistics",
         ],
@@ -88,6 +90,8 @@ def main():
         alphabet_page()
     elif page == "🎮 Drag & Drop":
         drag_drop_page()
+    elif page == "🔗 Match the Following":
+        match_exercise_page()
     elif page == "🎯 Quiz Mode":
         quiz_page()
     elif page == "📊 Statistics":
@@ -101,6 +105,7 @@ def main():
         "• Browse vocabulary by category\n"
         "• Click alphabet characters for handwriting animations\n"
         "• Play drag & drop to practice word building\n"
+        "• Match images with Tigrinya text labels\n"
         "• Take quizzes to test your knowledge\n"
         "• Check statistics to track progress"
     )
