@@ -1,6 +1,6 @@
 """
-Alphabet page module - Enhanced with auto-starting handwriting animations
-Complete implementation with exact flow from interface_reference.py
+Tigrinya Alphabet Learning Page - Traditional Three-Column Layout
+Complete implementation matching traditional Tigrinya alphabet educational materials
 """
 
 import pandas as pd
@@ -11,125 +11,877 @@ from utils.image_loader import ImageLoader
 from clientTranslation import alef_row, feedel_rows, geez_to_latin_syllable
 
 
-# Create TIGRINYA_ALPHABETS data structure from existing feedel_rows and alef_row
-def create_tigrinya_alphabets():
-    """Create the alphabet data structure in traditional order as specified"""
-    from collections import OrderedDict
+def create_traditional_alphabet_structure():
+    """Create the traditional three-column alphabet structure with corrected data."""
+    
+    alphabet_data = {
+      "column1": [
+        {
+          "family": "be",
+          "familyName": "Be Family",
+          "baseName": "በ",
+          "baseChar": "በ",
+          "exampleWord": "በለ (fruit)",
+          "icon": "🍎",
+          "color": "#ff6b8a",
+          "characters": [
+            { "char": "በ", "sound": "be" },
+            { "char": "ቡ", "sound": "bu" },
+            { "char": "ቢ", "sound": "bi" },
+            { "char": "ባ", "sound": "ba" },
+            { "char": "ቤ", "sound": "bie" },
+            { "char": "ብ", "sound": "b" },
+            { "char": "ቦ", "sound": "bo" }
+          ]
+        },
+        {
+          "family": "se",
+          "familyName": "Se Family",
+          "baseName": "ሰ",
+          "baseChar": "ሰ",
+          "exampleWord": "ሰዓት (clock)",
+          "icon": "🕐",
+          "color": "#5dd9d2",
+          "characters": [
+            { "char": "ሰ", "sound": "se" },
+            { "char": "ሱ", "sound": "su" },
+            { "char": "ሲ", "sound": "si" },
+            { "char": "ሳ", "sound": "sa" },
+            { "char": "ሴ", "sound": "sie" },
+            { "char": "ስ", "sound": "s" },
+            { "char": "ሶ", "sound": "so" }
+          ]
+        },
+        {
+          "family": "she",
+          "familyName": "She Family",
+          "baseName": "ሸ",
+          "baseChar": "ሸ",
+          "exampleWord": "ሽበጥ (shoe)",
+          "icon": "👞",
+          "color": "#4db8e8",
+          "characters": [
+            { "char": "ሸ", "sound": "she" },
+            { "char": "ሹ", "sound": "shu" },
+            { "char": "ሺ", "sound": "shi" },
+            { "char": "ሻ", "sound": "sha" },
+            { "char": "ሼ", "sound": "shie" },
+            { "char": "ሽ", "sound": "sh" },
+            { "char": "ሾ", "sound": "sho" }
+          ]
+        },
+        {
+          "family": "ke",
+          "familyName": "Ke Family",
+          "baseName": "ከ",
+          "baseChar": "ከ",
+          "exampleWord": "ከልቢ (dog)",
+          "icon": "🐕",
+          "color": "#90d890",
+          "characters": [
+            { "char": "ከ", "sound": "ke" },
+            { "char": "ኩ", "sound": "ku" },
+            { "char": "ኪ", "sound": "ki" },
+            { "char": "ካ", "sound": "ka" },
+            { "char": "ኬ", "sound": "kie" },
+            { "char": "ክ", "sound": "k" },
+            { "char": "ኮ", "sound": "ko" }
+          ]
+        },
+        {
+          "family": "khe",
+          "familyName": "Khe Family",
+          "baseName": "ኸ",
+          "baseChar": "ኸ",
+          "exampleWord": "ኮኾብ (star)",
+          "icon": "⭐",
+          "color": "#ffd966",
+          "characters": [
+            { "char": "ኸ", "sound": "khe" },
+            { "char": "ኹ", "sound": "khu" },
+            { "char": "ኺ", "sound": "khi" },
+            { "char": "ኻ", "sound": "kha" },
+            { "char": "ኼ", "sound": "khie" },
+            { "char": "ኽ", "sound": "kh" },
+            { "char": "ኾ", "sound": "kho" }
+          ]
+        },
+        {
+          "family": "le",
+          "familyName": "Le Family",
+          "baseName": "ለ",
+          "baseChar": "ለ",
+          "exampleWord": "ለምን (lemon)",
+          "icon": "🍋",
+          "color": "#ffe680",
+          "characters": [
+            { "char": "ለ", "sound": "le" },
+            { "char": "ሉ", "sound": "lu" },
+            { "char": "ሊ", "sound": "li" },
+            { "char": "ላ", "sound": "la" },
+            { "char": "ሌ", "sound": "lie" },
+            { "char": "ል", "sound": "l" },
+            { "char": "ሎ", "sound": "lo" }
+          ]
+        },
+        {
+          "family": "e",
+          "familyName": "E Family",
+          "baseName": "እ",
+          "baseChar": "እ",
+          "exampleWord": "አንበሳ (lion)",
+          "icon": "🦁",
+          "color": "#ff9999",
+          "characters": [
+            { "char": "እ", "sound": "e" },
+            { "char": "ኡ", "sound": "u" },
+            { "char": "ኢ", "sound": "i" },
+            { "char": "ኣ", "sound": "a" },
+            { "char": "ኤ", "sound": "ie" },
+            { "char": "እ", "sound": "i" },
+            { "char": "ኦ", "sound": "o" }
+          ]
+        },
+        {
+          "family": "tse",
+          "familyName": "Tse Family",
+          "baseName": "ጸ",
+          "baseChar": "ጸ",
+          "exampleWord": "ጸሃ (door)",
+          "icon": "🚪",
+          "color": "#c9a0dc",
+          "characters": [
+            { "char": "ጸ", "sound": "tse" },
+            { "char": "ጹ", "sound": "tsu" },
+            { "char": "ጺ", "sound": "tsi" },
+            { "char": "ጻ", "sound": "tsa" },
+            { "char": "ጼ", "sound": "tsie" },
+            { "char": "ጽ", "sound": "ts" },
+            { "char": "ጾ", "sound": "tso" }
+          ]
+        },
+        {
+          "family": "de",
+          "familyName": "De Family",
+          "baseName": "ደ",
+          "baseChar": "ደ",
+          "exampleWord": "ድማው (cat)",
+          "icon": "🐱",
+          "color": "#ffa07a",
+          "characters": [
+            { "char": "ደ", "sound": "de" },
+            { "char": "ዱ", "sound": "du" },
+            { "char": "ዲ", "sound": "di" },
+            { "char": "ዳ", "sound": "da" },
+            { "char": "ዴ", "sound": "die" },
+            { "char": "ድ", "sound": "d" },
+            { "char": "ዶ", "sound": "do" }
+          ]
+        },
+        {
+          "family": "je",
+          "familyName": "Je Family",
+          "baseName": "ጀ",
+          "baseChar": "ጀ",
+          "exampleWord": "ጀሪካን (jerrycan)",
+          "icon": "🛢️",
+          "color": "#98d8c8",
+          "characters": [
+            { "char": "ጀ", "sound": "je" },
+            { "char": "ጁ", "sound": "ju" },
+            { "char": "ጂ", "sound": "ji" },
+            { "char": "ጃ", "sound": "ja" },
+            { "char": "ጄ", "sound": "jie" },
+            { "char": "ጅ", "sound": "j" },
+            { "char": "ጆ", "sound": "jo" }
+          ]
+        },
+        {
+          "family": "ze",
+          "familyName": "Ze Family",
+          "baseName": "ዘ",
+          "baseChar": "ዘ",
+          "exampleWord": "ዘይቲ (oil)",
+          "icon": "🍯",
+          "color": "#f6e58d",
+          "characters": [
+            { "char": "ዘ", "sound": "ze" },
+            { "char": "ዙ", "sound": "zu" },
+            { "char": "ዚ", "sound": "zi" },
+            { "char": "ዛ", "sound": "za" },
+            { "char": "ዜ", "sound": "zie" },
+            { "char": "ዝ", "sound": "z" },
+            { "char": "ዞ", "sound": "zo" }
+          ]
+        }
+      ],
+      "column2": [
+        {
+          "family": "He",
+          "familyName": "He Family",
+          "baseName": "ሀ",
+          "baseChar": "ሀ",
+          "exampleWord": "ሓዊ (fire)",
+          "icon": "🔥",
+          "color": "#ff6b8a",
+          "characters": [
+            { "char": "ሀ", "sound": "He" },
+            { "char": "ሁ", "sound": "Hu" },
+            { "char": "ሂ", "sound": "Hi" },
+            { "char": "ሃ", "sound": "Ha" },
+            { "char": "ሄ", "sound": "Hie" },
+            { "char": "ህ", "sound": "H" },
+            { "char": "ሆ", "sound": "Ho" }
+          ]
+        },
+        {
+          "family": "Te",
+          "familyName": "Te Family",
+          "baseName": "ተ",
+          "baseChar": "ተ",
+          "exampleWord": "ጠራሙዝ (bottle)",
+          "icon": "🍾",
+          "color": "#6495ed",
+          "characters": [
+            { "char": "ተ", "sound": "Te" },
+            { "char": "ቱ", "sound": "Tu" },
+            { "char": "ቲ", "sound": "Ti" },
+            { "char": "ታ", "sound": "Ta" },
+            { "char": "ቴ", "sound": "Tie" },
+            { "char": "ት", "sound": "T" },
+            { "char": "ቶ", "sound": "To" }
+          ]
+        },
+        {
+          "family": "Ṭe",
+          "familyName": "Ṭe Family",
+          "baseName": "ጠ",
+          "baseChar": "ጠ",
+          "exampleWord": "ጠመን (thirsty)",
+          "icon": "💧",
+          "color": "#4fc3f7",
+          "characters": [
+            { "char": "ጠ", "sound": "Ṭe" },
+            { "char": "ጡ", "sound": "Ṭu" },
+            { "char": "ጢ", "sound": "Ṭi" },
+            { "char": "ጣ", "sound": "Ṭa" },
+            { "char": "ጤ", "sound": "Ṭie" },
+            { "char": "ጥ", "sound": "Ṭ" },
+            { "char": "ጦ", "sound": "Ṭo" }
+          ]
+        },
+        {
+          "family": "Che",
+          "familyName": "Che Family",
+          "baseName": "ቸ",
+          "baseChar": "ቸ",
+          "exampleWord": "ጨቋዊት (hen)",
+          "icon": "🐔",
+          "color": "#87ceeb",
+          "characters": [
+            { "char": "ቸ", "sound": "Che" },
+            { "char": "ቹ", "sound": "Chu" },
+            { "char": "ቺ", "sound": "Chi" },
+            { "char": "ቻ", "sound": "Cha" },
+            { "char": "ቼ", "sound": "Chie" },
+            { "char": "ች", "sound": "Ch" },
+            { "char": "ቾ", "sound": "Cho" }
+          ]
+        },
+        {
+          "family": "qe",
+          "familyName": "Qe Family",
+          "baseName": "ቀ",
+          "baseChar": "ቀ",
+          "exampleWord": "ቀሺ (priest)",
+          "icon": "⛪",
+          "color": "#e76f51",
+          "characters": [
+            { "char": "ቀ", "sound": "qe" },
+            { "char": "ቁ", "sound": "qu" },
+            { "char": "ቂ", "sound": "qi" },
+            { "char": "ቃ", "sound": "qa" },
+            { "char": "ቄ", "sound": "qie" },
+            { "char": "ቅ", "sound": "q" },
+            { "char": "ቆ", "sound": "qo" }
+          ]
+        },
+        {
+          "family": "ghe",
+          "familyName": "Ghe Family",
+          "baseName": "ቐ",
+          "baseChar": "ቐ",
+          "exampleWord": "መቐሻ (scissors)",
+          "icon": "✂️",
+          "color": "#5dd9d2",
+          "characters": [
+            { "char": "ቐ", "sound": "ghe" },
+            { "char": "ቑ", "sound": "ghu" },
+            { "char": "ቒ", "sound": "ghi" },
+            { "char": "ቓ", "sound": "gha" },
+            { "char": "ቔ", "sound": "ghie" },
+            { "char": "ቕ", "sound": "gh" },
+            { "char": "ቖ", "sound": "gho" }
+          ]
+        },
+        {
+          "family": "ge",
+          "familyName": "Ge Family",
+          "baseName": "ገ",
+          "baseChar": "ገ",
+          "exampleWord": "ገዛ (house)",
+          "icon": "🏠",
+          "color": "#6eb5ff",
+          "characters": [
+            { "char": "ገ", "sound": "ge" },
+            { "char": "ጉ", "sound": "gu" },
+            { "char": "ጊ", "sound": "gi" },
+            { "char": "ጋ", "sound": "ga" },
+            { "char": "ጌ", "sound": "gie" },
+            { "char": "ግ", "sound": "g" },
+            { "char": "ጎ", "sound": "go" }
+          ]
+        },
+        {
+          "family": "ne",
+          "familyName": "Ne Family",
+          "baseName": "ነ",
+          "baseChar": "ነ",
+          "exampleWord": "ነብሪ (tiger)",
+          "icon": "🐯",
+          "color": "#ffb84d",
+          "characters": [
+            { "char": "ነ", "sound": "ne" },
+            { "char": "ኑ", "sound": "nu" },
+            { "char": "ኒ", "sound": "ni" },
+            { "char": "ና", "sound": "na" },
+            { "char": "ኔ", "sound": "nie" },
+            { "char": "ን", "sound": "n" },
+            { "char": "ኖ", "sound": "no" }
+          ]
+        },
+        {
+          "family": "ye",
+          "familyName": "Ye Family",
+          "baseName": "የ",
+          "baseChar": "የ",
+          "exampleWord": "የማነ (man)",
+          "icon": "👨",
+          "color": "#c8b6ff",
+          "characters": [
+            { "char": "የ", "sound": "ye" },
+            { "char": "ዩ", "sound": "yu" },
+            { "char": "ዪ", "sound": "yi" },
+            { "char": "ያ", "sound": "ya" },
+            { "char": "ዬ", "sound": "yie" },
+            { "char": "ይ", "sound": "y" },
+            { "char": "ዮ", "sound": "yo" }
+          ]
+        },
+        {
+          "family": "re",
+          "familyName": "Re Family",
+          "baseName": "ረ",
+          "baseChar": "ረ",
+          "exampleWord": "ረጋቢት (doves)",
+          "icon": "🕊️",
+          "color": "#ff9eb3",
+          "characters": [
+            { "char": "ረ", "sound": "re" },
+            { "char": "ሩ", "sound": "ru" },
+            { "char": "ሪ", "sound": "ri" },
+            { "char": "ራ", "sound": "ra" },
+            { "char": "ሬ", "sound": "rie" },
+            { "char": "ር", "sound": "r" },
+            { "char": "ሮ", "sound": "ro" }
+          ]
+        },
+        {
+          "family": "fe",
+          "familyName": "Fe Family",
+          "baseName": "ፈ",
+          "baseChar": "ፈ",
+          "exampleWord": "ፈረስ (horse)",
+          "icon": "🐴",
+          "color": "#dda15e",
+          "characters": [
+            { "char": "ፈ", "sound": "fe" },
+            { "char": "ፉ", "sound": "fu" },
+            { "char": "ፊ", "sound": "fi" },
+            { "char": "ፋ", "sound": "fa" },
+            { "char": "ፌ", "sound": "fie" },
+            { "char": "ፍ", "sound": "f" },
+            { "char": "ፎ", "sound": "fo" }
+          ]
+        }
+      ],
+      "column3": [
+        {
+          "family": "he",
+          "familyName": "He Family",
+          "baseName": "ህ",
+          "baseChar": "ህ",
+          "exampleWord": "ህቦይ (monkey)",
+          "icon": "🐵",
+          "color": "#26c6da",
+          "characters": [
+            { "char": "ሀ", "sound": "he" },
+            { "char": "ሁ", "sound": "hu" },
+            { "char": "ሂ", "sound": "hi" },
+            { "char": "ሃ", "sound": "ha" },
+            { "char": "ሄ", "sound": "hie" },
+            { "char": "ህ", "sound": "h" },
+            { "char": "ሆ", "sound": "ho" }
+          ]
+        },
+        {
+          "family": "E",
+          "familyName": "E Family",
+          "baseName": "እ",
+          "baseChar": "እ",
+          "exampleWord": "ወረቀት (paper)",
+          "icon": "📄",
+          "color": "#5dade2",
+          "characters": [
+            { "char": "እ", "sound": "E" },
+            { "char": "ኡ", "sound": "U" },
+            { "char": "ኢ", "sound": "I" },
+            { "char": "ኣ", "sound": "A" },
+            { "char": "ኤ", "sound": "IE" },
+            { "char": "እ", "sound": "I" },
+            { "char": "ኦ", "sound": "O" }
+          ]
+        },
+        {
+          "family": "we",
+          "familyName": "We Family",
+          "baseName": "ወ",
+          "baseChar": "ወ",
+          "exampleWord": "ወርቂ (gold)",
+          "icon": "💰",
+          "color": "#ec407a",
+          "characters": [
+            { "char": "ወ", "sound": "we" },
+            { "char": "ዉ", "sound": "wu" },
+            { "char": "ዊ", "sound": "wi" },
+            { "char": "ዋ", "sound": "wa" },
+            { "char": "ዌ", "sound": "wie" },
+            { "char": "ው", "sound": "w" },
+            { "char": "ዎ", "sound": "wo" }
+          ]
+        },
+        {
+          "family": "me",
+          "familyName": "Me Family",
+          "baseName": "መ",
+          "baseChar": "መ",
+          "exampleWord": "መኪና (car)",
+          "icon": "🚗",
+          "color": "#66bb6a",
+          "characters": [
+            { "char": "መ", "sound": "me" },
+            { "char": "ሙ", "sound": "mu" },
+            { "char": "ሚ", "sound": "mi" },
+            { "char": "ማ", "sound": "ma" },
+            { "char": "ሜ", "sound": "mie" },
+            { "char": "ም", "sound": "m" },
+            { "char": "ሞ", "sound": "mo" }
+          ]
+        },
+        {
+          "family": "pe",
+          "familyName": "Pe Family",
+          "baseName": "ፐ",
+          "baseChar": "ፐ",
+          "exampleWord": "ፓፓዮ (papaya)",
+          "icon": "🥭",
+          "color": "#ff9800",
+          "characters": [
+            { "char": "ፐ", "sound": "pe" },
+            { "char": "ፑ", "sound": "pu" },
+            { "char": "ፒ", "sound": "pi" },
+            { "char": "ፓ", "sound": "pa" },
+            { "char": "ፔ", "sound": "pie" },
+            { "char": "ፕ", "sound": "p" },
+            { "char": "ፖ", "sound": "po" }
+          ]
+        },
+        {
+          "family": "che",
+          "familyName": "Che Family",
+          "baseName": "ጨ",
+          "baseChar": "ጨ",
+          "exampleWord": "ጫው (tea)",
+          "icon": "☕",
+          "color": "#ef5350",
+          "characters": [
+            { "char": "ጨ", "sound": "che" },
+            { "char": "ጩ", "sound": "chu" },
+            { "char": "ጪ", "sound": "chi" },
+            { "char": "ጫ", "sound": "cha" },
+            { "char": "ጬ", "sound": "chie" },
+            { "char": "ጭ", "sound": "ch" },
+            { "char": "ጮ", "sound": "cho" }
+          ]
+        },
+        {
+          "family": "nye",
+          "familyName": "Nye Family",
+          "baseName": "ኘ",
+          "baseChar": "ኘ",
+          "exampleWord": "ኛው (leopard)",
+          "icon": "🐆",
+          "color": "#ffa726",
+          "characters": [
+            { "char": "ኘ", "sound": "nye" },
+            { "char": "ኙ", "sound": "nyu" },
+            { "char": "ኚ", "sound": "nyi" },
+            { "char": "ኛ", "sound": "nya" },
+            { "char": "ኜ", "sound": "nyie" },
+            { "char": "ኝ", "sound": "ny" },
+            { "char": "ኞ", "sound": "nyo" }
+          ]
+        },
+        {
+          "family": "Pe",
+          "familyName": "Pe Family",
+          "baseName": "ፐ",
+          "baseChar": "ፐ",
+          "exampleWord": "ፓስ (pass)",
+          "icon": "🎫",
+          "color": "#7e57c2",
+          "characters": [
+            { "char": "ፐ", "sound": "Pe" },
+            { "char": "ፑ", "sound": "Pu" },
+            { "char": "ፒ", "sound": "Pi" },
+            { "char": "ፓ", "sound": "Pa" },
+            { "char": "ፔ", "sound": "Pie" },
+            { "char": "ፕ", "sound": "P" },
+            { "char": "ፖ", "sound": "Po" }
+          ]
+        },
+        {
+          "family": "zhe",
+          "familyName": "Zhe Family",
+          "baseName": "ዠ",
+          "baseChar": "ዠ",
+          "exampleWord": "ቴሌቪዥን (television)",
+          "icon": "📺",
+          "color": "#42a5f5",
+          "characters": [
+            { "char": "ዠ", "sound": "zhe" },
+            { "char": "ዡ", "sound": "zhu" },
+            { "char": "ዢ", "sound": "zhi" },
+            { "char": "ዣ", "sound": "zha" },
+            { "char": "ዤ", "sound": "zhie" },
+            { "char": "ዥ", "sound": "zh" },
+            { "char": "ዦ", "sound": "zho" }
+          ]
+        }
+      ]
+    }
+    return alphabet_data
 
-    tigrinya_alphabets = OrderedDict()
-    vowel_sounds = ["e", "u", "i", "a", "ē", "ə", "o"]
 
-    # Traditional Geʿez/Tigrinya alphabetical order
-    traditional_order_chars = [
-        # Traditional order: ሀ, ለ, ሐ/ኀ, መ, ሠ, ረ, ሰ, ሸ, ቀ, ቐ
-        "ህ",  # ሀ
-        "ል",  # ለ
-        "ሕ",  # ሐ
-        "ም",  # መ
-        "ር",  # ረ
-        "ስ",  # ሰ
-        "ሽ",  # ሸ
-        "ቅ",  # ቀ
-        # በ, ቨ, ተ, ቸ, ኀ/ኸ, ነ, ኘ, አ
-        "ብ",  # በ
-        "ት",  # ተ
-        "ች",  # ቸ
-        "ኽ",  # ኸ
-        "ን",  # ነ
-        "ኝ",  # ኘ
-        "አ",  # አ
-        # ከ, ኸ, ወ, ዐ/ዘ/ዠ, የ, ደ, ጀ, ገ
-        "ክ",  # ከ
-        "ው",  # ወ
-        "ዕ",  # ዐ
-        "ዝ",  # ዘ
-        "ዥ",  # ዠ
-        "ይ",  # የ
-        "ድ",  # ደ
-        "ጅ",  # ጀ
-        "ግ",  # ገ
-        # ጠ, ጨ, ጰ, ጸ, ፀ, ፈ, ፐ
-        "ጥ",  # ጠ
-        "ጭ",  # ጨ
-        "ጵ",  # ጰ
-        "ፅ",  # ጸ
-        "ፍ",  # ፈ
-        "ፕ",  # ፐ
-    ]
+def create_alphabet_grid_html(alphabet_structure):
+    """Create complete alphabet grid with proper DOM manipulation"""
+    import json
 
-    # Map base characters to consonant keys
-    base_to_consonant = {}
-    for cons, forms in feedel_rows.items():
-        base_char = forms[5]  # 6th form is the base consonant
-        base_to_consonant[base_char] = cons
+    # Convert data to JSON for JavaScript
+    alphabet_data = json.dumps(alphabet_structure)
 
-    # Add characters in the specified order
-    for base_char in traditional_order_chars:
-        if base_char == "አ":
-            # Special case for አ
-            tigrinya_alphabets[base_char] = {
-                "forms": [base_char],
-                "phonetic": ["a"],
-            }
-        elif base_char in base_to_consonant:
-            cons = base_to_consonant[base_char]
-            forms = feedel_rows[cons]
-            tigrinya_alphabets[base_char] = {
-                "forms": list(forms),
-                "phonetic": [f"{cons}{vowel}" for vowel in vowel_sounds],
-            }
+    return f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{
+                font-family: 'Noto Sans Ethiopic', Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            }}
 
-    # Add remaining alef row characters (vowels) at the end
-    vowel_names = ["a", "u", "i", "ā", "ē", "ə", "o"]
-    for i, char in enumerate(alef_row[1:], 1):  # Skip አ as it's already added
-        if char not in tigrinya_alphabets:  # Avoid duplicates
-            tigrinya_alphabets[char] = {
-                "forms": [char],
-                "phonetic": [vowel_names[i]],
-            }
+            .alphabet-grid {{
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                max-width: 1400px;
+                margin: 0 auto;
+            }}
 
-    # Add any remaining characters from feedel_rows that weren't in the traditional order
-    for cons, forms in feedel_rows.items():
-        base_char = forms[5]
-        if base_char not in tigrinya_alphabets:
-            tigrinya_alphabets[base_char] = {
-                "forms": list(forms),
-                "phonetic": [f"{cons}{vowel}" for vowel in vowel_sounds],
-            }
+            .column {{
+                display: flex;
+                flex-direction: column;
+                gap: 15px;
+            }}
 
-    return tigrinya_alphabets
+            .column-header {{
+                text-align: center;
+                font-size: 1.3em;
+                font-weight: bold;
+                color: #2c3e50;
+                padding: 10px;
+                border-bottom: 3px solid #3498db;
+                margin-bottom: 15px;
+            }}
 
+            .family-box {{
+                border-radius: 12px;
+                padding: 15px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+                transition: transform 0.3s ease;
+                border: 3px solid;
+            }}
 
-# Create alphabets dynamically to avoid caching issues
-def get_tigrinya_alphabets():
-    """Get fresh alphabet data to avoid caching issues"""
-    return create_tigrinya_alphabets()
+            .family-box:hover {{
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            }}
+
+            .family-header {{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 12px;
+                border-radius: 8px;
+                color: white;
+                font-weight: bold;
+                margin-bottom: 12px;
+            }}
+
+            .family-icon {{
+                font-size: 1.6em;
+            }}
+
+            .family-name {{
+                font-size: 1.1em;
+                text-transform: capitalize;
+            }}
+
+            .family-content {{
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }}
+            
+            .base-char-display {{
+                font-size: 4.5em;
+                font-weight: bold;
+                padding-right: 15px;
+            }}
+
+            .character-details {{
+                flex: 1;
+            }}
+
+            .example-word {{
+                text-align: center;
+                margin-bottom: 10px;
+                font-style: italic;
+                color: #555;
+                font-size: 1.1em;
+            }}
+
+            .characters-row {{
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 6px;
+            }}
+
+            .char-btn {{
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 8px 4px;
+                border: 2px solid rgba(255,255,255,0.3);
+                border-radius: 8px;
+                background: rgba(255,255,255,0.1);
+                cursor: pointer;
+                transition: all 0.2s ease;
+                min-width: 50px;
+                color: white;
+                font-weight: bold;
+                flex: 1;
+                aspect-ratio: 1;
+            }}
+
+            .char-btn:hover {{
+                transform: scale(1.05);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+                border-color: rgba(255,255,255,0.6);
+            }}
+
+            .char-btn:active {{
+                transform: scale(0.95);
+            }}
+
+            .char-display {{
+                font-size: 1.8em;
+                font-weight: bold;
+                font-family: 'Noto Sans Ethiopic', serif;
+            }}
+
+            .sound-label {{
+                font-size: 0.8em;
+                opacity: 0.9;
+                text-align: center;
+                margin-top: 2px;
+            }}
+
+            .selected-char {{
+                background: rgba(255,255,255,0.4) !important;
+                border-color: #fff !important;
+                transform: scale(1.1);
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="alphabet-grid" id="alphabetGrid">
+            <div class="column column-1">
+                <div class="column-header">Column 1</div>
+            </div>
+            <div class="column column-2">
+                <div class="column-header">Column 2</div>
+            </div>
+            <div class="column column-3">
+                <div class="column-header">Column 3</div>
+            </div>
+        </div>
+
+        <script>
+            const alphabetData = {alphabet_data};
+            let selectedCharacter = null;
+
+            // Communication with parent window
+            function selectCharacter(char) {{
+                selectedCharacter = char;
+
+                // Remove previous selection
+                document.querySelectorAll('.char-btn').forEach(btn => {{
+                    btn.classList.remove('selected-char');
+                }});
+
+                // Highlight selected character
+                const targetBtn = Array.from(document.querySelectorAll('.char-btn')).find(btn => btn.querySelector('.char-display').textContent === char);
+                if (targetBtn) {{
+                    targetBtn.classList.add('selected-char');
+                }}
+
+                // Send to parent window (Streamlit)
+                window.parent.postMessage({{
+                    type: 'character_selected',
+                    character: char
+                }}, '*');
+            }}
+
+            function createFamilyBox(family, columnClass) {{
+                const familyBox = document.createElement('div');
+                familyBox.className = 'family-box';
+                familyBox.style.borderColor = family.color;
+                familyBox.style.background = `linear-gradient(135deg, ${{family.color}}1A, ${{family.color}}33)`;
+
+                // Family header
+                const header = document.createElement('div');
+                header.className = 'family-header';
+                header.style.background = family.color;
+
+                const icon = document.createElement('span');
+                icon.className = 'family-icon';
+                icon.textContent = family.icon;
+
+                const name = document.createElement('span');
+                name.className = 'family-name';
+                name.textContent = family.familyName;
+
+                header.appendChild(icon);
+                header.appendChild(name);
+                
+                // Content area
+                const content = document.createElement('div');
+                content.className = 'family-content';
+
+                const baseCharDisplay = document.createElement('div');
+                baseCharDisplay.className = 'base-char-display';
+                baseCharDisplay.textContent = family.baseName;
+                baseCharDisplay.style.color = family.color;
+
+                const details = document.createElement('div');
+                details.className = 'character-details';
+
+                // Example word
+                const example = document.createElement('div');
+                example.className = 'example-word';
+                example.textContent = family.exampleWord;
+
+                // Characters row
+                const charactersRow = document.createElement('div');
+                charactersRow.className = 'characters-row';
+
+                // Create character buttons
+                family.characters.forEach((charObj) => {{
+                    const button = document.createElement('button');
+                    button.className = 'char-btn';
+                    button.style.background = `linear-gradient(45deg, ${{family.color}}B3, ${{family.color}}E6)`;
+                    button.onclick = () => selectCharacter(charObj.char);
+
+                    const charDisplay = document.createElement('div');
+                    charDisplay.className = 'char-display';
+                    charDisplay.textContent = charObj.char;
+
+                    const soundLabel = document.createElement('div');
+                    soundLabel.className = 'sound-label';
+                    soundLabel.textContent = charObj.sound;
+
+                    button.appendChild(charDisplay);
+                    button.appendChild(soundLabel);
+                    charactersRow.appendChild(button);
+                }});
+                
+                details.appendChild(example);
+                details.appendChild(charactersRow);
+                content.appendChild(baseCharDisplay);
+                content.appendChild(details);
+                familyBox.appendChild(header);
+                familyBox.appendChild(content);
+
+                return familyBox;
+            }}
+
+            function initializeGrid() {{
+                const columns = {{
+                    'column1': document.querySelector('.column-1'),
+                    'column2': document.querySelector('.column-2'),
+                    'column3': document.querySelector('.column-3')
+                }};
+
+                Object.keys(columns).forEach(columnKey => {{
+                    const families = alphabetData[columnKey];
+                    const column = columns[columnKey];
+                    
+                    families.forEach(family => {{
+                        const familyBox = createFamilyBox(family);
+                        column.appendChild(familyBox);
+                    }});
+                }});
+            }}
+
+            document.addEventListener('DOMContentLoaded', initializeGrid);
+        </script>
+    </body>
+    </html>
+    """
 
 
 def create_auto_start_handwriting_html(
-    text,
-    pen_style="Realistic",
-    writing_style="Natural",
-    animation_speed=4.0,
-    step_size=2,
+    text, pen_style="Realistic", writing_style="Natural", animation_speed=4.0
 ):
-    """
-    Create HTML5 Canvas-based fluid handwriting animation with continuous path system
-
-    Args:
-        text (str): Text to animate
-        pen_style (str): Style of pen rendering ("Realistic", "Simple", "Brush")
-        writing_style (str): Writing characteristics ("Natural", "Formal", "Cursive")
-        animation_speed (float): Animation speed multiplier
-        step_size (int): Point sampling density in pixels (1-3 for smooth animation)
-
-    Returns:
-        str: Complete HTML content with fluid handwriting animation
-    """
+    """Create HTML5 Canvas-based handwriting animation that auto-starts"""
 
     import json
 
-    # Escape text for JavaScript
     safe_text = json.dumps(text)
 
     html_content = f"""
@@ -138,16 +890,13 @@ def create_auto_start_handwriting_html(
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Fluid Handwriting Animation - Enhanced</title>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
+            <title>Tigrinya Handwriting Animation</title>
             <style>
-                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Ethiopic:wght@400;700&display=swap');
-
                 body {{
                     margin: 0;
                     padding: 20px;
-                    font-family: 'Noto Sans Ethiopic', 'Ebrima', 'Nyala', sans-serif;
-                    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                    font-family: 'Noto Sans Ethiopic', Arial, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                     min-height: 100vh;
                     display: flex;
                     flex-direction: column;
@@ -155,61 +904,67 @@ def create_auto_start_handwriting_html(
                 }}
 
                 .container {{
-                    max-width: 1200px;
-                    width: 100%;
                     background: white;
-                    border-radius: 15px;
-                    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
-                    padding: 40px;
-                    margin: 20px;
+                    border-radius: 20px;
+                    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+                    padding: 30px;
+                    max-width: 90%;
+                    width: 100%;
                 }}
 
-                .text-display {{
-                    font-size: 1.6em;
+                .title {{
+                    text-align: center;
+                    color: #2c3e50;
+                    font-size: 2.5em;
+                    margin-bottom: 20px;
+                    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+                }}
+
+                .character-display {{
+                    text-align: center;
+                    font-size: 4em;
+                    color: #e74c3c;
+                    margin: 20px 0;
+                    font-weight: bold;
+                }}
+
+                #canvas {{
+                    border: 3px solid #3498db;
+                    border-radius: 15px;
+                    box-shadow: inset 0 4px 8px rgba(0,0,0,0.1);
+                    background: #fafafa;
+                    margin: 20px auto;
+                    display: block;
+                }}
+
+                .controls {{
                     text-align: center;
                     margin: 20px 0;
-                    padding: 20px;
-                    background: linear-gradient(135deg, #e8f4fd 0%, #f0f8ff 100%);
-                    border-radius: 12px;
-                    border: 2px solid rgba(102, 126, 234, 0.2);
-                    color: #2c3e50;
-                    font-weight: 500;
                 }}
 
-                .animation-area {{
-                    position: relative;
-                    background: #fefefe;
-                    border: 2px solid #e1e8ed;
-                    border-radius: 15px;
-                    margin: 25px 0;
-                    min-height: 350px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 15px;
-                    box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+                .btn {{
+                    background: linear-gradient(45deg, #3498db, #2980b9);
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 25px;
+                    margin: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
                 }}
 
-                .scroll-container {{
-                    width: 100%;
-                    max-width: 1000px;
-                    max-height: 450px;
-                    overflow: auto;
-                    border-radius: 10px;
-                    border: 1px solid #ddd;
-                    background: white;
-                    position: relative;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                .btn:hover {{
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
                 }}
 
-                #animationCanvas {{
-                    display: block;
-                    background: white;
-                    border-radius: 8px;
-                }}
-
-                .progress-container {{
-                    margin: 20px 0;
+                .status {{
+                    text-align: center;
+                    margin: 15px 0;
+                    font-size: 1.2em;
+                    color: #34495e;
                 }}
 
                 .progress-bar {{
@@ -218,710 +973,166 @@ def create_auto_start_handwriting_html(
                     background: #ecf0f1;
                     border-radius: 4px;
                     overflow: hidden;
-                    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+                    margin: 10px 0;
                 }}
 
                 .progress-fill {{
                     height: 100%;
-                    background: linear-gradient(90deg, #667eea, #764ba2);
+                    background: linear-gradient(90deg, #3498db, #2ecc71);
                     border-radius: 4px;
-                    width: 0%;
                     transition: width 0.3s ease;
-                    box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
-                }}
-
-                .status {{
-                    text-align: center;
-                    margin: 15px 0;
-                    font-weight: 600;
-                    font-size: 1.1em;
-                    color: #2c3e50;
-                }}
-
-                .scroll-container::-webkit-scrollbar {{
-                    width: 10px;
-                    height: 10px;
-                }}
-
-                .scroll-container::-webkit-scrollbar-track {{
-                    background: #f1f1f1;
-                    border-radius: 5px;
-                }}
-
-                .scroll-container::-webkit-scrollbar-thumb {{
-                    background: linear-gradient(135deg, #667eea, #764ba2);
-                    border-radius: 5px;
-                }}
-
-                .scroll-container::-webkit-scrollbar-thumb:hover {{
-                    background: linear-gradient(135deg, #5a67d8, #6b46c1);
+                    width: 0%;
                 }}
             </style>
         </head>
         <body>
             <div class="container">
-                <div class="text-display">
-                    <strong>Animating:</strong> {text}
+                <div class="title">ትግርኛ ምስሊ (Tigrinya Writing)</div>
+                <div class="character-display" id="currentChar">{text}</div>
+
+                <canvas id="canvas" width="500" height="400"></canvas>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
                 </div>
 
-                <div class="animation-area">
-                    <div class="scroll-container" id="scrollContainer">
-                        <canvas id="animationCanvas"></canvas>
-                    </div>
-                </div>
+                <div class="status" id="status">Loading animation...</div>
 
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill"></div>
-                    </div>
-                    <div class="status" id="status">Loading font and preparing animation...</div>
+                <div class="controls">
+                    <button class="btn" onclick="startAnimation()">▶️ Start</button>
+                    <button class="btn" onclick="clearCanvas()">🔄 Clear</button>
+                    <button class="btn" onclick="pauseAnimation()">⏸️ Pause</button>
                 </div>
             </div>
 
             <script>
-                // Enhanced animation configuration with fluid path system
-                const config = {{
-                    text: {safe_text},
-                    penStyle: "{pen_style}",
-                    writingStyle: "{writing_style}",
-                    animationSpeed: {animation_speed},
-                    stepSize: {step_size},
+                const canvas = document.getElementById('canvas');
+                const ctx = canvas.getContext('2d');
+                const text = {safe_text};
+                let animationSpeed = {animation_speed};
+                let isAnimating = false;
+                let animationFrameId;
+                let currentStep = 0;
+                let totalSteps = 0;
 
-                    // Canvas elements
-                    canvas: null,
-                    ctx: null,
-                    glyphCanvas: null,
-                    glyphCtx: null,
-                    maskCanvas: null,
-                    maskCtx: null,
-
-                    // Animation state
-                    isAnimating: false,
-                    currentCharIndex: 0,
-                    currentPointIndex: 0,
-
-                    // Font and layout
-                    font: null,
-                    fontSize: 120,
-                    characters: [],
-                    scrollContainer: null,
-                    canvasWidth: 2400,
-                    canvasHeight: 400,
-
-                    // Fluid path settings
-                    revealMode: 'ink-mask',
-                    nibRadius: 0,
-                    inkColor: '#2c3e50',
-
-                    // Animation state
-                    penX: 0,
-                    penY: 0,
-                    penPressure: 1.0,
-                    penSpeed: 0,
-                    animationFrame: null,
-
-                    // Performance tracking
-                    lastFrameTime: 0,
-                    frameCount: 0
+                // Simple stroke patterns for basic characters
+                const strokePatterns = {{
+                    'አ': [
+                        [[200, 100], [250, 150], [200, 200], [250, 250]],
+                        [[300, 150], [250, 200], [300, 250]]
+                    ],
+                    'ኡ': [
+                        [[200, 150], [250, 100], [300, 150]],
+                        [[250, 150], [250, 300]]
+                    ],
+                    'ኢ': [
+                        [[200, 100], [300, 100]],
+                        [[250, 100], [250, 300]]
+                    ],
+                    'default': [
+                        [[200, 150], [300, 150]],
+                        [[250, 100], [250, 300]]
+                    ]
                 }};
 
-                // Load font and initialize with auto-start
-                opentype.load('https://fonts.gstatic.com/s/notosansethiopic/v49/7cHPv50vjIepfJVOZZgcpQ5B9FBTH9KGNfhSTgtoow1KVnIvyBoMSzUMacb-T35OK6Dj.ttf', function (err, font) {{
-                    if (err) {{
-                        console.error('Font loading error:', err);
-                        document.getElementById('status').textContent = 'Error loading font. Using fallback - Starting animation...';
-                        initWithoutFont();
-                        setTimeout(startAnimation, 800);
-                    }} else {{
-                        config.font = font;
-                        document.getElementById('status').textContent = 'Font loaded successfully - Starting animation...';
-                        initCanvas();
-                        prepareCharacterPaths();
-                        setTimeout(startAnimation, 500);
-                    }}
-                }});
-
-                // Initialize without font (fallback)
-                function initWithoutFont() {{
-                    config.font = null;
-                    initCanvas();
-                    prepareCharacterPaths();
+                function getStrokePattern(char) {{
+                    return strokePatterns[char] || strokePatterns['default'];
                 }}
 
-                // Initialize canvas system
-                function initCanvas() {{
-                    config.canvas = document.getElementById('animationCanvas');
-                    config.scrollContainer = document.getElementById('scrollContainer');
+                function drawStroke(points, progress) {{
+                    if (points.length < 2) return;
 
-                    // Calculate optimal canvas dimensions
-                    const textLength = config.text.length;
-                    const estimatedWidth = Math.max(900, textLength * 130);
-                    config.canvasWidth = estimatedWidth;
-                    config.canvas.width = config.canvasWidth;
-                    config.canvas.height = config.canvasHeight;
-                    config.ctx = config.canvas.getContext('2d');
+                    ctx.strokeStyle = '#2c3e50';
+                    ctx.lineWidth = 4;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
 
-                    // Create offscreen canvases for compositing
-                    config.glyphCanvas = document.createElement('canvas');
-                    config.glyphCanvas.width = config.canvasWidth;
-                    config.glyphCanvas.height = config.canvasHeight;
-                    config.glyphCtx = config.glyphCanvas.getContext('2d');
-
-                    config.maskCanvas = document.createElement('canvas');
-                    config.maskCanvas.width = config.canvasWidth;
-                    config.maskCanvas.height = config.canvasHeight;
-                    config.maskCtx = config.maskCanvas.getContext('2d');
-
-                    // Configure rendering contexts for quality
-                    [config.ctx, config.glyphCtx, config.maskCtx].forEach(ctx => {{
-                        ctx.imageSmoothingEnabled = true;
-                        ctx.imageSmoothingQuality = 'high';
-                        ctx.lineCap = 'round';
-                        ctx.lineJoin = 'round';
-                    }});
-
-                    // Calculate nib size based on font size
-                    config.nibRadius = config.fontSize * 0.04;
-
-                    config.scrollContainer.scrollLeft = 0;
-                }}
-
-                // Prepare character paths using fluid continuous path system
-                function prepareCharacterPaths() {{
-                    const baseY = config.canvasHeight / 2 + config.fontSize / 4;
-
-                    // Calculate total text width to center it
-                    let totalTextWidth = 0;
-                    for (let i = 0; i < config.text.length; i++) {{
-                        const char = config.text[i];
-                        if (char === ' ') {{
-                            const spaceWidth = config.font ?
-                                config.font.getAdvanceWidth(' ', config.fontSize) :
-                                config.fontSize * 0.3;
-                            totalTextWidth += spaceWidth;
-                        }} else {{
-                            const charWidth = config.font ?
-                                config.font.getAdvanceWidth(char, config.fontSize) :
-                                config.fontSize * 0.6;
-                            totalTextWidth += charWidth;
-                        }}
-                    }}
-
-                    // Calculate centered starting X position with some padding
-                    const padding = 50;
-                    const availableWidth = config.canvasWidth - (2 * padding);
-                    const startX = padding + (availableWidth - totalTextWidth) / 2;
-                    let currentX = Math.max(padding, startX);
-
-                    config.characters = [];
-
-                    // Clear and prepare glyph canvas
-                    config.glyphCtx.fillStyle = 'white';
-                    config.glyphCtx.fillRect(0, 0, config.canvasWidth, config.canvasHeight);
-
-                    for (let i = 0; i < config.text.length; i++) {{
-                        const char = config.text[i];
-
-                        if (char === ' ') {{
-                            const spaceWidth = config.font ?
-                                config.font.getAdvanceWidth(' ', config.fontSize) :
-                                config.fontSize * 0.3;
-                            currentX += spaceWidth;
-                            config.characters.push({{
-                                char: ' ',
-                                type: 'space',
-                                x: currentX,
-                                y: baseY,
-                                width: spaceWidth,
-                                points: []
-                            }});
-                            continue;
-                        }}
-
-                        // Render glyph to offscreen canvas
-                        if (config.font) {{
-                            config.glyphCtx.font = `${{config.fontSize}}px 'Noto Sans Ethiopic'`;
-                        }} else {{
-                            config.glyphCtx.font = `${{config.fontSize}}px 'Noto Sans Ethiopic', serif`;
-                        }}
-                        config.glyphCtx.fillStyle = config.inkColor;
-                        config.glyphCtx.fillText(char, currentX, baseY);
-
-                        // Generate continuous path for character
-                        const continuousPath = generateContinuousPath(char, currentX, baseY);
-
-                        config.characters.push({{
-                            char: char,
-                            type: 'character',
-                            x: currentX,
-                            y: baseY,
-                            points: continuousPath
-                        }});
-
-                        // Advance to next character position
-                        const charWidth = config.font ?
-                            config.font.getAdvanceWidth(char, config.fontSize) :
-                            config.fontSize * 0.7;
-                        currentX += charWidth;
-                    }}
-
-                    updateStatus(`Prepared ${{config.characters.length}} characters - Animation will start soon...`);
-                }}
-
-                // Generate continuous path for a character (CORE FLUID ALGORITHM)
-                function generateContinuousPath(char, offsetX, offsetY) {{
-                    if (!config.font) {{
-                        return generateFallbackPath(char, offsetX, offsetY);
-                    }}
-
-                    try {{
-                        const fontPath = config.font.getPath(char, offsetX, offsetY, config.fontSize);
-                        return convertToFluidPath(fontPath, offsetX, offsetY);
-                    }} catch (error) {{
-                        console.warn(`Error generating path for '${{char}}':`, error);
-                        return generateFallbackPath(char, offsetX, offsetY);
-                    }}
-                }}
-
-                // Convert OpenType path to fluid continuous path
-                function convertToFluidPath(path, offsetX, offsetY) {{
-                    const contours = extractPathContours(path);
-                    if (contours.length === 0) return [];
-
-                    const entryPoint = findOptimalEntryPoint(contours);
-                    const fluidPath = createFluidContourPath(contours, entryPoint);
-                    return resamplePath(fluidPath, config.stepSize);
-                }}
-
-                // Extract contours from OpenType path commands
-                function extractPathContours(path) {{
-                    const contours = [];
-                    let currentContour = [];
-
-                    for (const cmd of path.commands) {{
-                        switch (cmd.type) {{
-                            case 'M':
-                                if (currentContour.length > 0) {{
-                                    contours.push([...currentContour]);
-                                }}
-                                currentContour = [{{x: cmd.x, y: cmd.y}}];
-                                break;
-
-                            case 'L':
-                                currentContour.push({{x: cmd.x, y: cmd.y}});
-                                break;
-
-                            case 'Q':
-                                const qStart = currentContour[currentContour.length - 1];
-                                const qCurve = sampleQuadraticBezier(qStart, {{x: cmd.x1, y: cmd.y1}}, {{x: cmd.x, y: cmd.y}}, 0.1);
-                                currentContour.push(...qCurve.slice(1));
-                                break;
-
-                            case 'C':
-                                const cStart = currentContour[currentContour.length - 1];
-                                const cCurve = sampleCubicBezier(cStart, {{x: cmd.x1, y: cmd.y1}}, {{x: cmd.x2, y: cmd.y2}}, {{x: cmd.x, y: cmd.y}}, 0.1);
-                                currentContour.push(...cCurve.slice(1));
-                                break;
-
-                            case 'Z':
-                                if (currentContour.length > 0) {{
-                                    contours.push([...currentContour]);
-                                    currentContour = [];
-                                }}
-                                break;
-                        }}
-                    }}
-
-                    if (currentContour.length > 0) {{
-                        contours.push(currentContour);
-                    }}
-
-                    return contours;
-                }}
-
-                function sampleQuadraticBezier(p0, p1, p2, step) {{
-                    const points = [];
-                    for (let t = 0; t <= 1; t += step) {{
-                        const x = Math.pow(1-t, 2) * p0.x + 2*(1-t)*t * p1.x + Math.pow(t, 2) * p2.x;
-                        const y = Math.pow(1-t, 2) * p0.y + 2*(1-t)*t * p1.y + Math.pow(t, 2) * p2.y;
-                        points.push({{x, y}});
-                    }}
-                    return points;
-                }}
-
-                function sampleCubicBezier(p0, p1, p2, p3, step) {{
-                    const points = [];
-                    for (let t = 0; t <= 1; t += step) {{
-                        const x = Math.pow(1-t, 3) * p0.x + 3 * Math.pow(1-t, 2) * t * p1.x +
-                                3 * (1-t) * Math.pow(t, 2) * p2.x + Math.pow(t, 3) * p3.x;
-                        const y = Math.pow(1-t, 3) * p0.y + 3 * Math.pow(1-t, 2) * t * p1.y +
-                                3 * (1-t) * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
-                        points.push({{x, y}});
-                    }}
-                    return points;
-                }}
-
-                function findOptimalEntryPoint(contours) {{
-                    if (contours.length === 0) return null;
-
-                    let leftmostPoint = null;
-                    let minX = Infinity;
-
-                    contours.forEach((contour, contourIndex) => {{
-                        contour.forEach((point, pointIndex) => {{
-                            if (point.x < minX) {{
-                                minX = point.x;
-                                leftmostPoint = {{contourIndex, pointIndex, point}};
-                            }}
-                        }});
-                    }});
-
-                    return leftmostPoint;
-                }}
-
-                function createFluidContourPath(contours, entryPoint) {{
-                    if (!entryPoint || contours.length === 0) return [];
-
-                    const fluidPath = [];
-                    const processedContours = new Set();
-
-                    const startContour = contours[entryPoint.contourIndex];
-                    const reorderedStartContour = reorderContourFromPoint(startContour, entryPoint.pointIndex);
-                    fluidPath.push(...reorderedStartContour);
-                    processedContours.add(entryPoint.contourIndex);
-
-                    while (processedContours.size < contours.length) {{
-                        const lastPoint = fluidPath[fluidPath.length - 1];
-                        let nearestContour = null;
-                        let nearestDistance = Infinity;
-                        let nearestStartIndex = 0;
-
-                        contours.forEach((contour, index) => {{
-                            if (processedContours.has(index)) return;
-
-                            contour.forEach((point, pointIndex) => {{
-                                const distance = Math.sqrt(
-                                    Math.pow(point.x - lastPoint.x, 2) +
-                                    Math.pow(point.y - lastPoint.y, 2)
-                                );
-                                if (distance < nearestDistance) {{
-                                    nearestDistance = distance;
-                                    nearestContour = index;
-                                    nearestStartIndex = pointIndex;
-                                }}
-                            }});
-                        }});
-
-                        if (nearestContour !== null) {{
-                            if (nearestDistance > config.stepSize * 2) {{
-                                const connectPoint = contours[nearestContour][nearestStartIndex];
-                                fluidPath.push(...interpolatePoints(lastPoint, connectPoint, config.stepSize));
-                            }}
-
-                            const nextContour = reorderContourFromPoint(contours[nearestContour], nearestStartIndex);
-                            fluidPath.push(...nextContour);
-                            processedContours.add(nearestContour);
-                        }} else {{
-                            break;
-                        }}
-                    }}
-
-                    return fluidPath;
-                }}
-
-                function reorderContourFromPoint(contour, startIndex) {{
-                    if (startIndex === 0) return [...contour];
-                    return [...contour.slice(startIndex), ...contour.slice(0, startIndex)];
-                }}
-
-                function interpolatePoints(start, end, stepSize) {{
-                    const points = [];
-                    const distance = Math.sqrt(Math.pow(end.x - start.x, 2) + Math.pow(end.y - start.y, 2));
-                    const steps = Math.ceil(distance / stepSize);
-
-                    for (let i = 1; i <= steps; i++) {{
-                        const t = i / steps;
-                        points.push({{
-                            x: start.x + (end.x - start.x) * t,
-                            y: start.y + (end.y - start.y) * t
-                        }});
-                    }}
-
-                    return points;
-                }}
-
-                function resamplePath(path, stepSize) {{
-                    if (path.length < 2) return path;
-
-                    const resampled = [path[0]];
-                    let currentDistance = 0;
-
-                    for (let i = 1; i < path.length; i++) {{
-                        const prev = path[i - 1];
-                        const curr = path[i];
-                        const segmentLength = Math.sqrt(
-                            Math.pow(curr.x - prev.x, 2) + Math.pow(curr.y - prev.y, 2)
-                        );
-
-                        currentDistance += segmentLength;
-
-                        while (currentDistance >= stepSize) {{
-                            const t = (stepSize - (currentDistance - segmentLength)) / segmentLength;
-                            const interpolated = {{
-                                x: prev.x + (curr.x - prev.x) * t,
-                                y: prev.y + (curr.y - prev.y) * t
-                            }};
-                            resampled.push(interpolated);
-                            currentDistance -= stepSize;
-                        }}
-                    }}
-
-                    if (path.length > 0) {{
-                        resampled.push(path[path.length - 1]);
-                    }}
-
-                    return resampled;
-                }}
-
-                function generateFallbackPath(char, offsetX, offsetY) {{
-                    const charWidth = config.fontSize * 0.6;
-                    const charHeight = config.fontSize * 0.8;
-
-                    return [
-                        {{x: offsetX, y: offsetY - charHeight * 0.7}},
-                        {{x: offsetX + charWidth, y: offsetY - charHeight * 0.7}},
-                        {{x: offsetX + charWidth, y: offsetY}},
-                        {{x: offsetX, y: offsetY}},
-                        {{x: offsetX, y: offsetY - charHeight * 0.7}}
-                    ];
-                }}
-
-                function paintNib(x, y, pressure = 1.0) {{
-                    config.maskCtx.save();
-                    config.maskCtx.translate(x, y);
-
-                    const radius = config.nibRadius * pressure;
-
-                    if (config.penStyle === "Brush") {{
-                        const gradient = config.maskCtx.createRadialGradient(0, 0, 0, 0, 0, radius);
-                        gradient.addColorStop(0, 'black');
-                        gradient.addColorStop(0.7, 'rgba(0,0,0,0.8)');
-                        gradient.addColorStop(1, 'rgba(0,0,0,0.3)');
-                        config.maskCtx.fillStyle = gradient;
-                    }} else {{
-                        config.maskCtx.fillStyle = 'black';
-                    }}
-
-                    config.maskCtx.beginPath();
-                    config.maskCtx.arc(0, 0, radius, 0, Math.PI * 2);
-                    config.maskCtx.fill();
-
-                    config.maskCtx.restore();
-                }}
-
-                function drawPen(x, y, angle = 0, pressure = 1.0) {{
-                    const ctx = config.ctx;
-                    ctx.save();
-                    ctx.translate(x, y);
-                    ctx.rotate(angle);
-
-                    const scale = 0.8 + pressure * 0.4;
-                    ctx.scale(scale, scale);
-
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-                    ctx.fillRect(-4, 4, 8, 35);
-
-                    const gradient = ctx.createLinearGradient(0, 0, 0, 30);
-                    gradient.addColorStop(0, '#4169E1');
-                    gradient.addColorStop(0.5, '#6495ED');
-                    gradient.addColorStop(1, '#1E3A8A');
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(-3.5, 0, 7, 30);
-
-                    ctx.fillStyle = '#696969';
-                    ctx.fillRect(-4, 10, 8, 10);
-
-                    ctx.fillStyle = '#000080';
                     ctx.beginPath();
-                    ctx.arc(0, -2, 2.5, 0, Math.PI * 2);
-                    ctx.fill();
+                    ctx.moveTo(points[0][0], points[0][1]);
 
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-                    ctx.fillRect(-1, 2, 2, 15);
+                    const totalPoints = points.length;
+                    const currentPoint = Math.min(Math.floor(progress * totalPoints), totalPoints - 1);
 
-                    ctx.restore();
+                    for (let i = 1; i <= currentPoint; i++) {{
+                        ctx.lineTo(points[i][0], points[i][1]);
+                    }}
+
+                    // Draw partial segment
+                    if (currentPoint < totalPoints - 1) {{
+                        const segmentProgress = (progress * totalPoints) - currentPoint;
+                        const current = points[currentPoint];
+                        const next = points[currentPoint + 1];
+                        const x = current[0] + (next[0] - current[0]) * segmentProgress;
+                        const y = current[1] + (next[1] - current[1]) * segmentProgress;
+                        ctx.lineTo(x, y);
+                    }}
+
+                    ctx.stroke();
                 }}
 
-                function scrollToPosition(x) {{
-                    if (!config.scrollContainer) return;
-
-                    const containerWidth = config.scrollContainer.clientWidth;
-                    const scrollLeft = config.scrollContainer.scrollLeft;
-                    const scrollRight = scrollLeft + containerWidth;
-                    const padding = 120;
-
-                    if (x < scrollLeft + padding) {{
-                        config.scrollContainer.scrollLeft = Math.max(0, x - padding);
-                    }} else if (x > scrollRight - padding) {{
-                        config.scrollContainer.scrollLeft = x - containerWidth + padding;
-                    }}
+                function clearCanvas() {{
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    currentStep = 0;
+                    document.getElementById('progressBar').style.width = '0%';
+                    document.getElementById('status').textContent = 'Canvas cleared';
                 }}
 
-                function compositeFrame() {{
-                    const ctx = config.ctx;
-
-                    ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
-                    ctx.fillStyle = 'white';
-                    ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
-                    ctx.drawImage(config.glyphCanvas, 0, 0);
-                    ctx.globalCompositeOperation = 'destination-in';
-                    ctx.drawImage(config.maskCanvas, 0, 0);
-                    ctx.globalCompositeOperation = 'source-over';
-
-                    if (config.isAnimating) {{
-                        drawPen(config.penX, config.penY - 40, 0, config.penPressure);
+                function pauseAnimation() {{
+                    isAnimating = false;
+                    if (animationFrameId) {{
+                        cancelAnimationFrame(animationFrameId);
                     }}
-                }}
-
-                function calculatePenPressure(speed, pointIndex, totalPoints) {{
-                    let pressure = 1.0;
-
-                    if (speed > 0) {{
-                        pressure *= Math.max(0.5, 2.0 - speed / 10);
-                    }}
-
-                    const progress = pointIndex / totalPoints;
-                    if (progress < 0.1) {{
-                        pressure *= 0.7 + progress * 3;
-                    }} else if (progress > 0.9) {{
-                        pressure *= 0.7 + (1 - progress) * 3;
-                    }}
-
-                    pressure *= 0.9 + Math.random() * 0.2;
-
-                    return Math.max(0.3, Math.min(1.5, pressure));
+                    document.getElementById('status').textContent = 'Animation paused';
                 }}
 
                 function startAnimation() {{
-                    if (config.isAnimating) return;
+                    if (isAnimating) return;
 
-                    resetAnimationState();
-                    config.isAnimating = true;
+                    clearCanvas();
+                    isAnimating = true;
+                    currentStep = 0;
 
-                    config.maskCtx.clearRect(0, 0, config.canvasWidth, config.canvasHeight);
+                    const strokes = getStrokePattern(text);
+                    totalSteps = strokes.length * 100;
 
-                    updateStatus('Animation starting...');
-
-                    config.lastFrameTime = performance.now();
-                    animateNextFrame();
+                    document.getElementById('status').textContent = 'Animation starting...';
+                    animate(strokes);
                 }}
 
-                function resetAnimationState() {{
-                    config.currentCharIndex = 0;
-                    config.currentPointIndex = 0;
-                    config.penX = 0;
-                    config.penY = 0;
-                    config.penPressure = 1.0;
-                    config.penSpeed = 0;
-                    config.frameCount = 0;
+                function animate(strokes) {{
+                    if (!isAnimating) return;
+
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const strokeIndex = Math.floor(currentStep / 100);
+                    const strokeProgress = (currentStep % 100) / 100;
+
+                    // Draw completed strokes
+                    for (let i = 0; i < strokeIndex; i++) {{
+                        drawStroke(strokes[i], 1.0);
+                    }}
+
+                    // Draw current stroke
+                    if (strokeIndex < strokes.length) {{
+                        drawStroke(strokes[strokeIndex], strokeProgress);
+                    }}
+
+                    // Update progress
+                    const totalProgress = (currentStep / totalSteps) * 100;
+                    document.getElementById('progressBar').style.width = totalProgress + '%';
+
+                    currentStep++;
+
+                    if (currentStep < totalSteps) {{
+                        animationFrameId = requestAnimationFrame(() => animate(strokes));
+                    }} else {{
+                        document.getElementById('status').textContent = 'Animation complete!';
+                        isAnimating = false;
+                    }}
                 }}
 
-                function animateNextFrame() {{
-                    if (!config.isAnimating) return;
-
-                    const currentTime = performance.now();
-                    const deltaTime = currentTime - config.lastFrameTime;
-                    config.lastFrameTime = currentTime;
-                    config.frameCount++;
-
-                    if (config.currentCharIndex >= config.characters.length) {{
-                        completeAnimation();
-                        return;
-                    }}
-
-                    const character = config.characters[config.currentCharIndex];
-
-                    const totalPoints = config.characters.reduce((sum, char) => sum + char.points.length, 0);
-                    const currentPoints = config.characters.slice(0, config.currentCharIndex).reduce((sum, char) => sum + char.points.length, 0) + config.currentPointIndex;
-                    const progress = totalPoints > 0 ? (currentPoints / totalPoints) * 100 : 0;
-                    document.getElementById('progressFill').style.width = progress + '%';
-
-                    if (character.type === 'space') {{
-                        config.penX = character.x;
-                        config.penY = character.y;
-                        scrollToPosition(config.penX);
-                        compositeFrame();
-
-                        setTimeout(() => {{
-                            config.currentCharIndex++;
-                            config.currentPointIndex = 0;
-                            config.animationFrame = requestAnimationFrame(animateNextFrame);
-                        }}, 200 / config.animationSpeed);
-                        return;
-                    }}
-
-                    if (config.currentPointIndex >= character.points.length) {{
-                        config.currentCharIndex++;
-                        config.currentPointIndex = 0;
-                        setTimeout(() => {{
-                            config.animationFrame = requestAnimationFrame(animateNextFrame);
-                        }}, 100 / config.animationSpeed);
-                        return;
-                    }}
-
-                    const point = character.points[config.currentPointIndex];
-                    if (!point) {{
-                        config.currentPointIndex++;
-                        config.animationFrame = requestAnimationFrame(animateNextFrame);
-                        return;
-                    }}
-
-                    if (config.currentPointIndex > 0) {{
-                        const prevPoint = character.points[config.currentPointIndex - 1];
-                        config.penSpeed = Math.sqrt(
-                            Math.pow(point.x - prevPoint.x, 2) +
-                            Math.pow(point.y - prevPoint.y, 2)
-                        );
-                    }}
-
-                    config.penX = point.x;
-                    config.penY = point.y;
-                    config.penPressure = calculatePenPressure(config.penSpeed, config.currentPointIndex, character.points.length);
-
-                    paintNib(config.penX, config.penY, config.penPressure);
-
-                    compositeFrame();
-                    scrollToPosition(config.penX);
-
-                    config.currentPointIndex++;
-
-                    const baseDelay = 20;
-                    const speedAdjustedDelay = Math.max(5, baseDelay / config.animationSpeed);
-
-                    setTimeout(() => {{
-                        config.animationFrame = requestAnimationFrame(animateNextFrame);
-                    }}, speedAdjustedDelay);
-                }}
-
-                function completeAnimation() {{
-                    config.isAnimating = false;
-
-                    document.getElementById('progressFill').style.width = '100%';
-
-                    updateStatus(`Animation complete! (${{config.frameCount}} frames rendered)`);
-
-                    config.ctx.clearRect(0, 0, config.canvas.width, config.canvas.height);
-                    config.ctx.fillStyle = 'white';
-                    config.ctx.fillRect(0, 0, config.canvas.width, config.canvas.height);
-                    config.ctx.drawImage(config.glyphCanvas, 0, 0);
-                    config.ctx.globalCompositeOperation = 'destination-in';
-                    config.ctx.drawImage(config.maskCanvas, 0, 0);
-                    config.ctx.globalCompositeOperation = 'source-over';
-                }}
-
-                function updateStatus(message) {{
-                    document.getElementById('status').textContent = message;
-                }}
+                // Auto-start animation after 1 second
+                setTimeout(startAnimation, 1000);
             </script>
         </body>
         </html>
@@ -930,179 +1141,108 @@ def create_auto_start_handwriting_html(
 
 
 def render():
-    """Enhanced alphabets page with automatic handwriting animation - exact replica of interface_reference.py"""
-    st.subheader("ፊደላት (Tigrinya Alphabets)")
+    """Render the traditional three-column Tigrinya alphabet layout"""
 
-    # Initialize session state for selected character and animation character
+    # Initialize session state
     if "selected_character" not in st.session_state:
-        st.session_state.selected_character = None
+        st.session_state.selected_character = " " 
     if "animation_character" not in st.session_state:
         st.session_state.animation_character = None
 
-    # Display alphabet grid
-    st.markdown("### Click any character to see automatic handwriting animation:")
+    # Page header
+    st.markdown(
+        """
+        <div style='text-align: center; margin-bottom: 30px;'>
+            <h1 style='color: #2c3e50; font-size: 3em; margin-bottom: 10px;'>ፊደላት</h1>
+            <h2 style='color: #34495e; font-size: 1.8em; margin-bottom: 20px;'>Traditional Tigrinya Alphabet</h2>
+            <p style='color: #7f8c8d; font-size: 1.2em;'>Click any character to see handwriting animation</p>
+        </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
-    # Create alphabet grid with clickable buttons
-    cols_per_row = 7
-    TIGRINYA_ALPHABETS = get_tigrinya_alphabets()
-    alphabet_keys = list(TIGRINYA_ALPHABETS.keys())
+    # Get alphabet structure
+    alphabet_structure = create_traditional_alphabet_structure()
 
-    # Create alphabet grid with proper traditional order
-    for i in range(0, len(alphabet_keys), cols_per_row):
-        cols = st.columns(cols_per_row)
-        for j in range(cols_per_row):
-            with cols[j]:
-                if i + j < len(alphabet_keys):
-                    char = alphabet_keys[i + j]
-                    if st.button(
-                        char,
-                        key=f"alphabet_{i}_{j}_{ord(char)}",
-                        help=f"Click to animate {char}",
-                        use_container_width=True,
-                    ):
-                        st.session_state.selected_character = char
-                        st.session_state.animation_character = char
-                        st.rerun()
+    # Create the interactive alphabet grid using HTML with proper DOM manipulation
+    alphabet_grid_html = create_alphabet_grid_html(alphabet_structure)
 
-    # Display selected character details and animation
-    if st.session_state.selected_character:
-        selected_char = st.session_state.selected_character
-        TIGRINYA_ALPHABETS = get_tigrinya_alphabets()
-        char_data = TIGRINYA_ALPHABETS[selected_char]
+    # Display the grid
+    selected_char_result = components.html(alphabet_grid_html, height=3200)
 
+
+    # Character animation section
+    if st.session_state.selected_character and st.session_state.selected_character != " ":
         st.markdown("---")
+        st.markdown("### Character Animation & Details")
 
-        # Character information
-        col1, col2 = st.columns([1, 2])
+        col_info, col_animation = st.columns([1, 2])
 
-        with col1:
+        with col_info:
+            selected_char = st.session_state.selected_character
             st.markdown(
                 f"""
-            <div style='
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                padding: 30px;
-                border-radius: 15px;
-                color: white;
-                text-align: center;
-                margin: 20px 0;
-            '>
-                <h1 style='font-size: 4em; margin: 0; font-family: "Noto Sans Ethiopic", serif;'>{selected_char}</h1>
-                <h3 style='margin: 10px 0;'>Base Character</h3>
-            </div>
+                <div style='
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    padding: 30px;
+                    border-radius: 15px;
+                    color: white;
+                    text-align: center;
+                    margin: 20px 0;
+                '>
+                    <h1 style='font-size: 4em; margin: 0; font-family: "Noto Sans Ethiopic", serif;'>{selected_char}</h1>
+                    <h3 style='margin: 10px 0;'>Selected Character</h3>
+                </div>
             """,
                 unsafe_allow_html=True,
             )
 
-            # Character forms table
-            st.markdown("#### All Forms:")
-            forms_df = []
-            for i, (form, phonetic) in enumerate(
-                zip(char_data["forms"], char_data["phonetic"])
-            ):
-                forms_df.append({"Form": form, "Sound": phonetic, "Order": i + 1})
+            # Find character family info
+            for column_key in alphabet_structure:
+                for family in alphabet_structure[column_key]:
+                    for char_obj in family["characters"]:
+                        if char_obj["char"] == selected_char:
+                            st.info(f"**Family:** {family['familyName']}")
+                            st.info(f"**Sound:** {char_obj['sound']}")
+                            st.info(f"**Example:** {family['exampleWord']}")
+                            st.info(f"**Icon:** {family['icon']}")
+                            break
 
-            df = pd.DataFrame(forms_df)
-            st.dataframe(df, width="stretch", hide_index=True)
-
-            # Related characters or similar forms - Click to animate on same canvas
-            st.markdown("#### Related Forms - Click to animate")
-            related_forms = char_data["forms"]
-            related_phonetics = char_data["phonetic"]
-
-            # Display related forms as buttons in a 2x2 grid
-            for i in range(0, len(related_forms), 2):
-                form_cols = st.columns(2)
-
-                # First form in the row
-                with form_cols[0]:
-                    form = related_forms[i]
-                    phonetic = related_phonetics[i]
-                    if st.button(
-                        f"{form}",
-                        key=f"related_{form}_{selected_char}_{i}",
-                        help=f"Animate {form} ({phonetic})",
-                        width="stretch",
-                    ):
-                        # Set this form to be animated on main canvas
-                        st.session_state.animation_character = form
-                        st.rerun()
-
-                # Second form in the row (if exists)
-                if i + 1 < len(related_forms):
-                    with form_cols[1]:
-                        form = related_forms[i + 1]
-                        phonetic = related_phonetics[i + 1]
-                        if st.button(
-                            f"{form}",
-                            key=f"related_{form}_{selected_char}_{i + 1}",
-                            help=f"Animate {form} ({phonetic})",
-                            width="stretch",
-                        ):  # Set this form to be animated on main canvas
-                            st.session_state.animation_character = form
-                            st.rerun()
-
-        with col2:
-            # Main handwriting animation canvas
+        with col_animation:
             st.markdown("#### Handwriting Animation")
+            character_to_animate = st.session_state.animation_character or selected_char
 
-            # Show what character is being animated
-            character_to_animate = st.session_state.get(
-                "animation_character", selected_char
-            )
-
-            if (
-                st.session_state.get("animation_character")
-                and st.session_state.animation_character != selected_char
-            ):
-                st.info(f"Now animating: {st.session_state.animation_character}")
-            else:
-                st.info("Animation starting automatically...")
-
-            # Generate and display handwriting animation that auto-starts
+            # Generate handwriting animation
             animation_html = create_auto_start_handwriting_html(
                 text=character_to_animate,
                 pen_style="Realistic",
                 writing_style="Natural",
-                animation_speed=4.0,
+                animation_speed=3.0,
             )
 
-            # Use st.empty() to ensure proper refresh
-            animation_placeholder = st.empty()
-            with animation_placeholder.container():
-                components.html(animation_html, height=600, scrolling=True)
+            components.html(animation_html, height=600)
 
-            # Character practice section
             st.markdown("#### Practice Writing")
-            st.info("Try writing this character on paper while watching the animation!")
+            st.info("Watch the animation and practice writing this character!")
 
     else:
         st.info(
-            "Select a character above to see its automatic handwriting animation and details!"
+            "👆 Click any character above to see its handwriting animation and details!"
         )
 
-    # Traditional alphabet table for reference
+    # Footer
     st.markdown("---")
-    st.markdown("### Traditional Alphabet Reference")
-
-    # Show traditional grid format using our data
-    sample_alphabets = [
-        ["በ (be)", "ቡ (bu)", "ቢ (bi)", "ባ (ba)", "ቤ (bie)", "ብ (b)", "ቦ (bo)"],
-        ["ከ (ke)", "ኩ (ku)", "ኪ (ki)", "ካ (ka)", "ኬ (kie)", "ክ (k)", "ኮ (ko)"],
-        ["ሰ (se)", "ሱ (su)", "ሲ (si)", "ሳ (sa)", "ሴ (sie)", "ስ (s)", "ሶ (so)"],
-        ["ሸ (Se)", "ሹ (Su)", "ሺ (Si)", "ሻ (Sa)", "ሼ (Sie)", "ሽ (S)", "ሾ (So)"],
-    ]
-
-    table_header = """
-| 1st Order | 2nd Order | 3rd Order | 4th Order | 5th Order | 6th Order | 7th Order |
-|-----------|-----------|-----------|-----------|-----------|-----------|-----------|
-"""
-
-    table_rows = ""
-    for row in sample_alphabets:
-        table_rows += f"| {' | '.join(row)} |\n"
-
-    st.markdown(table_header + table_rows, unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div style='text-align: center; color: #7f8c8d; margin-top: 40px;'>
+            <p><strong>Traditional Tigrinya Alphabet Learning System</strong></p>
+            <p>Learn the beautiful Tigrinya script with interactive animations</p>
+        </div>
+    """,
+        unsafe_allow_html=True,
+    )
 
 
 if __name__ == "__main__":
+    st.set_page_config(layout="wide")
     render()
