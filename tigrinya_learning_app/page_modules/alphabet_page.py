@@ -607,7 +607,7 @@ def create_alphabet_grid_html(alphabet_structure):
                 display: grid;
                 grid-template-columns: repeat(3, 1fr);
                 gap: 20px;
-                max-width: 1400px;
+                max-width: 1800px;
                 margin: 0 auto;
             }}
 
@@ -741,13 +741,13 @@ def create_alphabet_grid_html(alphabet_structure):
     <body>
         <div class="alphabet-grid" id="alphabetGrid">
             <div class="column column-1">
-                <div class="column-header">Column 1</div>
+                <div class="column-header"></div>
             </div>
             <div class="column column-2">
-                <div class="column-header">Column 2</div>
+                <div class="column-header"></div>
             </div>
             <div class="column column-3">
-                <div class="column-header">Column 3</div>
+                <div class="column-header"></div>
             </div>
         </div>
 
