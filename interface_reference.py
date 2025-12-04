@@ -3093,6 +3093,7 @@ def create_auto_start_handwriting_html(text, pen_style="Realistic", writing_styl
         </html>
     """
     return html_content
+
 def main():
     # Page configuration
     st.set_page_config(
