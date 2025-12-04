@@ -437,19 +437,20 @@ def create_traditional_alphabet_structure():
     },
     {
       "family": "e",
-      "familyName": "E Family",
-      "baseName": "ኡ",
-      "baseChar": "ኡ",
+      "familyName": "'e Family",
+      "baseName": "ዐ",
+      "baseChar": "ዐ",
       "exampleWord": "ዓረት (bed)",
       "icon": "🛏️",
       "color": "#0077B6",
       "characters": [
-        { "char": "ኡ", "sound": "u" },
-        { "char": "ኢ", "sound": "i" },
-        { "char": "ኣ", "sound": "a" },
-        { "char": "ኤ", "sound": "ie" },
-        { "char": "እ", "sound": "e" },
-        { "char": "ኦ", "sound": "o" }
+        { "char": "ዐ", "sound": "e" },
+        { "char": "ዑ", "sound": "u" },
+        { "char": "ዒ", "sound": "i" },
+        { "char": "ዓ", "sound": "a" },
+        { "char": "ዔ", "sound": "ie" },
+        { "char": "ዕ", "sound": "i" },
+        { "char": "ዖ", "sound": "o" }
       ]
     },
     {
