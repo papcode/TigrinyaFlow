@@ -808,26 +808,38 @@ def create_alphabet_grid_html(alphabet_structure, selected_char=None):
             
             .modal-header {{
                 display: flex;
-                justify-content: space-between;
+                justify-content: center;
                 align-items: center;
-                margin-bottom: 30px;
+                margin-bottom: 20px;
                 padding-bottom: 20px;
                 border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+                position: relative;
+                text-align: center;
             }}
-            
+
             .modal-char-display {{
                 font-size: 6em;
                 font-weight: bold;
                 font-family: 'Noto Sans Ethiopic', serif;
-                text-align: center;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
                 margin: 0;
+                line-height: 1;
+            }}
+
+            .modal-family-info {{
+                font-size: 1.5em;
+                font-weight: 500;
+                color: #764ba2;
+                margin-top: 10px;
             }}
             
             .modal-close-btn {{
+                position: absolute;
+                top: -10px;
+                right: -10px;
                 background: rgba(255, 255, 255, 0.8);
                 border: 2px solid rgba(102, 126, 234, 0.3);
                 border-radius: 50%;
@@ -959,7 +971,10 @@ def create_alphabet_grid_html(alphabet_structure, selected_char=None):
         <div class="modal-overlay" id="charModal">
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
-                    <h1 class="modal-char-display" id="modalCharDisplay"></h1>
+                    <div>
+                        <h1 class="modal-char-display" id="modalCharDisplay"></h1>
+                        <div class="modal-family-info" id="modalFamilyInfo"></div>
+                    </div>
                     <button class="modal-close-btn" onclick="closeModal()" title="Close (ESC)">×</button>
                 </div>
                 
@@ -1005,16 +1020,38 @@ def create_alphabet_grid_html(alphabet_structure, selected_char=None):
                         }}, 300);
                     }}
                 }});
+
+                // Find family info
+                let familyName = '';
+                let baseName = '';
+                for (const columnKey in alphabetData) {{
+                    for (const family of alphabetData[columnKey]) {{
+                        if (family.characters.find(c => c.char === char)) {{
+                            familyName = family.familyName;
+                            baseName = family.baseName;
+                            break;
+                        }}
+                    }}
+                    if (familyName) break;
+                }}
                 
                 // Open modal
-                openModal(char);
+                openModal(char, baseName, familyName);
             }}
             
             // Modal functions
-            function openModal(char) {{
+            function openModal(char, baseName, familyName) {{
                 const modal = document.getElementById('charModal');
                 const charDisplay = document.getElementById('modalCharDisplay');
+                const familyInfoDisplay = document.getElementById('modalFamilyInfo');
+
                 charDisplay.textContent = char;
+                if (familyName) {{
+                    familyInfoDisplay.textContent = `${{baseName}} - ${{familyName}}`;
+                }} else {{
+                    familyInfoDisplay.textContent = '';
+                }}
+
                 modal.classList.add('active');
                 
                 // Initialize animation
