@@ -16,571 +16,588 @@ def create_traditional_alphabet_structure():
     """Create the traditional three-column alphabet structure with corrected data."""
     
     alphabet_data = {
-      "column1": [
-        {
-          "family": "be",
-          "familyName": "Be Family",
-          "baseName": "በ",
-          "baseChar": "በ",
-          "exampleWord": "በለ (fruit)",
-          "icon": "🍎",
-          "color": "#ff6b8a",
-          "characters": [
-            { "char": "በ", "sound": "be" },
-            { "char": "ቡ", "sound": "bu" },
-            { "char": "ቢ", "sound": "bi" },
-            { "char": "ባ", "sound": "ba" },
-            { "char": "ቤ", "sound": "bie" },
-            { "char": "ብ", "sound": "b" },
-            { "char": "ቦ", "sound": "bo" }
-          ]
+        "column1": [
+            {
+            "family": "be",
+            "familyName": "Be Family",
+            "baseName": "በ",
+            "baseChar": "በ",
+            "exampleWord": "በለ (fruit)",
+            "icon": "🍎",
+            "color": "#ff6b8a",
+            "characters": [
+                { "char": "በ", "sound": "be" },
+                { "char": "ቡ", "sound": "bu" },
+                { "char": "ቢ", "sound": "bi" },
+                { "char": "ባ", "sound": "ba" },
+                { "char": "ቤ", "sound": "bie" },
+                { "char": "ብ", "sound": "b" },
+                { "char": "ቦ", "sound": "bo" }
+            ]
+            },
+            {
+            "family": "se",
+            "familyName": "Se Family",
+            "baseName": "ሰ",
+            "baseChar": "ሰ",
+            "exampleWord": "ሰዓት (clock)",
+            "icon": "🕐",
+            "color": "#5dd9d2",
+            "characters": [
+                { "char": "ሰ", "sound": "se" },
+                { "char": "ሱ", "sound": "su" },
+                { "char": "ሲ", "sound": "si" },
+                { "char": "ሳ", "sound": "sa" },
+                { "char": "ሴ", "sound": "sie" },
+                { "char": "ስ", "sound": "s" },
+                { "char": "ሶ", "sound": "so" }
+            ]
+            },
+            {
+            "family": "she",
+            "familyName": "She Family",
+            "baseName": "ሸ",
+            "baseChar": "ሸ",
+            "exampleWord": "ሽበጥ (shoe)",
+            "icon": "👞",
+            "color": "#4db8e8",
+            "characters": [
+                { "char": "ሸ", "sound": "she" },
+                { "char": "ሹ", "sound": "shu" },
+                { "char": "ሺ", "sound": "shi" },
+                { "char": "ሻ", "sound": "sha" },
+                { "char": "ሼ", "sound": "shie" },
+                { "char": "ሽ", "sound": "sh" },
+                { "char": "ሾ", "sound": "sho" }
+            ]
+            },
+            {
+            "family": "ke",
+            "familyName": "Ke Family",
+            "baseName": "ከ",
+            "baseChar": "ከ",
+            "exampleWord": "ከልቢ (dog)",
+            "icon": "🐕",
+            "color": "#90d890",
+            "characters": [
+                { "char": "ከ", "sound": "ke" },
+                { "char": "ኩ", "sound": "ku" },
+                { "char": "ኪ", "sound": "ki" },
+                { "char": "ካ", "sound": "ka" },
+                { "char": "ኬ", "sound": "kie" },
+                { "char": "ክ", "sound": "k" },
+                { "char": "ኮ", "sound": "ko" }
+            ]
+            },
+            {
+            "family": "khe",
+            "familyName": "Khe Family",
+            "baseName": "ኸ",
+            "baseChar": "ኸ",
+            "exampleWord": "ኮኾብ (star)",
+            "icon": "⭐",
+            "color": "#ffd966",
+            "characters": [
+                { "char": "ኸ", "sound": "khe" },
+                { "char": "ኹ", "sound": "khu" },
+                { "char": "ኺ", "sound": "khi" },
+                { "char": "ኻ", "sound": "kha" },
+                { "char": "ኼ", "sound": "khie" },
+                { "char": "ኽ", "sound": "kh" },
+                { "char": "ኾ", "sound": "kho" }
+            ]
+            },
+            {
+            "family": "le",
+            "familyName": "Le Family",
+            "baseName": "ለ",
+            "baseChar": "ለ",
+            "exampleWord": "ለምን (lemon)",
+            "icon": "🍋",
+            "color": "#ffe680",
+            "characters": [
+                { "char": "ለ", "sound": "le" },
+                { "char": "ሉ", "sound": "lu" },
+                { "char": "ሊ", "sound": "li" },
+                { "char": "ላ", "sound": "la" },
+                { "char": "ሌ", "sound": "lie" },
+                { "char": "ል", "sound": "l" },
+                { "char": "ሎ", "sound": "lo" }
+            ]
+            },
+            {
+            "family": "e",
+            "familyName": "E Family",
+            "baseName": "እ",
+            "baseChar": "እ",
+            "exampleWord": "አንበሳ (lion)",
+            "icon": "🦁",
+            "color": "#ff9999",
+            "characters": [
+                { "char": "እ", "sound": "e" },
+                { "char": "ኡ", "sound": "u" },
+                { "char": "ኢ", "sound": "i" },
+                { "char": "ኣ", "sound": "a" },
+                { "char": "ኤ", "sound": "ie" },
+                { "char": "እ", "sound": "i" },
+                { "char": "ኦ", "sound": "o" }
+            ]
+            },
+            {
+            "family": "tse",
+            "familyName": "Tse Family",
+            "baseName": "ጸ",
+            "baseChar": "ጸ",
+            "exampleWord": "ጸሃ (door)",
+            "icon": "🚪",
+            "color": "#c9a0dc",
+            "characters": [
+                { "char": "ጸ", "sound": "tse" },
+                { "char": "ጹ", "sound": "tsu" },
+                { "char": "ጺ", "sound": "tsi" },
+                { "char": "ጻ", "sound": "tsa" },
+                { "char": "ጼ", "sound": "tsie" },
+                { "char": "ጽ", "sound": "ts" },
+                { "char": "ጾ", "sound": "tso" }
+            ]
+            },
+            {
+            "family": "de",
+            "familyName": "De Family",
+            "baseName": "ደ",
+            "baseChar": "ደ",
+            "exampleWord": "ድማው (cat)",
+            "icon": "🐱",
+            "color": "#ffa07a",
+            "characters": [
+                { "char": "ደ", "sound": "de" },
+                { "char": "ዱ", "sound": "du" },
+                { "char": "ዲ", "sound": "di" },
+                { "char": "ዳ", "sound": "da" },
+                { "char": "ዴ", "sound": "die" },
+                { "char": "ድ", "sound": "d" },
+                { "char": "ዶ", "sound": "do" }
+            ]
+            },
+            {
+            "family": "je",
+            "familyName": "Je Family",
+            "baseName": "ጀ",
+            "baseChar": "ጀ",
+            "exampleWord": "ጀሪካን (jerrycan)",
+            "icon": "🛢️",
+            "color": "#98d8c8",
+            "characters": [
+                { "char": "ጀ", "sound": "je" },
+                { "char": "ጁ", "sound": "ju" },
+                { "char": "ጂ", "sound": "ji" },
+                { "char": "ጃ", "sound": "ja" },
+                { "char": "ጄ", "sound": "jie" },
+                { "char": "ጅ", "sound": "j" },
+                { "char": "ጆ", "sound": "jo" }
+            ]
+            },
+            {
+            "family": "ze",
+            "familyName": "Ze Family",
+            "baseName": "ዘ",
+            "baseChar": "ዘ",
+            "exampleWord": "ዘይቲ (oil)",
+            "icon": "🍯",
+            "color": "#f6e58d",
+            "characters": [
+                { "char": "ዘ", "sound": "ze" },
+                { "char": "ዙ", "sound": "zu" },
+                { "char": "ዚ", "sound": "zi" },
+                { "char": "ዛ", "sound": "za" },
+                { "char": "ዜ", "sound": "zie" },
+                { "char": "ዝ", "sound": "z" },
+                { "char": "ዞ", "sound": "zo" }
+            ]
+            }
+        ],
+        "column2": [
+                {
+            "family": "He",
+            "familyName": "He Family",
+            "baseName": "ሐ",
+            "baseChar": "ሐ",
+            "exampleWord": "ሓዊ (fire)",
+            "icon": "🔥",
+            "color": "#ff6b8a",
+            "characters": [
+                { "char": "ሐ", "sound": "He" },
+                { "char": "ሑ", "sound": "Hu" },
+                { "char": "ሒ", "sound": "Hi" },
+                { "char": "ሓ", "sound": "Ha" },
+                { "char": "ሔ", "sound": "Hie" },
+                { "char": "ሕ", "sound": "H" },
+                { "char": "ሖ", "sound": "Ho" }
+            ]
+            },
+            {
+            "family": "te2",
+            "familyName": "Te Family (variant)",
+            "baseName": "ጠ",
+            "baseChar": "ጠ",
+            "exampleWord": "ጠረጴዛ (table)",
+            "icon": "🪑",
+            "color": "#d4a574",
+            "characters": [
+                { "char": "ጠ", "sound": "te" },
+                { "char": "ጡ", "sound": "tu" },
+                { "char": "ጢ", "sound": "ti" },
+                { "char": "ጣ", "sound": "ta" },
+                { "char": "ጤ", "sound": "tie" },
+                { "char": "ጥ", "sound": "t" },
+                { "char": "ጦ", "sound": "to" }
+            ]
+            },
+            {
+            "family": "che",
+            "familyName": "Che Family",
+            "baseName": "ጨ",
+            "baseChar": "ጨ",
+            "exampleWord": "ጫው (chat)",
+            "icon": "👥",
+            "color": "#ff6b8a",
+            "characters": [
+                { "char": "ጨ", "sound": "che" },
+                { "char": "ጩ", "sound": "chu" },
+                { "char": "ጪ", "sound": "chi" },
+                { "char": "ጫ", "sound": "cha" },
+                { "char": "ጬ", "sound": "chie" },
+                { "char": "ጭ", "sound": "ch" },
+                { "char": "ጮ", "sound": "cho" }
+            ]
+            }, 
+            {
+            "family": "te",
+            "familyName": "Te Family",
+            "baseName": "ተ",
+            "baseChar": "ተ",
+            "exampleWord": "ተራሙዝ (bottle)",
+            "icon": "🍾",
+            "color": "#90d890",
+            "characters": [
+                { "char": "ተ", "sound": "te" },
+                { "char": "ቱ", "sound": "tu" },
+                { "char": "ቲ", "sound": "ti" },
+                { "char": "ታ", "sound": "ta" },
+                { "char": "ቴ", "sound": "tie" },
+                { "char": "ት", "sound": "t" },
+                { "char": "ቶ", "sound": "to" }
+            ]
         },
+            {
+            "family": "qe",
+            "familyName": "Qe Family",
+            "baseName": "ቀ",
+            "baseChar": "ቀ",
+            "exampleWord": "ቀሺ (priest)",
+            "icon": "⛪",
+            "color": "#ff6b8a",
+            "characters": [
+                { "char": "ቀ", "sound": "qe" },
+                { "char": "ቁ", "sound": "qu" },
+                { "char": "ቂ", "sound": "qi" },
+                { "char": "ቃ", "sound": "qa" },
+                { "char": "ቄ", "sound": "qie" },
+                { "char": "ቅ", "sound": "q" },
+                { "char": "ቆ", "sound": "qo" }
+            ]
+            },
+            {
+            "family": "qhe",
+            "familyName": "Qhe Family",
+            "baseName": "ቐ",
+            "baseChar": "ቐ",
+            "exampleWord": "መቐስ (scissors)",
+            "icon": "✂️",
+            "color": "#90d890",
+            "characters": [
+                { "char": "ቐ", "sound": "qhe" },
+                { "char": "ቑ", "sound": "qhu" },
+                { "char": "ቒ", "sound": "qhi" },
+                { "char": "ቓ", "sound": "qha" },
+                { "char": "ቔ", "sound": "qhie" },
+                { "char": "ቕ", "sound": "qh" },
+                { "char": "ቖ", "sound": "qho" }
+            ]
+            },
+            {
+            "family": "ge",
+            "familyName": "Ge Family",
+            "baseName": "ገ",
+            "baseChar": "ገ",
+            "exampleWord": "ገዛ (house)",
+            "icon": "🏠",
+            "color": "#5dd9d2",
+            "characters": [
+                { "char": "ገ", "sound": "ge" },
+                { "char": "ጉ", "sound": "gu" },
+                { "char": "ጊ", "sound": "gi" },
+                { "char": "ጋ", "sound": "ga" },
+                { "char": "ጌ", "sound": "gie" },
+                { "char": "ግ", "sound": "g" },
+                { "char": "ጎ", "sound": "go" }
+            ]
+            },
+            {
+            "family": "ne",
+            "familyName": "Ne Family",
+            "baseName": "ነ",
+            "baseChar": "ነ",
+            "exampleWord": "ነብሪ (tiger)",
+            "icon": "🐅",
+            "color": "#ffa07a",
+            "characters": [
+                { "char": "ነ", "sound": "ne" },
+                { "char": "ኑ", "sound": "nu" },
+                { "char": "ኒ", "sound": "ni" },
+                { "char": "ና", "sound": "na" },
+                { "char": "ኔ", "sound": "nie" },
+                { "char": "ን", "sound": "n" },
+                { "char": "ኖ", "sound": "no" }
+            ]
+            },
+            {
+            "family": "ye",
+            "familyName": "Ye Family",
+            "baseName": "የ",
+            "baseChar": "የ",
+            "exampleWord": "የማነ (person)",
+            "icon": "👨",
+            "color": "#b8b8b8",
+            "characters": [
+                { "char": "የ", "sound": "ye" },
+                { "char": "ዩ", "sound": "yu" },
+                { "char": "ዪ", "sound": "yi" },
+                { "char": "ያ", "sound": "ya" },
+                { "char": "ዬ", "sound": "yie" },
+                { "char": "ይ", "sound": "y" },
+                { "char": "ዮ", "sound": "yo" }
+            ]
+            },
+            {
+            "family": "re",
+            "familyName": "Re Family",
+            "baseName": "ረ",
+            "baseChar": "ረ",
+            "exampleWord": "ረጋቢት (doves)",
+            "icon": "🕊️",
+            "color": "#f6e58d",
+            "characters": [
+                { "char": "ረ", "sound": "re" },
+                { "char": "ሩ", "sound": "ru" },
+                { "char": "ሪ", "sound": "ri" },
+                { "char": "ራ", "sound": "ra" },
+                { "char": "ሬ", "sound": "rie" },
+                { "char": "ር", "sound": "r" },
+                { "char": "ሮ", "sound": "ro" }
+            ]
+            },
+            {
+            "family": "fe2",
+            "familyName": "Fe Family (variant)",
+            "baseName": "ፈ",
+            "baseChar": "ፈ",
+            "exampleWord": "ፈረስ (horse)",
+            "icon": "🐴",
+            "color": "#8b7355",
+            "characters": [
+                { "char": "ፈ", "sound": "fe" },
+                { "char": "ፉ", "sound": "fu" },
+                { "char": "ፊ", "sound": "fi" },
+                { "char": "ፋ", "sound": "fa" },
+                { "char": "ፌ", "sound": "fie" },
+                { "char": "ፍ", "sound": "f" },
+                { "char": "ፎ", "sound": "fo" }
+            ]
+            }
+        ],
+        "column3": [
+            {
+            "family": "he",
+            "familyName": "He Family",
+            "baseName": "ሀ",
+            "baseChar": "ሀ",
+            "exampleWord": "ህይወ (life)",
+            "icon": "🐒",
+            "color": "#d4a574",
+            "characters": [
+                { "char": "ሀ", "sound": "he" },
+                { "char": "ሁ", "sound": "hu" },
+                { "char": "ሂ", "sound": "hi" },
+                { "char": "ሃ", "sound": "ha" },
+                { "char": "ሄ", "sound": "hie" },
+                { "char": "ህ", "sound": "h" },
+                { "char": "ሆ", "sound": "ho" }
+            ]
+            },
+            {
+            "family": "e",
+            "familyName": "E Family",
+            "baseName": "ኡ",
+            "baseChar": "ኡ",
+            "exampleWord": "ዓረት (bed)",
+            "icon": "🛏️",
+            "color": "#5dd9d2",
+            "characters": [
+                { "char": "ኡ", "sound": "u" },
+                { "char": "ኢ", "sound": "i" },
+                { "char": "ኣ", "sound": "a" },
+                { "char": "ኤ", "sound": "ie" },
+                { "char": "እ", "sound": "e" },
+                { "char": "ኦ", "sound": "o" }
+            ]
+            },
+            {
+            "family": "we",
+            "familyName": "We Family",
+            "baseName": "ወ",
+            "baseChar": "ወ",
+            "exampleWord": "ወረቐት (paper)",
+            "icon": "📄",
+            "color": "#e8e8e8",
+            "characters": [
+                { "char": "ወ", "sound": "we" },
+                { "char": "ዉ", "sound": "wu" },
+                { "char": "ዊ", "sound": "wi" },
+                { "char": "ዋ", "sound": "wa" },
+                { "char": "ዌ", "sound": "wie" },
+                { "char": "ው", "sound": "w" },
+                { "char": "ዎ", "sound": "wo" }
+            ]
+            },
+            {
+            "family": "me",
+            "familyName": "Me Family",
+            "baseName": "መ",
+            "baseChar": "መ",
+            "exampleWord": "መካና (car)",
+            "icon": "🚗",
+            "color": "#ff6b6b",
+            "characters": [
+                { "char": "መ", "sound": "me" },
+                { "char": "ሙ", "sound": "mu" },
+                { "char": "ሚ", "sound": "mi" },
+                { "char": "ማ", "sound": "ma" },
+                { "char": "ሜ", "sound": "mie" },
+                { "char": "ም", "sound": "m" },
+                { "char": "ሞ", "sound": "mo" }
+            ]
+            },
+            {
+            "family": "pe",
+            "familyName": "Pe Family",
+            "baseName": "ፐ",
+            "baseChar": "ፐ",
+            "exampleWord": "ፓፓዮ (papaya)",
+            "icon": "🥭",
+            "color": "#ffb347",
+            "characters": [
+                { "char": "ፐ", "sound": "pe" },
+                { "char": "ፑ", "sound": "pu" },
+                { "char": "ፒ", "sound": "pi" },
+                { "char": "ፓ", "sound": "pa" },
+                { "char": "ፔ", "sound": "pie" },
+                { "char": "ፕ", "sound": "p" },
+                { "char": "ፖ", "sound": "po" }
+            ]
+            },
         {
-          "family": "se",
-          "familyName": "Se Family",
-          "baseName": "ሰ",
-          "baseChar": "ሰ",
-          "exampleWord": "ሰዓት (clock)",
-          "icon": "🕐",
-          "color": "#5dd9d2",
-          "characters": [
-            { "char": "ሰ", "sound": "se" },
-            { "char": "ሱ", "sound": "su" },
-            { "char": "ሲ", "sound": "si" },
-            { "char": "ሳ", "sound": "sa" },
-            { "char": "ሴ", "sound": "sie" },
-            { "char": "ስ", "sound": "s" },
-            { "char": "ሶ", "sound": "so" }
-          ]
-        },
-        {
-          "family": "she",
-          "familyName": "She Family",
-          "baseName": "ሸ",
-          "baseChar": "ሸ",
-          "exampleWord": "ሽበጥ (shoe)",
-          "icon": "👞",
-          "color": "#4db8e8",
-          "characters": [
-            { "char": "ሸ", "sound": "she" },
-            { "char": "ሹ", "sound": "shu" },
-            { "char": "ሺ", "sound": "shi" },
-            { "char": "ሻ", "sound": "sha" },
-            { "char": "ሼ", "sound": "shie" },
-            { "char": "ሽ", "sound": "sh" },
-            { "char": "ሾ", "sound": "sho" }
-          ]
-        },
-        {
-          "family": "ke",
-          "familyName": "Ke Family",
-          "baseName": "ከ",
-          "baseChar": "ከ",
-          "exampleWord": "ከልቢ (dog)",
-          "icon": "🐕",
-          "color": "#90d890",
-          "characters": [
-            { "char": "ከ", "sound": "ke" },
-            { "char": "ኩ", "sound": "ku" },
-            { "char": "ኪ", "sound": "ki" },
-            { "char": "ካ", "sound": "ka" },
-            { "char": "ኬ", "sound": "kie" },
-            { "char": "ክ", "sound": "k" },
-            { "char": "ኮ", "sound": "ko" }
-          ]
-        },
-        {
-          "family": "khe",
-          "familyName": "Khe Family",
-          "baseName": "ኸ",
-          "baseChar": "ኸ",
-          "exampleWord": "ኮኾብ (star)",
-          "icon": "⭐",
-          "color": "#ffd966",
-          "characters": [
-            { "char": "ኸ", "sound": "khe" },
-            { "char": "ኹ", "sound": "khu" },
-            { "char": "ኺ", "sound": "khi" },
-            { "char": "ኻ", "sound": "kha" },
-            { "char": "ኼ", "sound": "khie" },
-            { "char": "ኽ", "sound": "kh" },
-            { "char": "ኾ", "sound": "kho" }
-          ]
-        },
-        {
-          "family": "le",
-          "familyName": "Le Family",
-          "baseName": "ለ",
-          "baseChar": "ለ",
-          "exampleWord": "ለምን (lemon)",
-          "icon": "🍋",
-          "color": "#ffe680",
-          "characters": [
-            { "char": "ለ", "sound": "le" },
-            { "char": "ሉ", "sound": "lu" },
-            { "char": "ሊ", "sound": "li" },
-            { "char": "ላ", "sound": "la" },
-            { "char": "ሌ", "sound": "lie" },
-            { "char": "ል", "sound": "l" },
-            { "char": "ሎ", "sound": "lo" }
-          ]
-        },
-        {
-          "family": "e",
-          "familyName": "E Family",
-          "baseName": "እ",
-          "baseChar": "እ",
-          "exampleWord": "አንበሳ (lion)",
-          "icon": "🦁",
-          "color": "#ff9999",
-          "characters": [
-            { "char": "እ", "sound": "e" },
-            { "char": "ኡ", "sound": "u" },
-            { "char": "ኢ", "sound": "i" },
-            { "char": "ኣ", "sound": "a" },
-            { "char": "ኤ", "sound": "ie" },
-            { "char": "እ", "sound": "i" },
-            { "char": "ኦ", "sound": "o" }
-          ]
-        },
-        {
-          "family": "tse",
-          "familyName": "Tse Family",
-          "baseName": "ጸ",
-          "baseChar": "ጸ",
-          "exampleWord": "ጸሃ (door)",
-          "icon": "🚪",
-          "color": "#c9a0dc",
-          "characters": [
-            { "char": "ጸ", "sound": "tse" },
-            { "char": "ጹ", "sound": "tsu" },
-            { "char": "ጺ", "sound": "tsi" },
-            { "char": "ጻ", "sound": "tsa" },
-            { "char": "ጼ", "sound": "tsie" },
-            { "char": "ጽ", "sound": "ts" },
-            { "char": "ጾ", "sound": "tso" }
-          ]
-        },
-        {
-          "family": "de",
-          "familyName": "De Family",
-          "baseName": "ደ",
-          "baseChar": "ደ",
-          "exampleWord": "ድማው (cat)",
-          "icon": "🐱",
-          "color": "#ffa07a",
-          "characters": [
-            { "char": "ደ", "sound": "de" },
-            { "char": "ዱ", "sound": "du" },
-            { "char": "ዲ", "sound": "di" },
-            { "char": "ዳ", "sound": "da" },
-            { "char": "ዴ", "sound": "die" },
-            { "char": "ድ", "sound": "d" },
-            { "char": "ዶ", "sound": "do" }
-          ]
-        },
-        {
-          "family": "je",
-          "familyName": "Je Family",
-          "baseName": "ጀ",
-          "baseChar": "ጀ",
-          "exampleWord": "ጀሪካን (jerrycan)",
-          "icon": "🛢️",
-          "color": "#98d8c8",
-          "characters": [
-            { "char": "ጀ", "sound": "je" },
-            { "char": "ጁ", "sound": "ju" },
-            { "char": "ጂ", "sound": "ji" },
-            { "char": "ጃ", "sound": "ja" },
-            { "char": "ጄ", "sound": "jie" },
-            { "char": "ጅ", "sound": "j" },
-            { "char": "ጆ", "sound": "jo" }
-          ]
-        },
-        {
-          "family": "ze",
-          "familyName": "Ze Family",
-          "baseName": "ዘ",
-          "baseChar": "ዘ",
-          "exampleWord": "ዘይቲ (oil)",
-          "icon": "🍯",
-          "color": "#f6e58d",
-          "characters": [
-            { "char": "ዘ", "sound": "ze" },
-            { "char": "ዙ", "sound": "zu" },
-            { "char": "ዚ", "sound": "zi" },
-            { "char": "ዛ", "sound": "za" },
-            { "char": "ዜ", "sound": "zie" },
-            { "char": "ዝ", "sound": "z" },
-            { "char": "ዞ", "sound": "zo" }
-          ]
+            "family": "che",
+            "familyName": "Che Family",
+            "baseName": "ቸ",
+            "baseChar": "ቸ",
+            "exampleWord": "ጫው (chaw)",
+            "icon": "👥",
+            "color": "#ff6b8a",
+            "characters": [
+                { "char": "ቸ", "sound": "che" },
+                { "char": "ቹ", "sound": "chu" },
+                { "char": "ቺ", "sound": "chi" },
+                { "char": "ቻ", "sound": "cha" },
+                { "char": "ቼ", "sound": "chie" },
+                { "char": "ች", "sound": "ch" },
+                { "char": "ቾ", "sound": "cho" }
+            ]
+            },
+            {
+            "family": "nye",
+            "familyName": "Nye Family",
+            "baseName": "ኘ",
+            "baseChar": "ኘ",
+            "exampleWord": "ኙው (cat)",
+            "icon": "🐱",
+            "color": "#a67c52",
+            "characters": [
+                { "char": "ኘ", "sound": "nye" },
+                { "char": "ኙ", "sound": "nyu" },
+                { "char": "ኚ", "sound": "nyi" },
+                { "char": "ኛ", "sound": "nya" },
+                { "char": "ኜ", "sound": "nyie" },
+                { "char": "ኝ", "sound": "ny" },
+                { "char": "ኞ", "sound": "nyo" }
+            ]
+            },
+            {
+            "family": "ve",
+            "familyName": "Ve Family",
+            "baseName": "ቨ",
+            "baseChar": "ቨ",
+            "exampleWord": "ቪድዮ ካሜራ (video camera)",
+            "icon": "📹",
+            "color": "#4a4a4a",
+            "characters": [
+                { "char": "ቨ", "sound": "ve" },
+                { "char": "ቩ", "sound": "vu" },
+                { "char": "ቪ", "sound": "vi" },
+                { "char": "ቫ", "sound": "va" },
+                { "char": "ቬ", "sound": "vie" },
+                { "char": "ቭ", "sound": "v" },
+                { "char": "ቮ", "sound": "vo" }
+            ]
+            },
+            {
+            "family": "pe2",
+            "familyName": "Pe Family (variant)",
+            "baseName": "ጰ",
+            "baseChar": "ጰ",
+            "exampleWord": "አያት (father)",
+            "icon": "👨‍👦",
+            "color": "#5eb3d1",
+            "characters": [
+                { "char": "ጰ", "sound": "pe" },
+                { "char": "ጱ", "sound": "pu" },
+                { "char": "ጲ", "sound": "pi" },
+                { "char": "ጳ", "sound": "pa" },
+                { "char": "ጴ", "sound": "pie" },
+                { "char": "ጵ", "sound": "p" },
+                { "char": "ጶ", "sound": "po" }
+            ]
+            },
+            {
+            "family": "zhe",
+            "familyName": "Zhe Family",
+            "baseName": "ዠ",
+            "baseChar": "ዠ",
+            "exampleWord": "ተሌቪዥን (television)",
+            "icon": "📺",
+            "color": "#2c2c2c",
+            "characters": [
+                { "char": "ዠ", "sound": "zhe" },
+                { "char": "ዡ", "sound": "zhu" },
+                { "char": "ዢ", "sound": "zhi" },
+                { "char": "ዣ", "sound": "zha" },
+                { "char": "ዤ", "sound": "zhie" },
+                { "char": "ዥ", "sound": "zh" },
+                { "char": "ዦ", "sound": "zho" }
+            ]
+            }
+        ]
         }
-      ],
-      "column2": [
-        {
-          "family": "He",
-          "familyName": "He Family",
-          "baseName": "ሀ",
-          "baseChar": "ሀ",
-          "exampleWord": "ሓዊ (fire)",
-          "icon": "🔥",
-          "color": "#ff6b8a",
-          "characters": [
-            { "char": "ሀ", "sound": "He" },
-            { "char": "ሁ", "sound": "Hu" },
-            { "char": "ሂ", "sound": "Hi" },
-            { "char": "ሃ", "sound": "Ha" },
-            { "char": "ሄ", "sound": "Hie" },
-            { "char": "ህ", "sound": "H" },
-            { "char": "ሆ", "sound": "Ho" }
-          ]
-        },
-        {
-          "family": "Te",
-          "familyName": "Te Family",
-          "baseName": "ተ",
-          "baseChar": "ተ",
-          "exampleWord": "ጠራሙዝ (bottle)",
-          "icon": "🍾",
-          "color": "#6495ed",
-          "characters": [
-            { "char": "ተ", "sound": "Te" },
-            { "char": "ቱ", "sound": "Tu" },
-            { "char": "ቲ", "sound": "Ti" },
-            { "char": "ታ", "sound": "Ta" },
-            { "char": "ቴ", "sound": "Tie" },
-            { "char": "ት", "sound": "T" },
-            { "char": "ቶ", "sound": "To" }
-          ]
-        },
-        {
-          "family": "Ṭe",
-          "familyName": "Ṭe Family",
-          "baseName": "ጠ",
-          "baseChar": "ጠ",
-          "exampleWord": "ጠመን (thirsty)",
-          "icon": "💧",
-          "color": "#4fc3f7",
-          "characters": [
-            { "char": "ጠ", "sound": "Ṭe" },
-            { "char": "ጡ", "sound": "Ṭu" },
-            { "char": "ጢ", "sound": "Ṭi" },
-            { "char": "ጣ", "sound": "Ṭa" },
-            { "char": "ጤ", "sound": "Ṭie" },
-            { "char": "ጥ", "sound": "Ṭ" },
-            { "char": "ጦ", "sound": "Ṭo" }
-          ]
-        },
-        {
-          "family": "Che",
-          "familyName": "Che Family",
-          "baseName": "ቸ",
-          "baseChar": "ቸ",
-          "exampleWord": "ጨቋዊት (hen)",
-          "icon": "🐔",
-          "color": "#87ceeb",
-          "characters": [
-            { "char": "ቸ", "sound": "Che" },
-            { "char": "ቹ", "sound": "Chu" },
-            { "char": "ቺ", "sound": "Chi" },
-            { "char": "ቻ", "sound": "Cha" },
-            { "char": "ቼ", "sound": "Chie" },
-            { "char": "ች", "sound": "Ch" },
-            { "char": "ቾ", "sound": "Cho" }
-          ]
-        },
-        {
-          "family": "qe",
-          "familyName": "Qe Family",
-          "baseName": "ቀ",
-          "baseChar": "ቀ",
-          "exampleWord": "ቀሺ (priest)",
-          "icon": "⛪",
-          "color": "#e76f51",
-          "characters": [
-            { "char": "ቀ", "sound": "qe" },
-            { "char": "ቁ", "sound": "qu" },
-            { "char": "ቂ", "sound": "qi" },
-            { "char": "ቃ", "sound": "qa" },
-            { "char": "ቄ", "sound": "qie" },
-            { "char": "ቅ", "sound": "q" },
-            { "char": "ቆ", "sound": "qo" }
-          ]
-        },
-        {
-          "family": "ghe",
-          "familyName": "Ghe Family",
-          "baseName": "ቐ",
-          "baseChar": "ቐ",
-          "exampleWord": "መቐሻ (scissors)",
-          "icon": "✂️",
-          "color": "#5dd9d2",
-          "characters": [
-            { "char": "ቐ", "sound": "ghe" },
-            { "char": "ቑ", "sound": "ghu" },
-            { "char": "ቒ", "sound": "ghi" },
-            { "char": "ቓ", "sound": "gha" },
-            { "char": "ቔ", "sound": "ghie" },
-            { "char": "ቕ", "sound": "gh" },
-            { "char": "ቖ", "sound": "gho" }
-          ]
-        },
-        {
-          "family": "ge",
-          "familyName": "Ge Family",
-          "baseName": "ገ",
-          "baseChar": "ገ",
-          "exampleWord": "ገዛ (house)",
-          "icon": "🏠",
-          "color": "#6eb5ff",
-          "characters": [
-            { "char": "ገ", "sound": "ge" },
-            { "char": "ጉ", "sound": "gu" },
-            { "char": "ጊ", "sound": "gi" },
-            { "char": "ጋ", "sound": "ga" },
-            { "char": "ጌ", "sound": "gie" },
-            { "char": "ግ", "sound": "g" },
-            { "char": "ጎ", "sound": "go" }
-          ]
-        },
-        {
-          "family": "ne",
-          "familyName": "Ne Family",
-          "baseName": "ነ",
-          "baseChar": "ነ",
-          "exampleWord": "ነብሪ (tiger)",
-          "icon": "🐯",
-          "color": "#ffb84d",
-          "characters": [
-            { "char": "ነ", "sound": "ne" },
-            { "char": "ኑ", "sound": "nu" },
-            { "char": "ኒ", "sound": "ni" },
-            { "char": "ና", "sound": "na" },
-            { "char": "ኔ", "sound": "nie" },
-            { "char": "ን", "sound": "n" },
-            { "char": "ኖ", "sound": "no" }
-          ]
-        },
-        {
-          "family": "ye",
-          "familyName": "Ye Family",
-          "baseName": "የ",
-          "baseChar": "የ",
-          "exampleWord": "የማነ (man)",
-          "icon": "👨",
-          "color": "#c8b6ff",
-          "characters": [
-            { "char": "የ", "sound": "ye" },
-            { "char": "ዩ", "sound": "yu" },
-            { "char": "ዪ", "sound": "yi" },
-            { "char": "ያ", "sound": "ya" },
-            { "char": "ዬ", "sound": "yie" },
-            { "char": "ይ", "sound": "y" },
-            { "char": "ዮ", "sound": "yo" }
-          ]
-        },
-        {
-          "family": "re",
-          "familyName": "Re Family",
-          "baseName": "ረ",
-          "baseChar": "ረ",
-          "exampleWord": "ረጋቢት (doves)",
-          "icon": "🕊️",
-          "color": "#ff9eb3",
-          "characters": [
-            { "char": "ረ", "sound": "re" },
-            { "char": "ሩ", "sound": "ru" },
-            { "char": "ሪ", "sound": "ri" },
-            { "char": "ራ", "sound": "ra" },
-            { "char": "ሬ", "sound": "rie" },
-            { "char": "ር", "sound": "r" },
-            { "char": "ሮ", "sound": "ro" }
-          ]
-        },
-        {
-          "family": "fe",
-          "familyName": "Fe Family",
-          "baseName": "ፈ",
-          "baseChar": "ፈ",
-          "exampleWord": "ፈረስ (horse)",
-          "icon": "🐴",
-          "color": "#dda15e",
-          "characters": [
-            { "char": "ፈ", "sound": "fe" },
-            { "char": "ፉ", "sound": "fu" },
-            { "char": "ፊ", "sound": "fi" },
-            { "char": "ፋ", "sound": "fa" },
-            { "char": "ፌ", "sound": "fie" },
-            { "char": "ፍ", "sound": "f" },
-            { "char": "ፎ", "sound": "fo" }
-          ]
-        }
-      ],
-      "column3": [
-        {
-          "family": "he",
-          "familyName": "He Family",
-          "baseName": "ህ",
-          "baseChar": "ህ",
-          "exampleWord": "ህቦይ (monkey)",
-          "icon": "🐵",
-          "color": "#26c6da",
-          "characters": [
-            { "char": "ሀ", "sound": "he" },
-            { "char": "ሁ", "sound": "hu" },
-            { "char": "ሂ", "sound": "hi" },
-            { "char": "ሃ", "sound": "ha" },
-            { "char": "ሄ", "sound": "hie" },
-            { "char": "ህ", "sound": "h" },
-            { "char": "ሆ", "sound": "ho" }
-          ]
-        },
-        {
-          "family": "E",
-          "familyName": "E Family",
-          "baseName": "እ",
-          "baseChar": "እ",
-          "exampleWord": "ወረቀት (paper)",
-          "icon": "📄",
-          "color": "#5dade2",
-          "characters": [
-            { "char": "እ", "sound": "E" },
-            { "char": "ኡ", "sound": "U" },
-            { "char": "ኢ", "sound": "I" },
-            { "char": "ኣ", "sound": "A" },
-            { "char": "ኤ", "sound": "IE" },
-            { "char": "እ", "sound": "I" },
-            { "char": "ኦ", "sound": "O" }
-          ]
-        },
-        {
-          "family": "we",
-          "familyName": "We Family",
-          "baseName": "ወ",
-          "baseChar": "ወ",
-          "exampleWord": "ወർቂ (gold)",
-          "icon": "💰",
-          "color": "#ec407a",
-          "characters": [
-            { "char": "ወ", "sound": "we" },
-            { "char": "ዉ", "sound": "wu" },
-            { "char": "ዊ", "sound": "wi" },
-            { "char": "ዋ", "sound": "wa" },
-            { "char": "ዌ", "sound": "wie" },
-            { "char": "ው", "sound": "w" },
-            { "char": "ዎ", "sound": "wo" }
-          ]
-        },
-        {
-          "family": "me",
-          "familyName": "Me Family",
-          "baseName": "መ",
-          "baseChar": "መ",
-          "exampleWord": "መኪና (car)",
-          "icon": "🚗",
-          "color": "#66bb6a",
-          "characters": [
-            { "char": "መ", "sound": "me" },
-            { "char": "ሙ", "sound": "mu" },
-            { "char": "ሚ", "sound": "mi" },
-            { "char": "ማ", "sound": "ma" },
-            { "char": "ሜ", "sound": "mie" },
-            { "char": "ም", "sound": "m" },
-            { "char": "ሞ", "sound": "mo" }
-          ]
-        },
-        {
-          "family": "pe",
-          "familyName": "Pe Family",
-          "baseName": "ፐ",
-          "baseChar": "ፐ",
-          "exampleWord": "ፓፓዮ (papaya)",
-          "icon": "🥭",
-          "color": "#ff9800",
-          "characters": [
-            { "char": "ፐ", "sound": "pe" },
-            { "char": "ፑ", "sound": "pu" },
-            { "char": "ፒ", "sound": "pi" },
-            { "char": "ፓ", "sound": "pa" },
-            { "char": "ፔ", "sound": "pie" },
-            { "char": "ፕ", "sound": "p" },
-            { "char": "ፖ", "sound": "po" }
-          ]
-        },
-        {
-          "family": "che",
-          "familyName": "Che Family",
-          "baseName": "ጨ",
-          "baseChar": "ጨ",
-          "exampleWord": "ጫው (tea)",
-          "icon": "☕",
-          "color": "#ef5350",
-          "characters": [
-            { "char": "ጨ", "sound": "che" },
-            { "char": "ጩ", "sound": "chu" },
-            { "char": "ጪ", "sound": "chi" },
-            { "char": "ጫ", "sound": "cha" },
-            { "char": "ጬ", "sound": "chie" },
-            { "char": "ጭ", "sound": "ch" },
-            { "char": "ጮ", "sound": "cho" }
-          ]
-        },
-        {
-          "family": "nye",
-          "familyName": "Nye Family",
-          "baseName": "ኘ",
-          "baseChar": "ኘ",
-          "exampleWord": "ኛው (leopard)",
-          "icon": "🐆",
-          "color": "#ffa726",
-          "characters": [
-            { "char": "ኘ", "sound": "nye" },
-            { "char": "ኙ", "sound": "nyu" },
-            { "char": "ኚ", "sound": "nyi" },
-            { "char": "ኛ", "sound": "nya" },
-            { "char": "ኜ", "sound": "nyie" },
-            { "char": "ኝ", "sound": "ny" },
-            { "char": "ኞ", "sound": "nyo" }
-          ]
-        },
-        {
-          "family": "Pe",
-          "familyName": "Pe Family",
-          "baseName": "ፐ",
-          "baseChar": "ፐ",
-          "exampleWord": "ፓስ (pass)",
-          "icon": "🎫",
-          "color": "#7e57c2",
-          "characters": [
-            { "char": "ፐ", "sound": "Pe" },
-            { "char": "ፑ", "sound": "Pu" },
-            { "char": "ፒ", "sound": "Pi" },
-            { "char": "ፓ", "sound": "Pa" },
-            { "char": "ፔ", "sound": "Pie" },
-            { "char": "ፕ", "sound": "P" },
-            { "char": "ፖ", "sound": "Po" }
-          ]
-        },
-        {
-          "family": "zhe",
-          "familyName": "Zhe Family",
-          "baseName": "ዠ",
-          "baseChar": "ዠ",
-          "exampleWord": "ቴሌቪዥን (television)",
-          "icon": "📺",
-          "color": "#42a5f5",
-          "characters": [
-            { "char": "ዠ", "sound": "zhe" },
-            { "char": "ዡ", "sound": "zhu" },
-            { "char": "ዢ", "sound": "zhi" },
-            { "char": "ዣ", "sound": "zha" },
-            { "char": "ዤ", "sound": "zhie" },
-            { "char": "ዥ", "sound": "zh" },
-            { "char": "ዦ", "sound": "zho" }
-          ]
-        }
-      ]
-    }
     return alphabet_data
 
 
