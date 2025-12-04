@@ -142,11 +142,24 @@ def render():
         col1, col2 = st.columns([1, 2])
 
         with col1:
+            categories = ["all"] + list(VOCAB_CATEGORIES.keys())
+            
+            # Determine the index for the selectbox based on session_state
+            try:
+                selected_index = categories.index(st.session_state.get("selected_category", "all"))
+            except ValueError:
+                selected_index = 0 # Default to "All" if category not found
+
+            # Let the user choose a category, with the index correctly set
             selected_category = st.selectbox(
                 "Choose a category:",
-                ["all"] + list(VOCAB_CATEGORIES.keys()),
+                categories,
+                index=selected_index,
                 format_func=lambda x: x.title() if x != "all" else "All Categories",
             )
+            
+            # Update the session state with the value from the selectbox for subsequent reruns
+            st.session_state.selected_category = selected_category
 
             # Display category info
             if selected_category != "all":
@@ -301,7 +314,7 @@ def render():
                     for word in word_list
                     if word in VOCAB_CATEGORIES[category]
                 }
-                create_vocabulary_grid(essential_category_words, cols=3, key_prefix=category)
+                create_vocabulary_grid(essential_category_words, cols=3, key_prefix=f"essential_{category}")
 
         # Learning recommendations
         st.markdown("---")
