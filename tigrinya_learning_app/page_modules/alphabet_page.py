@@ -148,7 +148,7 @@ def create_traditional_alphabet_structure():
             "baseName": "ጸ",
             "baseChar": "ጸ",
             "exampleWord": "ጸባ (milk)",
-            "icon": "",
+            "icon": "🥛",
             "color": "#9D4EDD",
             "characters": [
                 { "char": "ጸ", "sound": "tse" },
