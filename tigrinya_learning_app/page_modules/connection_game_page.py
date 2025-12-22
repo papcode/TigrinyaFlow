@@ -103,7 +103,7 @@ def create_connection_game_html(puzzle_data: dict, game_id: str) -> str:
                 background: white;
                 border: 3px solid #dee2e6;
                 border-radius: 15px;
-                padding: 15px;
+                padding: 20px;
                 text-align: center;
                 cursor: pointer;
                 transition: all 0.3s ease;
@@ -145,8 +145,8 @@ def create_connection_game_html(puzzle_data: dict, game_id: str) -> str:
             }}
 
             .image-item img {{
-                max-width: 80px;
-                max-height: 80px;
+                max-width: 140px;
+                max-height: 180px;
                 object-fit: contain;
                 border-radius: 10px;
             }}
