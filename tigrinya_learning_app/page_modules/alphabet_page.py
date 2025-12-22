@@ -22,8 +22,8 @@ def create_traditional_alphabet_structure():
       "familyName": "Be Family",
       "baseName": "በ",
       "baseChar": "በ",
-      "exampleWord": "በለ (fruit)",
-      "icon": "🍎",
+      "exampleWord": "በጊዕ (sheep)",
+      "icon": "🐑",
       "color": "#E63946",
       "characters": [
         { "char": "በ", "sound": "be" },
@@ -58,8 +58,8 @@ def create_traditional_alphabet_structure():
       "familyName": "She Family",
       "baseName": "ሸ",
       "baseChar": "ሸ",
-      "exampleWord": "ሽበጥ (shoe)",
-      "icon": "👞",
+      "exampleWord": "ሸውዓተ (seven)",
+      "icon": "7️⃣",
       "color": "#2A9D8F",
       "characters": [
         { "char": "ሸ", "sound": "she" },
@@ -148,7 +148,7 @@ def create_traditional_alphabet_structure():
       "familyName": "Tse Family",
       "baseName": "ጸ",
       "baseChar": "ጸ",
-      "exampleWord": "ጸሃ (door)",
+      "exampleWord": "ማዕጾ (door)",
       "icon": "🚪",
       "color": "#9D4EDD",
       "characters": [
@@ -258,8 +258,8 @@ def create_traditional_alphabet_structure():
       "familyName": "Che Family",
       "baseName": "ጨ",
       "baseChar": "ጨ",
-      "exampleWord": "ጫው (chat)",
-      "icon": "👥",
+      "exampleWord": "ጨና (perfume)",
+      "icon": "⚱💨",
       "color": "#C77DFF",
       "characters": [
         { "char": "ጨ", "sound": "che" },
@@ -276,8 +276,8 @@ def create_traditional_alphabet_structure():
       "familyName": "Te Family",
       "baseName": "ተ",
       "baseChar": "ተ",
-      "exampleWord": "ተራሙዝ (bottle)",
-      "icon": "🍾",
+      "exampleWord": "ተመን (snake)",
+      "icon": "🐍",
       "color": "#588157",
       "characters": [
         { "char": "ተ", "sound": "te" },
@@ -440,7 +440,7 @@ def create_traditional_alphabet_structure():
       "familyName": "'e Family",
       "baseName": "ዐ",
       "baseChar": "ዐ",
-      "exampleWord": "ዓረት (bed)",
+      "exampleWord": "ዓራት (bed)",
       "icon": "🛏️",
       "color": "#0077B6",
       "characters": [
@@ -476,7 +476,7 @@ def create_traditional_alphabet_structure():
       "familyName": "Me Family",
       "baseName": "መ",
       "baseChar": "መ",
-      "exampleWord": "መካና (car)",
+      "exampleWord": "መኪና (car)",
       "icon": "🚗",
       "color": "#EF233C",
       "characters": [

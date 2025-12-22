@@ -109,15 +109,15 @@
         "radio": "ራድዮ",
         "clock": "ሰዓት",
         "mirror": "መስትያት",
-        "bag": "ሻንጣ",
+        "bag": "ሳንጣ",
         "shoes": "ሳእኒ",
         "clothes": "ክዳን",
         "hat": "ቆብዕ",
-        "glasses": "ብርጭቆ",
+        "glass-cup": "ብርጭቆ",
         "candle": "ሽምዓ",
         "perfume": "ጨና",
         "soap": "ሳምና",
-        "key": "ቁልፊ"
+        "key": "መፍትሕ"
     },
     "nature": {
         "sun": "ጸሓይ",
@@ -189,6 +189,10 @@
         "thirty": "ሰላሳ",
         "forty": "ኣርብዓ",
         "fifty": "ሓምሳ",
+        "sixity": "ዕስራ",
+        "seventy": "ሰላሳ",
+        "eighty": "ኣርብዓ",
+        "ninety": "ሓምሳ",
         "hundred": "ሚእቲ",
         "thousand": "ሺሕ"
     },
@@ -253,7 +257,9 @@
         "farm": "ሕርሻ",
         "city": "ከተማ",
         "village": "ዓዲ",
+        "continent": "ኣህጉር",
         "country": "ሃገር",
+        "border": "ዶብ",
         "park": "መናፈሲ",
         "beach": "ገምገም ባሕሪ",
         "forest": "ዱር"
