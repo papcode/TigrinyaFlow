@@ -1,0 +1,48 @@
+all_words = {#
+    Animals "ዶርሆ": { "translation": "chicken", "category": "animals", "phonetic": "dorho" },
+    "ላም": { "translation": "cow", "category": "animals", "phonetic": "lam" },
+    "ድሙ": { "translation": "cat", "category": "animals", "phonetic": "dimu" },
+    "ከልቢ": { "translation": "dog", "category": "animals", "phonetic": "kelbi" },
+    "ህበይ": { "translation": "monkey", "category": "animals", "phonetic": "hbey" },
+    "ፈረስ": { "translation": "horse", "category": "animals", "phonetic": "feres" },
+    #Colors "ቀይሕ": { "translation": "red", "category": "colors", "phonetic": "qeyiH" },
+    "ጸሊም": { "translation": "black", "category": "colors", "phonetic": "Selim" },
+    "ጻዕዳ": { "translation": "white", "category": "colors", "phonetic": "Sa'ida" },
+    "ቢጫ": { "translation": "yellow", "category": "colors", "phonetic": "bicha" },
+    "ሰማያዊ": { "translation": "blue", "category": "colors", "phonetic": "semayawi" },
+    #Objects "መጽሓፍ": { "translation": "book", "category": "objects", "phonetic": "meShaf" },
+    "ብርዒ": { "translation": "pen", "category": "objects", "phonetic": "biri" },
+    "ጣውላ": { "translation": "table", "category": "objects", "phonetic": "tawila" },
+    "ገዛ": { "translation": "house", "category": "objects", "phonetic": "geza" },
+    "መኪና": { "translation": "car", "category": "objects", "phonetic": "mekina" },
+    "ጸሓይ": { "translation": "sun", "category": "objects", "phonetic": "SaHay" },
+    #Greetings "ሰላም": {
+        "translation": "peace/hello",
+        "category": "greetings",
+        "phonetic": "selam",
+    },
+    "ጥዕና": { "translation": "health", "category": "greetings", "phonetic": "Tiina" },
+    #Objects / Nature "ማይ": { "translation": "water", "category": "nature", "phonetic": "may" },
+    "ሓሙስ": { "translation": "Thursday", "category": "time", "phonetic": "Hamus" },
+}
+
+#
+Word bank
+for drag - and - drop exercises
+DRAG_DROP_WORDS = {#
+    Animals "ዶርሆ": { "translation": "chicken", "category": "animals" },
+    "ላም": { "translation": "cow", "category": "animals" },
+    "ድሙ": { "translation": "cat", "category": "animals" },
+    "ከልቢ": { "translation": "dog", "category": "animals" },
+    #Colors "ቀይሕ": { "translation": "red", "category": "colors" },
+    "ጸሊም": { "translation": "black", "category": "colors" },
+    "ጻዕዳ": { "translation": "white", "category": "colors" },
+    "ቢጫ": { "translation": "yellow", "category": "colors" },
+    #Objects "መጽሓፍ": { "translation": "book", "category": "objects" },
+    "ብርዒ": { "translation": "pen", "category": "objects" },
+    "ጣውላ": { "translation": "table", "category": "objects" },
+    "ገዛ": { "translation": "house", "category": "objects" },
+    #Simple words "ሰላም": { "translation": "peace/hello", "category": "greetings" },
+    "ማይ": { "translation": "water", "category": "objects" },
+    "ሓሙስ": { "translation": "Thursday", "category": "time" },
+}
