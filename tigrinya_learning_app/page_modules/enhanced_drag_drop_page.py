@@ -10,25 +10,31 @@ from clientTranslation import geez_to_latin_syllable
 # Word bank for drag-and-drop exercises
 DRAG_DROP_WORDS = {
     # Animals
-    "ዶሮ": {"translation": "chicken", "category": "animals"},
-    "ላም": {"translation": "cow", "category": "animals"},
-    "ድሙ": {"translation": "cat", "category": "animals"},
-    "ከልቢ": {"translation": "dog", "category": "animals"},
+    "ዶሮ": { "translation": "chicken", "category": "animals" },
+    "ላም": { "translation": "cow", "category": "animals" },
+    "ድሙ": { "translation": "cat", "category": "animals" },
+    "ከልቢ": { "translation": "dog", "category": "animals" },
+
     # Colors
-    "ቀይሕ": {"translation": "red", "category": "colors"},
-    "ጸሊም": {"translation": "black", "category": "colors"},
-    "ጻዕዳ": {"translation": "white", "category": "colors"},
-    "ቢጫ": {"translation": "yellow", "category": "colors"},
+    "ቀይሕ": { "translation": "red", "category": "colors" },
+    "ጸሊም": { "translation": "black", "category": "colors" },
+    "ጻዕዳ": { "translation": "white", "category": "colors" },
+    "ቢጫ": { "translation": "yellow", "category": "colors" },
+
     # Objects
-    "መጽሓፍ": {"translation": "book", "category": "objects"},
-    "ብርዒ": {"translation": "pen", "category": "objects"},
-    "ጣውላ": {"translation": "table", "category": "objects"},
-    "ገዛ": {"translation": "house", "category": "objects"},
-    # Simple words
-    "ሰላም": {"translation": "peace/hello", "category": "greetings"},
-    "ማይ": {"translation": "water", "category": "objects"},
-    "ሓሙስ": {"translation": "Thursday", "category": "time"},
+    "መጽሓፍ": { "translation": "book", "category": "objects" },
+    "ብርዒ": { "translation": "pen", "category": "objects" },
+    "ጣውላ": { "translation": "table", "category": "objects" },
+    "ገዛ": { "translation": "house", "category": "objects" },
+
+    # Greetings / Simple words
+    "ሰላም": { "translation": "peace/hello", "category": "greetings" },
+
+    # Nature / Time
+    "ማይ": { "translation": "water", "category": "objects" },
+    "ሓሙስ": { "translation": "Thursday", "category": "time" },
 }
+
 
 
 class EnhancedDragDropGame:
@@ -151,37 +157,43 @@ def create_drag_drop_html(puzzle_data: Dict, component_key: str) -> str:
 
     # Complete word bank with more words
     all_words = {
-        # Animals
-        "ዶሮ": {"translation": "chicken", "category": "animals", "phonetic": "doro"},
-        "ላም": {"translation": "cow", "category": "animals", "phonetic": "lam"},
-        "ድሙ": {"translation": "cat", "category": "animals", "phonetic": "dimu"},
-        "ከልቢ": {"translation": "dog", "category": "animals", "phonetic": "kelbi"},
-        "ጊደር": {"translation": "donkey", "category": "animals", "phonetic": "gider"},
-        "ፈረስ": {"translation": "horse", "category": "animals", "phonetic": "feres"},
-        # Colors
-        "ቀይሕ": {"translation": "red", "category": "colors", "phonetic": "qeyiH"},
-        "ጸሊም": {"translation": "black", "category": "colors", "phonetic": "Selim"},
-        "ጻዕዳ": {"translation": "white", "category": "colors", "phonetic": "Sa'ida"},
-        "ቢጫ": {"translation": "yellow", "category": "colors", "phonetic": "bicha"},
-        "ሰማያዊ": {"translation": "blue", "category": "colors", "phonetic": "semayawi"},
-        # Objects
-        "መጽሓፍ": {"translation": "book", "category": "objects", "phonetic": "meShaf"},
-        "ብርዒ": {"translation": "pen", "category": "objects", "phonetic": "biri"},
-        "ጣውላ": {"translation": "table", "category": "objects", "phonetic": "tawila"},
-        "ገዛ": {"translation": "house", "category": "objects", "phonetic": "geza"},
-        "መኪና": {"translation": "car", "category": "objects", "phonetic": "mekina"},
-        "ፀሓይ": {"translation": "sun", "category": "objects", "phonetic": "SaHay"},
-        # Greetings
-        "ሰላም": {
-            "translation": "peace/hello",
-            "category": "greetings",
-            "phonetic": "selam",
-        },
-        "ጥዕና": {"translation": "health", "category": "greetings", "phonetic": "Tiina"},
-        # Objects/Nature
-        "ማይ": {"translation": "water", "category": "nature", "phonetic": "may"},
-        "ሓሙስ": {"translation": "Thursday", "category": "time", "phonetic": "Hamus"},
-    }
+    # Animals
+    "ዶሮ": { "translation": "chicken", "category": "animals", "phonetic": "doro" },
+    "ላም": { "translation": "cow", "category": "animals", "phonetic": "lam" },
+    "ድሙ": { "translation": "cat", "category": "animals", "phonetic": "dimu" },
+    "ከልቢ": { "translation": "dog", "category": "animals", "phonetic": "kelbi" },
+    "ጊደር": { "translation": "donkey", "category": "animals", "phonetic": "gider" },
+    "ፈረስ": { "translation": "horse", "category": "animals", "phonetic": "feres" },
+
+    # Colors
+    "ቀይሕ": { "translation": "red", "category": "colors", "phonetic": "qeyiH" },
+    "ጸሊም": { "translation": "black", "category": "colors", "phonetic": "Selim" },
+    "ጻዕዳ": { "translation": "white", "category": "colors", "phonetic": "Sa'ida" },
+    "ቢጫ": { "translation": "yellow", "category": "colors", "phonetic": "bicha" },
+    "ሰማያዊ": { "translation": "blue", "category": "colors", "phonetic": "semayawi" },
+
+    # Objects
+    "መጽሓፍ": { "translation": "book", "category": "objects", "phonetic": "meShaf" },
+    "ብርዒ": { "translation": "pen", "category": "objects", "phonetic": "biri" },
+    "ጣውላ": { "translation": "table", "category": "objects", "phonetic": "tawila" },
+    "ገዛ": { "translation": "house", "category": "objects", "phonetic": "geza" },
+    "መኪና": { "translation": "car", "category": "objects", "phonetic": "mekina" },
+    "ፀሓይ": { "translation": "sun", "category": "objects", "phonetic": "SaHay" },
+
+    # Greetings
+    "ሰላም": {
+        "translation": "peace/hello",
+        "category": "greetings",
+        "phonetic": "selam",
+    },
+    "ጥዕና": { "translation": "health", "category": "greetings", "phonetic": "Tiina" },
+
+    # Nature / Time
+    "ማይ": { "translation": "water", "category": "nature", "phonetic": "may" },
+    "ሓሙስ": { "translation": "Thursday", "category": "time", "phonetic": "Hamus" },
+}
+
+
 
     html_code = f"""
     <!DOCTYPE html>

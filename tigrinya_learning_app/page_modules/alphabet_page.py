@@ -566,7 +566,7 @@ def create_traditional_alphabet_structure():
       "familyName": "Pe Family (variant)",
       "baseName": "ጰ",
       "baseChar": "ጰ",
-      "exampleWord": "አያት (father)",
+      "exampleWord": "ጳጳስ (pope)",
       "icon": "👨‍👦",
       "color": "#4895EF",
       "characters": [
